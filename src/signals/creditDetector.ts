@@ -5,7 +5,14 @@
  */
 
 import { PlaidAccount, PlaidLiability } from '../types/plaid';
-import { CreditSignal, TimeWindow } from '../types/signals';
+import { CreditSignal, TimeWindow, UtilizationBucket } from '../types/signals';
+
+function getUtilizationBucket(utilization: number): UtilizationBucket {
+  if (utilization < 30) return 'under_30';
+  if (utilization < 50) return '30_to_50';
+  if (utilization < 80) return '50_to_80';
+  return 'over_80';
+}
 
 export function detectCredit(
   accounts: PlaidAccount[],
@@ -20,23 +27,30 @@ export function detectCredit(
       detected: false,
       evidence: {
         accounts: [],
-        maxUtilization: 0,
-        avgUtilization: 0,
+        overallUtilization: {
+          percent: 0,
+          bucket: 'under_30',
+        },
       },
       window,
     };
   }
 
   const accountData: CreditSignal['evidence']['accounts'] = [];
-  const utilizations: number[] = [];
+  let totalBalance = 0;
+  let totalLimit = 0;
 
   for (const account of creditAccounts) {
     const balance = account.balances.current;
     const limit = account.balances.limit || 0;
 
     // Calculate utilization
-    const utilization = limit > 0 ? (balance / limit) * 100 : 0;
-    utilizations.push(utilization);
+    const utilizationPercent = limit > 0 ? (balance / limit) * 100 : 0;
+    const utilizationBucket = getUtilizationBucket(utilizationPercent);
+
+    // Track for overall calculation
+    totalBalance += balance;
+    totalLimit += limit;
 
     // Find matching liability data
     const liability = liabilities.find((l) => l.account_id === account.account_id);
@@ -59,7 +73,8 @@ export function detectCredit(
     accountData.push({
       accountId: account.account_id,
       mask: account.mask,
-      utilization,
+      utilizationBucket,
+      utilizationPercent,
       balance,
       limit,
       minimumPaymentOnly,
@@ -68,16 +83,15 @@ export function detectCredit(
     });
   }
 
-  const maxUtilization = Math.max(...utilizations, 0);
-  const avgUtilization =
-    utilizations.length > 0
-      ? utilizations.reduce((sum, u) => sum + u, 0) / utilizations.length
-      : 0;
+  // Calculate overall utilization (sum of balances / sum of limits)
+  const overallUtilizationPercent = totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
+  const overallUtilizationBucket = getUtilizationBucket(overallUtilizationPercent);
 
-  // Detected if: utilization >= 50% OR interest charges OR minimum payment only OR overdue
+  // Detected if: any account utilization >= 50% OR interest charges OR minimum payment only OR overdue
   const detected = accountData.some(
     (acc) =>
-      acc.utilization >= 50 ||
+      acc.utilizationBucket === '50_to_80' ||
+      acc.utilizationBucket === 'over_80' ||
       acc.hasInterestCharges ||
       acc.minimumPaymentOnly ||
       acc.isOverdue
@@ -87,8 +101,10 @@ export function detectCredit(
     detected,
     evidence: {
       accounts: accountData,
-      maxUtilization,
-      avgUtilization,
+      overallUtilization: {
+        percent: overallUtilizationPercent,
+        bucket: overallUtilizationBucket,
+      },
     },
     window,
   };

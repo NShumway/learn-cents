@@ -39,21 +39,26 @@ export interface SavingsSignal {
   window: TimeWindow;
 }
 
+export type UtilizationBucket = 'under_30' | '30_to_50' | '50_to_80' | 'over_80';
+
 export interface CreditSignal {
   detected: boolean;
   evidence: {
     accounts: Array<{
       accountId: string;
       mask: string;
-      utilization: number;
+      utilizationBucket: UtilizationBucket;
+      utilizationPercent: number;  // Kept for overall calculation
       balance: number;
       limit: number;
       minimumPaymentOnly: boolean;
       hasInterestCharges: boolean;
       isOverdue: boolean;
     }>;
-    maxUtilization: number;
-    avgUtilization: number;
+    overallUtilization: {
+      percent: number;
+      bucket: UtilizationBucket;
+    };
   };
   window: TimeWindow;
 }

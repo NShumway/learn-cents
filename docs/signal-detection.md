@@ -111,9 +111,13 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Account Types:** `type === 'credit'`
 
 **Criteria:**
-- Utilization: `balance / limit * 100`
-- High utilization threshold: ≥50%
-- Warning threshold: ≥30%
+- Per-account utilization: `balance / limit * 100`
+- Overall utilization: `(sum of all balances) / (sum of all limits) * 100`
+- Utilization buckets:
+  - `under_30`: < 30%
+  - `30_to_50`: 30-50%
+  - `50_to_80`: 50-80%
+  - `over_80`: ≥ 80%
 - Interest charges: Look for `hasInterestCharges` in liabilities
 - Minimum payment only: Compare `last_payment_amount` to `minimum_payment_amount`
 - Overdue: Check `is_overdue` field in liabilities
@@ -127,7 +131,8 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
       {
         accountId: string,
         mask: string,
-        utilization: number,         // Percentage
+        utilizationBucket: 'under_30' | '30_to_50' | '50_to_80' | 'over_80',
+        utilizationPercent: number,  // Raw percentage (for overall calc)
         balance: number,
         limit: number,
         minimumPaymentOnly: boolean,
@@ -135,14 +140,18 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
         isOverdue: boolean
       }
     ],
-    maxUtilization: number,
-    avgUtilization: number
+    overallUtilization: {
+      percent: number,
+      bucket: 'under_30' | '30_to_50' | '50_to_80' | 'over_80'
+    }
   },
   window: '30d' | '180d'
 }
 ```
 
-**Detection threshold:** Utilization ≥50% OR interest charges OR minimum payment only OR is overdue
+**Detection threshold:** Any account with bucket `50_to_80` OR `over_80` OR interest charges OR minimum payment only OR is overdue
+
+**Note:** Overall utilization used for persona assignment (e.g., Building Saver requires overall < 30%)
 
 ### 4. Income Stability
 

@@ -29,8 +29,10 @@ describe('Credit Detector', () => {
     const result = detectCredit(accounts, liabilities, '30d');
 
     expect(result.detected).toBe(true);
-    expect(result.evidence.accounts[0].utilization).toBe(75);
-    expect(result.evidence.maxUtilization).toBe(75);
+    expect(result.evidence.accounts[0].utilizationBucket).toBe('50_to_80');
+    expect(result.evidence.accounts[0].utilizationPercent).toBe(75);
+    expect(result.evidence.overallUtilization.percent).toBe(75);
+    expect(result.evidence.overallUtilization.bucket).toBe('50_to_80');
   });
 
   it('should detect minimum payment only', () => {
@@ -97,6 +99,7 @@ describe('Credit Detector', () => {
     const result = detectCredit(accounts, liabilities, '30d');
 
     expect(result.detected).toBe(false);
-    expect(result.evidence.accounts[0].utilization).toBe(10);
+    expect(result.evidence.accounts[0].utilizationBucket).toBe('under_30');
+    expect(result.evidence.accounts[0].utilizationPercent).toBe(10);
   });
 });
