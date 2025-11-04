@@ -10,7 +10,7 @@
  *   npm run explore:plaid
  */
 
-import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from 'plaid';
+import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, SandboxItemFireWebhookRequestWebhookCodeEnum } from 'plaid';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs/promises';
 
@@ -88,7 +88,7 @@ async function main() {
     try {
       await plaidClient.sandboxItemFireWebhook({
         access_token: accessToken,
-        webhook_code: 'DEFAULT_UPDATE',
+        webhook_code: SandboxItemFireWebhookRequestWebhookCodeEnum.DefaultUpdate,
       });
       console.log('✓ Transaction sync triggered, waiting 2 seconds...');
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -188,8 +188,7 @@ async function main() {
       metadata: {
         fetched_at: now.toISOString(),
         environment: PLAID_ENV,
-        institution: 'First Platypus Bank (Sandbox)',
-        note: transactions.length === 0 ? 'No transactions available - this is common in fresh sandbox accounts' : undefined,
+        institution: 'First Platypus Bank',
       },
       accounts: accounts.map(acc => ({
         account_id: acc.account_id,
@@ -216,13 +215,14 @@ async function main() {
         pending: tx.pending,
         name: tx.name,
       })),
+      liabilities: [], // Liabilities not available in sandbox
       summary: {
         total_accounts: accounts.length,
         total_transactions: transactions.length,
       },
     };
 
-    const outputPath = './data/plaid-sandbox-sample.json';
+    const outputPath = './data/plaid-user-data.json';
     await fs.writeFile(outputPath, JSON.stringify(outputData, null, 2));
     console.log(`✓ Data saved to ${outputPath}\n`);
 

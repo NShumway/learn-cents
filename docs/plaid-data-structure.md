@@ -1,18 +1,47 @@
-# Plaid Data Structure Analysis
+# Plaid Data Structure Reference
 
 **Generated:** November 4, 2025
-**Purpose:** Document the actual Plaid API data structures for Phase 2 implementation
+**Purpose:** Document the data structures used by all downstream processes (signal detection, persona assignment, assessment generation)
 
 ## Overview
 
-This document describes the actual data structures returned by Plaid's Sandbox API, which we'll use to build our signal detection and persona assignment logic.
+This document defines the standardized data structures that all downstream processes consume. Whether data comes from Plaid API, synthetic generators, or user file uploads, it follows the formats defined here.
 
-## Data Sources
+## Complete User Financial Data Bundle
 
-1. **Plaid Sandbox API** - Live data from `scripts/explorePlaidSandbox.ts`
-2. **Synthetic Data** - Generated test data in `data/synthetic-users.json`
+All downstream processes receive data in this bundled format:
 
-Both follow the same Plaid format described in this document.
+```typescript
+interface PlaidUserData {
+  metadata: {
+    fetched_at: string;           // ISO timestamp
+    environment: string;           // "sandbox" | "production" | "synthetic"
+    institution?: string;          // Institution name (if applicable)
+  };
+  accounts: PlaidAccount[];        // All user accounts
+  transactions: PlaidTransaction[]; // All transactions
+  liabilities?: PlaidLiability[];  // Credit cards, loans (optional)
+  summary: {
+    total_accounts: number;
+    total_transactions: number;
+  };
+}
+```
+
+**Access Pattern:**
+```typescript
+// Read the bundled data
+const userData = JSON.parse(fs.readFileSync('data/plaid-user-data.json', 'utf-8'));
+
+// Access components
+const accounts = userData.accounts;
+const transactions = userData.transactions;
+const liabilities = userData.liabilities || [];
+```
+
+**Available Data Files:**
+- `data/plaid-user-data.json` - Current user data
+- `data/synthetic-users.json` - Test dataset with multiple users
 
 ## Account Structure
 
@@ -150,29 +179,38 @@ From Plaid Sandbox:
 }
 ```
 
-## User Data Structure
+## Multi-User Dataset Format
 
-### SyntheticDataset Format
-
-Our synthetic data generator creates:
+The synthetic data generator creates test datasets with multiple users:
 
 ```typescript
-interface PlaidUser {
-  user_id: string;
-  name: {
-    first: string;
-    last: string;
-  };
-  accounts: PlaidAccount[];
-  transactions: PlaidTransaction[];
-  liabilities: PlaidLiability[];
-}
-
 interface SyntheticDataset {
-  users: PlaidUser[];
+  users: Array<{
+    user_id: string;
+    name: { first: string; last: string };
+    accounts: PlaidAccount[];
+    transactions: PlaidTransaction[];
+    liabilities: PlaidLiability[];
+  }>;
   generated_at: string;
   count: number;
 }
+```
+
+**Access Pattern:**
+```typescript
+// Read multi-user dataset
+const dataset = JSON.parse(fs.readFileSync('data/synthetic-users.json', 'utf-8'));
+
+// Process first user
+const user = dataset.users[0];
+const accounts = user.accounts;
+const transactions = user.transactions;
+
+// Or iterate all users
+dataset.users.forEach(user => {
+  // Process each user's data
+});
 ```
 
 ## Key Observations for Phase 2
@@ -207,32 +245,65 @@ interface SyntheticDataset {
 
 ### For Data Ingestion (Story 7)
 
-The data format is already JSON-compatible. Key considerations:
+Downstream processes should accept both formats:
 
-1. **JSON Format:** Our synthetic data matches Plaid format exactly
-2. **CSV Format:** Will need parsers for:
-   - Accounts CSV (one row per account)
-   - Transactions CSV (one row per transaction)
-   - Liabilities CSV (one row per liability)
+1. **Single User Format** (`PlaidUserData`) - Direct from Plaid or file upload
+2. **Multi-User Format** (`SyntheticDataset`) - From synthetic generator
 
-3. **Data Validation:**
-   - Ensure required fields present
-   - Validate date formats (YYYY-MM-DD)
-   - Validate numeric fields are numbers
+Parsers should detect format and extract user data accordingly.
 
-## Sample Data Files
+## Data File Conventions
 
-- **Plaid Sandbox Sample:** `data/plaid-sandbox-sample.json`
-- **Synthetic Test Data:** `data/synthetic-users.json`
+**Single User Data:**
+- `data/plaid-user-data.json` - Current/latest user financial data
 
-## CLI Tool
+**Multi-User Test Data:**
+- `data/synthetic-users.json` - Generated test dataset
 
-Run `npm run explore:plaid` to fetch fresh data from Plaid sandbox and save to `data/plaid-sandbox-sample.json`.
+**Test Fixtures:**
+- `data/test-*.json` - Specific test cases
 
-Note: Sandbox accounts may have 0 transactions initially. Use synthetic data for testing signal detection.
+## Usage Examples
 
-## Next Steps
+### Signal Detection
+```typescript
+import { detectSubscriptions, detectSavingsPatterns } from './signals';
 
-1. ✅ Data structure documented
-2. ⏭️ Plan JSON/CSV ingestion format
-3. ⏭️ Begin signal detection implementation (Story 4)
+const userData = JSON.parse(fs.readFileSync('data/plaid-user-data.json', 'utf-8'));
+const subscriptions = detectSubscriptions(userData.transactions);
+const savingsSignals = detectSavingsPatterns(userData.accounts, userData.transactions);
+```
+
+### Persona Assignment
+```typescript
+import { assignPersona } from './personas';
+
+const userData = JSON.parse(fs.readFileSync('data/plaid-user-data.json', 'utf-8'));
+const persona = assignPersona({
+  accounts: userData.accounts,
+  transactions: userData.transactions,
+  liabilities: userData.liabilities
+});
+```
+
+### Assessment Generation
+```typescript
+import { generateAssessment } from './assessment';
+
+const userData = JSON.parse(fs.readFileSync('data/plaid-user-data.json', 'utf-8'));
+const assessment = generateAssessment(userData);
+```
+
+## Generating Fresh Data
+
+**From Plaid Sandbox:**
+```bash
+npm run explore:plaid
+# Outputs to: data/plaid-user-data.json
+```
+
+**From Synthetic Generator:**
+```bash
+npm run generate:data
+# Outputs to: data/synthetic-users.json
+```
