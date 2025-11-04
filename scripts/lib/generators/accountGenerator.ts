@@ -1,28 +1,28 @@
 import type { PlaidAccount } from '../types/plaidData.js';
 import { randomId } from '../utils/faker.js';
 
-export function generateAccounts(userId: string, count: number): PlaidAccount[] {
+export function generateAccounts(_userId: string, count: number): PlaidAccount[] {
   const accounts: PlaidAccount[] = [];
 
   // Ensure at least one checking account
-  accounts.push(generateCheckingAccount(userId));
+  accounts.push(generateCheckingAccount());
 
   // Add additional random accounts
   for (let i = 1; i < count; i++) {
     const rand = Math.random();
     if (rand < 0.3) {
-      accounts.push(generateSavingsAccount(userId));
+      accounts.push(generateSavingsAccount());
     } else if (rand < 0.6) {
-      accounts.push(generateCreditCard(userId));
+      accounts.push(generateCreditCard());
     } else {
-      accounts.push(generateCheckingAccount(userId));
+      accounts.push(generateCheckingAccount());
     }
   }
 
   return accounts;
 }
 
-function generateCheckingAccount(userId: string): PlaidAccount {
+function generateCheckingAccount(): PlaidAccount {
   const balance = Math.random() * 5000 + 500; // $500 - $5500
 
   return {
@@ -41,7 +41,7 @@ function generateCheckingAccount(userId: string): PlaidAccount {
   };
 }
 
-function generateSavingsAccount(userId: string): PlaidAccount {
+function generateSavingsAccount(): PlaidAccount {
   const balance = Math.random() * 10000 + 1000; // $1000 - $11000
 
   return {
@@ -60,7 +60,7 @@ function generateSavingsAccount(userId: string): PlaidAccount {
   };
 }
 
-function generateCreditCard(userId: string): PlaidAccount {
+function generateCreditCard(): PlaidAccount {
   const limit = Math.random() * 20000 + 1000; // $1000 - $21000 limit
   const utilization = Math.random(); // 0-100% utilization
   const balance = limit * utilization;
