@@ -1,22 +1,23 @@
 # Signal Detection Specification
 
-**Version:** 1.0
+**Version:** 2.0
 **Date:** November 4, 2025
-**Status:** Draft - Open Questions
+**Status:** Implemented
 
 ## Overview
 
-This document defines the exact criteria for detecting behavioral signals from financial data. All thresholds and detection logic must be implemented exactly as specified.
+This document defines the exact criteria for detecting behavioral signals from financial data. All thresholds and detection logic are implemented in `src/signals/`.
 
 ## Signal Types
 
-We detect 5 behavioral signal types across 30-day and 180-day windows:
+We detect 6 behavioral signal types across 30-day and 180-day windows:
 
 1. **Subscriptions** - Recurring payment patterns
 2. **Savings** - Savings account growth and health
 3. **Credit** - Credit card utilization and payment behavior
 4. **Income** - Income stability and payment frequency
 5. **Overdrafts** - Negative balances and fees
+6. **Banking Activity** - Low-use detection based on payment patterns
 
 ## Detection Criteria
 
@@ -24,15 +25,20 @@ We detect 5 behavioral signal types across 30-day and 180-day windows:
 
 **Definition:** A recurring transaction is a payment to the same merchant (case-insensitive) that occurs at regular intervals.
 
+**Data Sources:**
+- Plaid's `/transactions/recurring/get` API (when available)
+- Custom pattern detection (fallback/supplement)
+- Deduplicated to avoid flagging same subscription twice
+
 **Criteria:**
 - Minimum occurrences: ≥3 transactions in the window
 - Cadence detection:
   - Weekly: 7 days ±2 days
   - Bi-weekly: 14 days ±3 days
   - Monthly: 30 days ±5 days
-  - Quarterly: 90 days ±7 days
 - Amount consistency: Within ±15% of median amount
 - Merchant matching: Case-insensitive, trimmed whitespace
+- Filters: Only outbound payments (positive amounts)
 
 **Output:**
 ```typescript
@@ -43,7 +49,7 @@ We detect 5 behavioral signal types across 30-day and 180-day windows:
       {
         merchant: string,
         amount: number,
-        cadence: 'weekly' | 'biweekly' | 'monthly' | 'quarterly',
+        cadence: 'weekly' | 'biweekly' | 'monthly',
         lastChargeDate: string,
         count: number
       }
@@ -56,6 +62,8 @@ We detect 5 behavioral signal types across 30-day and 180-day windows:
 ```
 
 **Detection threshold:** ≥1 recurring subscription found
+
+**Note:** Quarterly subscriptions not detected (insufficient window size for reliable detection)
 
 ### 2. Savings Signals
 
@@ -211,6 +219,41 @@ We detect 5 behavioral signal types across 30-day and 180-day windows:
 ```
 
 **Detection threshold:** ≥1 incident in 30d OR ≥2 incidents in 180d
+
+### 6. Banking Activity
+
+**Definition:** Detects low-use banking patterns based on outbound payment activity.
+
+**Account Types:** All accounts (aggregated view)
+
+**Criteria:**
+- Count only outbound payments (positive amounts = debits/spending)
+- Income deposits (negative amounts) are excluded
+- Unique merchants counted from outbound payments only
+- Low-Use threshold:
+  - outboundPaymentCount180d < 10 AND
+  - outboundPaymentCount30d < 5 AND
+  - uniquePaymentMerchants < 5
+
+**Output:**
+```typescript
+{
+  detected: boolean,  // True = Low-Use
+  evidence: {
+    outboundPaymentCount30d: number,
+    outboundPaymentCount180d: number,
+    uniquePaymentMerchants: number
+  },
+  window: '30d' | '180d'
+}
+```
+
+**Detection threshold:** All three criteria must be met for Low-Use detection
+
+**Exemptions:**
+- Recent activity: If ≥5 payments in last 30d → NOT low-use
+- Merchant diversity: If ≥5 unique merchants → NOT low-use
+- Volume: If ≥10 payments in 180d → NOT low-use
 
 ## Open Questions
 
