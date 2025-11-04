@@ -26,8 +26,8 @@ export interface PersonaAssignment {
 export const PERSONA_LABELS: Record<PersonaType, string> = {
   overdraft_vulnerable: 'Overdraft-Vulnerable',
   high_utilization: 'High Utilization',
-  variable_income_budgeter: 'Variable Income Budgeter',
-  subscription_heavy: 'Subscription Heavy',
+  variable_income_budgeter: 'Variable-Income Budgeter',
+  subscription_heavy: 'Subscription-Heavy',
   savings_builder: 'Savings Builder',
   low_use: 'Low-Use',
   steady: 'Steady',

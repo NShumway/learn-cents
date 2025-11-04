@@ -14,8 +14,8 @@ We support 7 personas, evaluated in strict priority order (top to bottom):
 
 1. **Overdraft-Vulnerable**
 2. **High Utilization**
-3. **Variable Income Budgeter**
-4. **Subscription Heavy**
+3. **Variable-Income Budgeter**
+4. **Subscription-Heavy**
 5. **Savings Builder**
 6. **Low-Use**
 7. **Steady** (default)
@@ -25,7 +25,7 @@ We support 7 personas, evaluated in strict priority order (top to bottom):
 When multiple personas match, we assign the **first matching persona** in the list above. The order is intentionally designed so that:
 
 - **Financial risks** (Overdraft-Vulnerable, High Utilization, Variable Income) are addressed first
-- **Spending optimization** (Subscription Heavy) comes next
+- **Spending optimization** (Subscription-Heavy) comes next
 - **Positive behaviors** (Savings Builder) are celebrated before engagement issues
 - **Engagement opportunities** (Low-Use) follow
 - **Default state** (Steady) when nothing else matches
@@ -52,10 +52,10 @@ flowchart TD
     Credit -->|Yes| P2[PRIMARY:<br/>High Utilization]
     Credit -->|No| Income{Income gap >45 days<br/>AND cash buffer<br/><1 month?}
 
-    Income -->|Yes| P3[PRIMARY:<br/>Variable Income Budgeter]
+    Income -->|Yes| P3[PRIMARY:<br/>Variable-Income Budgeter]
     Income -->|No| Subscription{3+ recurring merchants<br/>AND monthly spend ≥$50<br/>OR subscription share ≥10%?}
 
-    Subscription -->|Yes| P4[PRIMARY:<br/>Subscription Heavy]
+    Subscription -->|Yes| P4[PRIMARY:<br/>Subscription-Heavy]
     Subscription -->|No| Saver{Savings growth ≥2%<br/>OR inflow ≥$200/month<br/>AND overall credit<br/>utilization <30%?}
 
     Saver -->|Yes| P5[PRIMARY:<br/>Savings Builder]
@@ -117,7 +117,7 @@ ANY account with:
 
 ---
 
-### 3. Variable Income Budgeter
+### 3. Variable-Income Budgeter
 
 **Signal:** `income.detected === true`
 
@@ -134,7 +134,7 @@ medianPayGap > 45 AND cashFlowBuffer < 1
 
 ---
 
-### 4. Subscription Heavy
+### 4. Subscription-Heavy
 
 **Signal:** `subscriptions.detected === true`
 
