@@ -1,0 +1,48 @@
+{
+  "name": "learn-cents",
+  "version": "0.1.0",
+  "description": "Financial education platform with behavioral insights",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch ui/app/main.ts",
+    "build": "tsc && vite build",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "lint": "eslint . --ext ts,tsx",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "typecheck": "tsc --noEmit",
+    "generate:data": "tsx scripts/generateRandomPlaidData.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts"
+  },
+  "keywords": [
+    "fintech",
+    "education",
+    "plaid"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NShumway/learn-cents.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NShumway/learn-cents/issues"
+  },
+  "homepage": "https://github.com/NShumway/learn-cents#readme",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.7"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "@supabase/supabase-js": "^2.79.0",
+    "dotenv": "^17.2.3",
+    "prisma": "^6.18.0"
+  }
+}

@@ -1,6 +1,37 @@
-#claude code
-.claude
-#original PRD
-PRD.pdf
-#macOS
+# Environment
+.env
+.env.local
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.vercel/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test coverage
+coverage/
+
+# Temporary files
+*.tmp
+
+# Claude Code
+.claude
+
+# Original PRD
+PRD.pdf

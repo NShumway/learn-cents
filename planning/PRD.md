@@ -185,7 +185,8 @@
 - **Limited Partner Offer Catalog**: Small curated set of partner offers for demonstration and validation. Not a comprehensive marketplace of financial products
 - **No Automated Scheduling**: No recurring Plaid data refreshes, scheduled reassessments, or automated reminders. User must manually trigger new assessments by reconnecting Plaid or uploading new data
 - **Strict Merchant Name Matching**: Subscription detection uses case-insensitive strict name matching only. No fuzzy matching or merchant name normalization. Variations in merchant names may not be detected as same merchant
-- **Chromium Browser Only**: Application tested and supported on Chromium-based browsers (Chrome, Edge, Brave) only. Other browsers (Firefox, Safari) not officially supported in MVP  
+- **Chromium Browser Only**: Application tested and supported on Chromium-based browsers (Chrome, Edge, Brave) only. Other browsers (Firefox, Safari) not officially supported in MVP
+- **United States Only**: This application is designed for use in the United States only. Financial regulations, product offerings, and compliance requirements vary by country. Using this application outside the United States may violate local financial services regulations or data privacy laws. All partner offers and educational content are US-focused  
 
 ---
 

@@ -1,2 +1,6 @@
 # Personal notes - not for AI reading
 .claude/notes.txt
+
+# No peaking!
+.env
+.env.local
