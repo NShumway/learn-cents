@@ -38,28 +38,28 @@ When multiple personas match, we assign the **first matching persona** in the li
 4. Low-use detection helps engagement but isn't urgent
 5. Steady users get baseline affirming messaging
 
-## Decision Tree (Primary Persona Assignment)
+## Decision Tree (Primary Insight Assignment)
 
-**Note:** This flowchart determines the PRIMARY persona. Additional insights may also be flagged if their signals are detected.
+**Note:** This determines your primary insight. Additional insights may be noted, but the user will be guided to the most important information.
 
 ```mermaid
 flowchart TD
-    Start([Detected Signals]) --> Overdraft{One overdraft in<br/>last 30 days OR<br/>two+ overdrafts<br/>in last 180 days?}
+    Start([Detected Signals]) --> Overdraft{1+ overdraft in<br/>last 30 days or<br/>2+ overdrafts<br/>in last 180 days?}
 
     Overdraft -->|Yes| P1[PRIMARY:<br/>Overdraft-Vulnerable]
-    Overdraft -->|No| Credit{Any card ≥50% utilization<br/>OR has interest charges<br/>OR minimum payment only<br/>OR overdue?}
+    Overdraft -->|No| Credit{Any card 50%+ utilization<br/>or charged interest on any card<br/>or making only minimum payments<br/>or any card overdue?}
 
     Credit -->|Yes| P2[PRIMARY:<br/>High Utilization]
-    Credit -->|No| Income{Income gap >45 days<br/>AND cash buffer<br/><1 month?}
+    Credit -->|No| Income{Income gap 45+ days<br/>and cash buffer<br/>under 1 month?}
 
     Income -->|Yes| P3[PRIMARY:<br/>Variable-Income Budgeter]
-    Income -->|No| Subscription{3+ recurring merchants<br/>AND monthly spend ≥$50<br/>OR subscription share ≥10%?}
+    Income -->|No| Subscription{3+ recurring merchants<br/>with $50+ total monthly spend<br/>or subscription share 10%+?}
 
     Subscription -->|Yes| P4[PRIMARY:<br/>Subscription-Heavy]
-    Subscription -->|No| Saver{Savings growth ≥2%<br/>OR inflow ≥$200/month<br/>AND overall credit<br/>utilization <30%?}
+    Subscription -->|No| Saver{Savings growth 2%+ or<br/>inflow $200+/month,<br/>and overall credit<br/>utilization under 30%?}
 
     Saver -->|Yes| P5[PRIMARY:<br/>Savings Builder]
-    Saver -->|No| LowUse{<10 payments in 180d<br/>AND <5 payments in 30d<br/>AND <5 unique merchants?}
+    Saver -->|No| LowUse{10 or fewer payments in 180d<br/>and 5 or fewer payments in 30d<br/>and 5 or fewer unique merchants?}
 
     LowUse -->|Yes| P6[PRIMARY:<br/>Low-Use]
     LowUse -->|No| P7[PRIMARY:<br/>Steady]
