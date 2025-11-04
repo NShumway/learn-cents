@@ -19,7 +19,29 @@ if not exist .env (
     echo.
     pause
 ) else (
-    echo .env file already exists.
+    echo .env file already exists. Checking for missing variables...
+
+    REM Check each variable from .env.example and append if missing
+    for /f "tokens=1 delims==" %%v in (.env.example) do (
+        REM Skip comments and empty lines
+        echo %%v | findstr /r "^#" >nul && (
+            REM Skip comment line
+        ) || (
+            REM Check if variable exists in .env
+            findstr /b /c:"%%v=" .env >nul
+            if errorlevel 1 (
+                echo   Adding missing variable: %%v
+                for /f "delims=" %%l in (.env.example) do (
+                    echo %%l | findstr /b /c:"%%v=" >nul && (
+                        echo. >> .env
+                        echo %%l >> .env
+                    )
+                )
+            )
+        )
+    )
+
+    echo √ .env file updated with any missing variables
 )
 
 echo Installing dependencies...

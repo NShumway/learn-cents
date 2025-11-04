@@ -20,7 +20,29 @@ if [ ! -f .env ]; then
     echo ""
     read -p "Press enter to continue..."
 else
-    echo ".env file already exists."
+    echo ".env file already exists. Checking for missing variables..."
+
+    # Extract variable names from .env.example (lines with =)
+    while IFS= read -r line; do
+        # Skip comments and empty lines
+        if [[ "$line" =~ ^[[:space:]]*# ]] || [[ -z "$line" ]]; then
+            continue
+        fi
+
+        # Extract variable name (everything before =)
+        if [[ "$line" =~ ^([A-Z_]+)= ]]; then
+            var_name="${BASH_REMATCH[1]}"
+
+            # Check if variable exists in .env
+            if ! grep -q "^${var_name}=" .env; then
+                echo "  Adding missing variable: $var_name"
+                echo "" >> .env
+                echo "$line" >> .env
+            fi
+        fi
+    done < .env.example
+
+    echo "✓ .env file updated with any missing variables"
 fi
 
 echo "Installing dependencies..."
