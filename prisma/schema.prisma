@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model (integrates with Supabase Auth)
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  isAdmin       Boolean       @default(false)
+  consentStatus Boolean       @default(false)
+  consentDate   DateTime?
+
+  assessments   Assessment[]
+  chatHistory   ChatMessage[]
+
+  @@map("users")
+}
+
+// Assessment model - stores one assessment per user
+model Assessment {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Assessment data (stored as JSONB)
+  priorityInsight   Json     // Priority persona insight
+  additionalInsights Json    // Array of additional insights
+  eligibilityMetrics Json    // Aggregated metrics for offer eligibility
+  decisionTree      Json     // Decision trace
+
+  // Metadata
+  createdAt         DateTime @default(now())
+  archived          Boolean  @default(false)
+
+  chatMessages      ChatMessage[]
+
+  @@map("assessments")
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+// Partner Offer model
+model PartnerOffer {
+  id                  String   @id @default(uuid())
+  offerName           String
+  offerPitch          String   @db.Text
+  targetedPersonas    String[] // Array of persona names
+  priorityPerPersona  Json     // { "High Utilization": 1, "Variable Income": 2, etc. }
+  eligibilityReqs     Json     // Requirements object
+  activeDateStart     DateTime
+  activeDateEnd       DateTime?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("partner_offers")
+}
+
+// Chat message model
+model ChatMessage {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assessmentId String
+  assessment   Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+  role         String     // 'user' or 'assistant'
+  content      String     @db.Text
+  flagged      Boolean    @default(false)
+
+  createdAt    DateTime   @default(now())
+
+  @@map("chat_messages")
+  @@index([assessmentId, createdAt])
+}
