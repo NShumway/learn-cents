@@ -85,6 +85,12 @@ npm run lint
 
 # Format code
 npm run format
+
+# Generate synthetic test data
+npm run generate:data
+
+# Explore Plaid sandbox data
+npm run explore:plaid
 ```
 
 ## Project Structure
@@ -133,9 +139,16 @@ Automatic deployment via GitHub Actions:
 
 ## Documentation
 
+### Planning
 - [PRD](./planning/PRD.md) - Product Requirements Document
 - [Development Phases](./planning/dev-phases.md) - Development roadmap
 - [Phase 1](./planning/phase-1.md) - Foundation phase details
+- [Phase 2](./planning/phase-2.md) - Core functionality implementation
+
+### Technical Specs
+- [Plaid Data Structure](./docs/plaid-data-structure.md) - Plaid API data format and field specifications
+- [Data Ingestion Format](./docs/data-ingestion-format.md) - JSON/CSV ingestion specification
+- [Signal Detection](./docs/signal-detection.md) - Behavioral signal detection criteria and algorithms
 
 ## License
 
