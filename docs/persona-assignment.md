@@ -44,25 +44,25 @@ When multiple personas match, we assign the **first matching persona** in the li
 
 ```mermaid
 flowchart TD
-    Start([Detected Signals]) --> Overdraft{1+ overdraft in<br/>last 30 days or<br/>2+ overdrafts<br/>in last 180 days?}
+    Start([Detected Signals]) --> Overdraft{1+ overdraft in last 30 days or 2+ overdrafts in last 180 days?}
 
-    Overdraft -->|Yes| P1[PRIMARY:<br/>Overdraft-Vulnerable]
-    Overdraft -->|No| Credit{Any card 50%+ utilization<br/>or charged interest on any card<br/>or making only minimum payments<br/>or any card overdue?}
+    Overdraft -->|Yes| P1[PRIMARY: Overdraft-Vulnerable]
+    Overdraft -->|No| Credit{Any card 50%+ utilization or charged interest on any card or making only minimum payments or any card overdue?}
 
-    Credit -->|Yes| P2[PRIMARY:<br/>High Utilization]
-    Credit -->|No| Income{Income gap 45+ days<br/>and cash buffer<br/>under 1 month?}
+    Credit -->|Yes| P2[PRIMARY: High Utilization]
+    Credit -->|No| Income{Income gap 45+ days and cash buffer under 1 month?}
 
-    Income -->|Yes| P3[PRIMARY:<br/>Variable-Income Budgeter]
-    Income -->|No| Subscription{3+ recurring merchants<br/>with $50+ total monthly spend<br/>or subscription share 10%+?}
+    Income -->|Yes| P3[PRIMARY: Variable-Income Budgeter]
+    Income -->|No| Subscription{3+ recurring merchants with $50+ total monthly spend or subscription share 10%+?}
 
-    Subscription -->|Yes| P4[PRIMARY:<br/>Subscription-Heavy]
-    Subscription -->|No| Saver{Savings growth 2%+ or<br/>inflow $200+/month,<br/>and overall credit<br/>utilization under 30%?}
+    Subscription -->|Yes| P4[PRIMARY: Subscription-Heavy]
+    Subscription -->|No| Saver{Savings growth 2%+ or inflow $200+/month, and overall credit utilization under 30%?}
 
-    Saver -->|Yes| P5[PRIMARY:<br/>Savings Builder]
-    Saver -->|No| LowUse{10 or fewer payments in 180d<br/>and 5 or fewer payments in 30d<br/>and 5 or fewer unique merchants?}
+    Saver -->|Yes| P5[PRIMARY: Savings Builder]
+    Saver -->|No| LowUse{10 or fewer payments in 180d and 5 or fewer payments in 30d and 5 or fewer unique merchants?}
 
-    LowUse -->|Yes| P6[PRIMARY:<br/>Low-Use]
-    LowUse -->|No| P7[PRIMARY:<br/>Steady]
+    LowUse -->|Yes| P6[PRIMARY: Low-Use]
+    LowUse -->|No| P7[PRIMARY: Steady]
 
     style P1 fill:#ff6b6b
     style P2 fill:#ff8c42
