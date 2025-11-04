@@ -12,23 +12,23 @@ This document defines the logic for assigning financial personas based on detect
 
 We support 7 personas, evaluated in strict priority order (top to bottom):
 
-1. **Overdraft Prone**
-2. **Credit Stressed**
-3. **Income Unstable**
-4. **Subscription Burdened**
-5. **Building Saver**
+1. **Overdraft-Vulnerable**
+2. **High Utilization**
+3. **Variable Income Budgeter**
+4. **Subscription Heavy**
+5. **Savings Builder**
 6. **Low-Use**
-7. **Stable & Thriving** (default)
+7. **Steady** (default)
 
 ## Prioritization Logic
 
 When multiple personas match, we assign the **first matching persona** in the list above. The order is intentionally designed so that:
 
-- **Financial risks** (Overdraft, Credit, Income) are addressed first
-- **Spending optimization** (Subscriptions) comes next
-- **Positive behaviors** (Building Saver) are celebrated before engagement issues
+- **Financial risks** (Overdraft-Vulnerable, High Utilization, Variable Income) are addressed first
+- **Spending optimization** (Subscription Heavy) comes next
+- **Positive behaviors** (Savings Builder) are celebrated before engagement issues
 - **Engagement opportunities** (Low-Use) follow
-- **Default state** (Stable & Thriving) when nothing else matches
+- **Default state** (Steady) when nothing else matches
 
 ### Why This Order?
 
@@ -36,7 +36,7 @@ When multiple personas match, we assign the **first matching persona** in the li
 2. Spending optimization helps prevent future problems
 3. Celebrating savings encourages continued positive behavior
 4. Low-use detection helps engagement but isn't urgent
-5. Stable users get affirming messaging
+5. Steady users get baseline affirming messaging
 
 ## Decision Tree
 
@@ -44,23 +44,23 @@ When multiple personas match, we assign the **first matching persona** in the li
 flowchart TD
     Start([Detected Signals]) --> Overdraft{Overdraft<br/>Prone?}
 
-    Overdraft -->|Yes: count30d ≥ 1<br/>OR count180d ≥ 2| P1[Persona:<br/>Overdraft Prone]
-    Overdraft -->|No| Credit{Credit<br/>Stressed?}
+    Overdraft -->|Yes: count30d ≥ 1<br/>OR count180d ≥ 2| P1[Persona:<br/>Overdraft-Vulnerable]
+    Overdraft -->|No| Credit{High<br/>Utilization?}
 
-    Credit -->|Yes: utilization ≥ 50%<br/>OR interest > 0<br/>OR min payment only<br/>OR overdue| P2[Persona:<br/>Credit Stressed]
-    Credit -->|No| Income{Income<br/>Unstable?}
+    Credit -->|Yes: utilization ≥ 50%<br/>OR interest > 0<br/>OR min payment only<br/>OR overdue| P2[Persona:<br/>High Utilization]
+    Credit -->|No| Income{Variable<br/>Income?}
 
-    Income -->|Yes: median gap > 45d<br/>AND cash buffer < 1mo| P3[Persona:<br/>Income Unstable]
-    Income -->|No| Subscription{Subscription<br/>Burdened?}
+    Income -->|Yes: median gap > 45d<br/>AND cash buffer < 1mo| P3[Persona:<br/>Variable Income Budgeter]
+    Income -->|No| Subscription{Subscription<br/>Heavy?}
 
-    Subscription -->|Yes: merchants ≥ 3<br/>AND monthly spend ≥ $50<br/>OR share ≥ 10%| P4[Persona:<br/>Subscription Burdened]
-    Subscription -->|No| Saver{Building<br/>Saver?}
+    Subscription -->|Yes: merchants ≥ 3<br/>AND monthly spend ≥ $50<br/>OR share ≥ 10%| P4[Persona:<br/>Subscription Heavy]
+    Subscription -->|No| Saver{Savings<br/>Builder?}
 
-    Saver -->|Yes: growth ≥ 2%<br/>OR inflow ≥ $200/mo<br/>AND overall util < 30%| P5[Persona:<br/>Building Saver]
+    Saver -->|Yes: growth ≥ 2%<br/>OR inflow ≥ $200/mo<br/>AND overall util < 30%| P5[Persona:<br/>Savings Builder]
     Saver -->|No| LowUse{Low<br/>Use?}
 
     LowUse -->|Yes: payments180d < 10<br/>AND payments30d < 5<br/>AND merchants < 5| P6[Persona:<br/>Low-Use]
-    LowUse -->|No| P7[Persona:<br/>Stable & Thriving]
+    LowUse -->|No| P7[Persona:<br/>Steady]
 
     style P1 fill:#ff6b6b
     style P2 fill:#ff8c42
@@ -73,7 +73,7 @@ flowchart TD
 
 ## Persona Formulas
 
-### 1. Overdraft Prone
+### 1. Overdraft-Vulnerable
 
 **Signal:** `overdrafts.detected === true`
 
@@ -90,7 +90,7 @@ count30d >= 1 OR count180d >= 2
 
 ---
 
-### 2. Credit Stressed
+### 2. High Utilization
 
 **Signal:** `credit.detected === true`
 
@@ -115,7 +115,7 @@ ANY account with:
 
 ---
 
-### 3. Income Unstable
+### 3. Variable Income Budgeter
 
 **Signal:** `income.detected === true`
 
@@ -132,7 +132,7 @@ medianPayGap > 45 AND cashFlowBuffer < 1
 
 ---
 
-### 4. Subscription Burdened
+### 4. Subscription Heavy
 
 **Signal:** `subscriptions.detected === true`
 
@@ -173,7 +173,7 @@ uniquePaymentMerchants < 5
 
 ---
 
-### 5. Building Saver
+### 5. Savings Builder
 
 **Signal:** `savings.detected === true`
 
@@ -209,7 +209,7 @@ uniquePaymentMerchants < 5
 
 ---
 
-### 7. Stable & Thriving
+### 7. Steady
 
 **Default persona when no other conditions match.**
 
