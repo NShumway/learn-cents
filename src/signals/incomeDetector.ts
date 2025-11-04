@@ -38,7 +38,7 @@ export function detectIncome(
     return {
       detected: false,
       evidence: {
-        payrollTransactions: [],
+        incomeBuckets: [],
         frequency: 'irregular',
         medianPayGap: 0,
         averageIncome: 0,
@@ -90,13 +90,13 @@ export function detectIncome(
   // Detected if median pay gap > 45 days OR frequency is irregular
   const detected = medianPayGap > 45 || frequency === 'irregular';
 
+  // Create 15-day income buckets
+  const incomeBuckets = create15DayIncomeBuckets(incomeTxs, days);
+
   return {
     detected,
     evidence: {
-      payrollTransactions: incomeTxs.map((tx) => ({
-        date: tx.date,
-        amount: Math.abs(tx.amount),
-      })),
+      incomeBuckets,
       frequency,
       medianPayGap,
       averageIncome,
@@ -104,4 +104,66 @@ export function detectIncome(
     },
     window,
   };
+}
+
+/**
+ * Create 15-day income buckets from income transactions
+ * Only includes buckets that have income (no zero-income buckets)
+ */
+function create15DayIncomeBuckets(
+  incomeTxs: PlaidTransaction[],
+  totalDays: number
+): Array<{ startDate: string; endDate: string; totalIncome: number }> {
+  if (incomeTxs.length === 0) return [];
+
+  // Get the date range
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - totalDays);
+
+  // Create buckets (2 for 30d, 12 for 180d)
+  const numBuckets = Math.ceil(totalDays / 15);
+  const buckets: Array<{ startDate: string; endDate: string; totalIncome: number }> = [];
+
+  for (let i = 0; i < numBuckets; i++) {
+    const bucketStart = new Date(startDate);
+    bucketStart.setDate(bucketStart.getDate() + i * 15);
+
+    const bucketEnd = new Date(bucketStart);
+    bucketEnd.setDate(bucketEnd.getDate() + 14); // 15 days (0-14)
+
+    // Don't go beyond today
+    if (bucketEnd > today) {
+      bucketEnd.setTime(today.getTime());
+    }
+
+    // Sum income in this bucket
+    const bucketIncome = incomeTxs
+      .filter((tx) => {
+        const txDate = new Date(tx.date);
+        return txDate >= bucketStart && txDate <= bucketEnd;
+      })
+      .reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+
+    // Only include buckets with income
+    if (bucketIncome > 0) {
+      buckets.push({
+        startDate: formatDate(bucketStart),
+        endDate: formatDate(bucketEnd),
+        totalIncome: Math.round(bucketIncome * 100) / 100, // Round to 2 decimals
+      });
+    }
+  }
+
+  return buckets;
+}
+
+/**
+ * Format date as YYYY-MM-DD
+ */
+function formatDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }

@@ -15,7 +15,6 @@ export type PersonaType =
 
 export interface PersonaAssignment {
   persona: PersonaType;
-  confidence: number; // 0-100
   reasoning: string[]; // Why this persona was assigned
   evidence: {
     // Key metrics that led to this assignment

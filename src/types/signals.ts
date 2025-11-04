@@ -66,9 +66,10 @@ export interface CreditSignal {
 export interface IncomeSignal {
   detected: boolean;
   evidence: {
-    payrollTransactions: Array<{
-      date: string;
-      amount: number;
+    incomeBuckets: Array<{
+      startDate: string;  // YYYY-MM-DD
+      endDate: string;    // YYYY-MM-DD
+      totalIncome: number;
     }>;
     frequency: 'weekly' | 'biweekly' | 'monthly' | 'irregular';
     medianPayGap: number;
