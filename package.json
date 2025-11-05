@@ -9,7 +9,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:personas": "tsx scripts/testPersonaAssignment.ts",
-    "view:assessment": "tsx scripts/viewAssessmentObject.ts",
+    "run:assessment": "tsx scripts/viewAssessmentObject.ts",
     "lint": "eslint . --ext ts,tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "typecheck": "tsc --noEmit",
