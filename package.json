@@ -62,6 +62,7 @@
     "prisma": "^6.18.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-plaid-link": "^4.1.1",
     "react-router-dom": "^7.9.5"
   }
 }

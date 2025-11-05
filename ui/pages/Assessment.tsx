@@ -1,11 +1,24 @@
+/**
+ * Assessment Display Page
+ *
+ * Displays the generated financial assessment with insights and decision tree
+ */
+
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import InsightCard from '../components/assessment/InsightCard';
 import DecisionTreeComponent from '../components/assessment/DecisionTree';
 import { mockAssessment } from '../lib/mockAssessment';
+import type { Assessment as AssessmentType } from '../../src/types/assessment';
 
 export default function Assessment() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [showAdditional, setShowAdditional] = useState(false);
-  const assessment = mockAssessment;
+
+  // Get assessment from navigation state or fall back to mock
+  const assessment: AssessmentType =
+    (location.state as { assessment?: AssessmentType })?.assessment || mockAssessment;
 
   return (
     <div className="max-w-4xl mx-auto">
