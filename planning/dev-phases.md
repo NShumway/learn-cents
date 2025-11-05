@@ -29,14 +29,14 @@ Build core processing logic: signal detection, persona assignment, assessment re
 ---
 
 ## Phase 3: User Interface
-**Stories 12-15**
+**Stories 8-11**
 
 User-facing application for assessment display and Plaid integration (Sandbox only, no authentication yet).
 
-### Story 12: Frontend Setup
-### Story 13: Assessment Display UI
-### Story 14: Plaid Integration (Sandbox)
-### Story 15: Plaid Connection UI
+### Story 8: Frontend Setup
+### Story 9: Assessment Display UI
+### Story 10: Plaid Integration (Sandbox)
+### Story 11: Plaid Connection UI
 
 ---
 
