@@ -2,6 +2,8 @@
 
 **Stories 18-19** - AI-powered chat with guardrails and AI-enhanced assessment rendering.
 
+**Architecture Note**: AI integration uses **Vercel AI SDK** with **Vercel serverless functions** (`/api/chat` routes). Leverages the unified serverless architecture from Phase 4 for authentication, database access, and chat history storage.
+
 ---
 
 ## Story 18: AI Integration - Core

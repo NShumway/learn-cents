@@ -2,6 +2,8 @@
 
 **Stories 12-17** - Server-side features: authentication, data storage, partner offers, consent management, and admin tools.
 
+**Architecture Note**: All server-side functionality uses **Vercel serverless functions** (`/api` routes). This unified serverless architecture handles Plaid integration, authentication, data persistence, consent checks, and AI integration (Phase 5). Deploy via GitHub push → Vercel auto-deploys.
+
 **Important**: Each story in this phase needs to be built BOTH in the UI and in the CLI. Everything needs well-documented CLI commands so devs can easily manage data.
 
 ---
