@@ -23,38 +23,79 @@ export function usePlaidConnection(linkToken: string, onSuccess: PlaidLinkOnSucc
 }
 
 /**
- * Exchange public token for access token
- * STUB - will be implemented server-side in Phase 4
- *
- * Phase 4 implementation:
- * POST /api/plaid/exchange_token
- * Server exchanges public token for access token with Plaid
+ * Fetch link token from server
+ * This is called when the page loads to initialize Plaid Link
  */
-export async function exchangePublicToken(publicToken: string): Promise<string> {
-  console.log('[STUB] Public token received:', publicToken);
-  console.log('[STUB] In Phase 4, this will call POST /api/plaid/exchange_token');
+export async function fetchLinkToken(): Promise<string> {
+  try {
+    // Use relative URL - Vite dev server will proxy to :3001
+    const response = await fetch('/api/plaid/create_link_token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  // Simulate API call
-  await new Promise(resolve => setTimeout(resolve, 500));
+    if (!response.ok) {
+      throw new Error(`Failed to fetch link token: ${response.statusText}`);
+    }
 
-  return 'mock-access-token-sandbox';
+    const data = await response.json();
+    return data.link_token;
+  } catch (error) {
+    console.error('Error fetching link token:', error);
+    throw error;
+  }
 }
 
 /**
- * Fetch transactions and account data from Plaid
- * STUB - will be implemented server-side in Phase 4
- *
- * Phase 4 implementation:
- * POST /api/plaid/fetch_data
- * Server fetches data from Plaid and returns to client
+ * Exchange public token and fetch financial data
+ * This combines token exchange and data fetching in one API call
  */
-export async function fetchPlaidData(accessToken: string): Promise<UserFinancialData> {
-  console.log('[STUB] Fetching data with access token:', accessToken);
-  console.log('[STUB] In Phase 4, this will call POST /api/plaid/fetch_data');
+export async function exchangeTokenAndFetchData(publicToken: string): Promise<UserFinancialData> {
+  try {
+    // Use relative URL - Vite dev server will proxy to :3001
+    const response = await fetch('/api/plaid/exchange_and_fetch', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ public_token: publicToken }),
+    });
 
-  throw new Error(
-    'fetchPlaidData not yet implemented. ' +
-    'For now, use the mock assessment data. ' +
-    'Server-side Plaid integration happens in Phase 4.'
-  );
+    if (!response.ok) {
+      throw new Error(`Failed to exchange token and fetch data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as UserFinancialData;
+  } catch (error) {
+    console.error('Error exchanging token and fetching data:', error);
+    throw error;
+  }
+}
+
+/**
+ * Connect to Plaid Sandbox directly (bypasses Plaid Link UI)
+ * This creates a sandbox item and fetches financial data in one call
+ */
+export async function connectSandboxAccount(): Promise<UserFinancialData> {
+  try {
+    const response = await fetch('/api/plaid/sandbox_connect', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to connect sandbox account: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data as UserFinancialData;
+  } catch (error) {
+    console.error('Error connecting sandbox account:', error);
+    throw error;
+  }
 }

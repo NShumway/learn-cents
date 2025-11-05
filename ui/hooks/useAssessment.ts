@@ -14,7 +14,8 @@ interface UseAssessmentReturn {
   loading: boolean;
   error: Error | null;
   progress: { stage: string; percent: number };
-  generate: (plaidData: UserFinancialData) => Promise<void>;
+  generate: (plaidData: UserFinancialData) => Promise<Assessment>;
+  setProgress: (progress: { stage: string; percent: number }) => void;
   reset: () => void;
 }
 
@@ -24,7 +25,7 @@ export function useAssessment(): UseAssessmentReturn {
   const [error, setError] = useState<Error | null>(null);
   const [progress, setProgress] = useState({ stage: '', percent: 0 });
 
-  const generate = async (plaidData: UserFinancialData) => {
+  const generate = async (plaidData: UserFinancialData): Promise<Assessment> => {
     setLoading(true);
     setError(null);
     setProgress({ stage: 'Starting', percent: 0 });
@@ -36,10 +37,12 @@ export function useAssessment(): UseAssessmentReturn {
       );
 
       setAssessment(result);
+      return result;
     } catch (err) {
       setError(
         err instanceof Error ? err : new Error('Assessment generation failed')
       );
+      throw err;
     } finally {
       setLoading(false);
     }
@@ -51,5 +54,5 @@ export function useAssessment(): UseAssessmentReturn {
     setProgress({ stage: '', percent: 0 });
   };
 
-  return { assessment, loading, error, progress, generate, reset };
+  return { assessment, loading, error, progress, generate, setProgress, reset };
 }

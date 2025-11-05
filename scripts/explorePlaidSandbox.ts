@@ -69,6 +69,7 @@ async function main() {
       initial_products: [Products.Transactions, Products.Liabilities, Products.Auth],
       options: {
         webhook: 'https://example.com/webhook', // Required for immediate transaction availability
+        override_username: 'user_transactions_dynamic', // User with 50 transactions (pending + posted)
       },
     });
 
@@ -84,18 +85,17 @@ async function main() {
     const accessToken = exchangeResponse.data.access_token;
     console.log('✓ Access Token obtained:', accessToken.substring(0, 20) + '...\n');
 
-    // Step 3.5: Fire webhook to trigger transaction sync in sandbox
-    console.log('Step 3.5: Triggering transaction sync...');
+    // Step 3.5: Call transactions/refresh to populate transaction data
+    console.log('Step 3.5: Refreshing transactions...');
     try {
-      await plaidClient.sandboxItemFireWebhook({
+      await plaidClient.transactionsRefresh({
         access_token: accessToken,
-        webhook_code: SandboxItemFireWebhookRequestWebhookCodeEnum.DefaultUpdate,
       });
-      console.log('✓ Transaction sync triggered, waiting 2 seconds...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('✓ Transactions refresh triggered, waiting for data to populate...');
+      await new Promise(resolve => setTimeout(resolve, 3000));
       console.log('✓ Ready to fetch data\n');
-    } catch {
-      console.log('⚠️  Could not trigger webhook (continuing anyway)\n');
+    } catch (err: any) {
+      console.log('⚠️  Could not refresh transactions:', err.response?.data?.error_message || err.message, '\n');
     }
 
     // Step 4: Fetch Accounts

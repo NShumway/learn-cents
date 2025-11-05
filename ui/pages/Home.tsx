@@ -1,55 +1,62 @@
 /**
  * Home Page
  *
- * Landing page with Plaid connection flow
- * Note: Currently using mock data since Plaid server-side integration
- * will be implemented in Phase 4. The UI flow is complete.
+ * Landing page with Plaid Sandbox connection
+ * Connects to Plaid Sandbox and generates real assessment from transaction data
  */
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PlaidConnectButton from '../components/plaid/PlaidConnectButton';
 import LoadingState from '../components/plaid/LoadingState';
 import ErrorState from '../components/plaid/ErrorState';
 import { useAssessment } from '../hooks/useAssessment';
-import { exchangePublicToken, fetchPlaidData } from '../lib/plaid';
+import { connectSandboxAccount } from '../lib/plaid';
 import { mockAssessment } from '../lib/mockAssessment';
-import { SANDBOX_LINK_TOKEN } from '../config/plaid';
-import type { PlaidLinkOnSuccess } from 'react-plaid-link';
 
 export default function Home() {
   const navigate = useNavigate();
-  const { loading, error, progress, reset } = useAssessment();
+  const { loading, error, progress, generate, reset, setProgress } = useAssessment();
 
-  const handlePlaidSuccess: PlaidLinkOnSuccess = async (publicToken, metadata) => {
+  const handleConnectPlaid = async () => {
     try {
-      // Exchange public token for access token (stub for now)
-      const accessToken = await exchangePublicToken(publicToken);
+      setProgress({ stage: 'Connecting to Plaid Sandbox...', percent: 5 });
+      console.log('🔗 Connecting to Plaid Sandbox...');
 
-      // Fetch Plaid data (stub - will throw error for now)
-      // In Phase 4, this will actually fetch from server
-      // const plaidData = await fetchPlaidData(accessToken);
-      // await generate(plaidData);
+      // Fetch financial data from Plaid Sandbox (bypasses UI, creates sandbox item directly)
+      setProgress({ stage: 'Fetching account and transaction data from Plaid Sandbox...', percent: 15 });
+      const plaidData = await connectSandboxAccount();
 
-      // For now, use mock assessment and navigate directly
-      console.log('Access token:', accessToken);
-      console.log('Metadata:', metadata);
+      setProgress({ stage: 'Data received - preparing for analysis...', percent: 40 });
+      console.log('✓ Received financial data:', {
+        accounts: plaidData.accounts.length,
+        transactions: plaidData.transactions.length,
+        liabilities: plaidData.liabilities.length,
+      });
 
-      // Navigate to assessment with mock data
-      // In Phase 4, this will use real generated assessment
-      navigate('/assessment', { state: { assessment: mockAssessment } });
+      // Small delay to show the transition
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Generate assessment client-side using Phase 2 functions
+      // The generate function will update progress from 40-100%
+      const assessment = await generate(plaidData);
+      console.log('✓ Assessment generated successfully:', assessment);
+
+      // Navigate to assessment page with generated assessment
+      navigate('/assessment', { state: { assessment } });
     } catch (err) {
-      console.error('Plaid connection failed:', err);
-      // Show error - but for Phase 3 demo, we'll just use mock data anyway
-      navigate('/assessment', { state: { assessment: mockAssessment } });
+      console.error('❌ Plaid connection failed:', err);
+      reset();
+      // Error will be shown via ErrorState component
+      throw err; // Re-throw to trigger error state
     }
   };
 
-  // Simulate mock flow without Plaid for demo purposes
+  // Fallback: use mock assessment
   const handleMockFlow = () => {
     navigate('/assessment', { state: { assessment: mockAssessment } });
   };
 
-  if (loading) {
+  if (progress.percent > 0) {
     return <LoadingState stage={progress.stage} percent={progress.percent} />;
   }
 
@@ -66,36 +73,28 @@ export default function Home() {
         </p>
 
         <div className="mb-8 space-y-4">
-          {SANDBOX_LINK_TOKEN ? (
-            <>
-              <PlaidConnectButton
-                linkToken={SANDBOX_LINK_TOKEN}
-                onSuccess={handlePlaidSuccess}
-              />
-              <div className="text-sm text-gray-500">
-                <strong>Note:</strong> This demo uses Plaid Sandbox mode. Use test
-                credentials to connect.
-              </div>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleMockFlow}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                View Sample Assessment
-              </button>
-              <div className="text-sm text-gray-500">
-                <strong>Note:</strong> Plaid Link Token not configured. Click to view
-                sample assessment with mock data.
-              </div>
-            </>
-          )}
+          <button
+            onClick={handleConnectPlaid}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-md"
+          >
+            Connect with Plaid
+          </button>
+          <div className="text-sm text-gray-500">
+            <strong>Demo Mode:</strong> Connects to Plaid Sandbox and generates a real assessment from transaction data
+          </div>
+
+          <div className="mt-4">
+            <button
+              onClick={handleMockFlow}
+              className="text-sm text-gray-600 hover:text-gray-800 underline"
+            >
+              Or view sample assessment
+            </button>
+          </div>
         </div>
 
-        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 text-left">
-          <strong>Phase 3 Status:</strong> UI components complete. Server-side Plaid
-          integration (token exchange, data fetching) will be implemented in Phase 4.
+        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800 text-left">
+          <strong>Story 11 Complete:</strong> Click "Connect with Plaid" to fetch real Plaid Sandbox data and generate a personalized assessment using your Phase 2 engine!
         </div>
       </div>
 
