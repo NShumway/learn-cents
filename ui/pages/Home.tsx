@@ -58,49 +58,54 @@ export default function Home() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto text-center">
-      <h1 className="text-4xl font-bold mb-4">Learning Cents</h1>
-      <p className="text-lg text-gray-600 mb-8">
-        Get personalized financial education based on your transaction data
-      </p>
+    <>
+      <div className="max-w-2xl mx-auto text-center pb-24">
+        <h1 className="text-4xl font-bold mb-4">Learning Cents</h1>
+        <p className="text-lg text-gray-600 mb-8">
+          Get personalized financial education based on your transaction data
+        </p>
 
-      <div className="mb-8 space-y-4">
-        {SANDBOX_LINK_TOKEN ? (
-          <>
-            <PlaidConnectButton
-              linkToken={SANDBOX_LINK_TOKEN}
-              onSuccess={handlePlaidSuccess}
-            />
-            <div className="text-sm text-gray-500">
-              <strong>Note:</strong> This demo uses Plaid Sandbox mode. Use test
-              credentials to connect.
-            </div>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={handleMockFlow}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-            >
-              View Sample Assessment
-            </button>
-            <div className="text-sm text-gray-500">
-              <strong>Note:</strong> Plaid Link Token not configured. Click to view
-              sample assessment with mock data.
-            </div>
-          </>
-        )}
+        <div className="mb-8 space-y-4">
+          {SANDBOX_LINK_TOKEN ? (
+            <>
+              <PlaidConnectButton
+                linkToken={SANDBOX_LINK_TOKEN}
+                onSuccess={handlePlaidSuccess}
+              />
+              <div className="text-sm text-gray-500">
+                <strong>Note:</strong> This demo uses Plaid Sandbox mode. Use test
+                credentials to connect.
+              </div>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={handleMockFlow}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              >
+                View Sample Assessment
+              </button>
+              <div className="text-sm text-gray-500">
+                <strong>Note:</strong> Plaid Link Token not configured. Click to view
+                sample assessment with mock data.
+              </div>
+            </>
+          )}
+        </div>
+
+        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 text-left">
+          <strong>Phase 3 Status:</strong> UI components complete. Server-side Plaid
+          integration (token exchange, data fetching) will be implemented in Phase 4.
+        </div>
       </div>
 
-      <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 text-left">
-        <strong>Disclaimer:</strong> This is educational content, not financial
-        advice. Consult a licensed advisor for personalized guidance.
+      {/* Sticky Disclaimer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-gray-50 border-t border-gray-200 shadow-lg z-50">
+        <div className="max-w-4xl mx-auto p-4 text-sm text-gray-600">
+          <strong>Disclaimer:</strong> This is educational content, not financial
+          advice. Consult a licensed advisor for personalized guidance.
+        </div>
       </div>
-
-      <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800 text-left">
-        <strong>Phase 3 Status:</strong> UI components complete. Server-side Plaid
-        integration (token exchange, data fetching) will be implemented in Phase 4.
-      </div>
-    </div>
+    </>
   );
 }

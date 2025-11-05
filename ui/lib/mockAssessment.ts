@@ -13,7 +13,7 @@ export const mockAssessment: Assessment = {
     personaLabel: 'High Utilization',
     priority: 2,
     renderedForUser:
-      'Your credit card usage is running high. You are carrying balances that put you at 24.7% utilization across your cards. You are paying interest charges on 1 account. Let us work on bringing these balances down.',
+      'You are paying interest charges on 1 credit card account. While your overall utilization is 24.7% (which is good), carrying balances that accrue interest can be costly over time. Let us work on bringing these balances down.',
     educationItems: [
       {
         title: 'Understanding Credit Utilization',

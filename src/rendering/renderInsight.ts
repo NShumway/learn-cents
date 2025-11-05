@@ -42,15 +42,25 @@ export function renderHighUtilization(signals: DetectedSignals): string {
 
   const utilizationPercent = overallUtilization.percent;
   const accountsWithInterest = accounts.filter((a) => a.hasInterestCharges).length;
+  const isHighUtil = utilizationPercent >= 50;
 
-  let text = `Your credit card usage is running high. You are carrying balances that put you at ${utilizationPercent}% utilization across your cards.`;
+  let text = '';
 
-  if (utilizationPercent >= 50) {
+  // Lead with the primary concern
+  if (isHighUtil && accountsWithInterest > 0) {
+    // Both high utilization AND interest charges
+    text = `Your credit card usage is running high. You are carrying balances that put you at ${utilizationPercent.toFixed(1)}% utilization across your cards, and you are paying interest charges on ${accountsWithInterest} account${accountsWithInterest === 1 ? '' : 's'}.`;
     text += ' This high utilization can significantly impact your credit score.';
-  }
-
-  if (accountsWithInterest > 0) {
-    text += ` You are paying interest charges on ${accountsWithInterest} account${accountsWithInterest === 1 ? '' : 's'}.`;
+  } else if (isHighUtil) {
+    // High utilization only
+    text = `Your credit card usage is running high. You are carrying balances that put you at ${utilizationPercent.toFixed(1)}% utilization across your cards.`;
+    text += ' This high utilization can significantly impact your credit score.';
+  } else if (accountsWithInterest > 0) {
+    // Interest charges but not high utilization
+    text = `You are paying interest charges on ${accountsWithInterest} credit card account${accountsWithInterest === 1 ? '' : 's'}. While your overall utilization is ${utilizationPercent.toFixed(1)}% (which is good), carrying balances that accrue interest can be costly over time.`;
+  } else {
+    // Edge case: matched high_utilization but not high util or interest (e.g., minimum payment only)
+    text = `You have credit card activity that needs attention. Your overall utilization is ${utilizationPercent.toFixed(1)}%.`;
   }
 
   text += ' Let us work on bringing these balances down.';
