@@ -10,7 +10,7 @@
  *   npm run explore:plaid
  */
 
-import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, SandboxItemFireWebhookRequestWebhookCodeEnum } from 'plaid';
+import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, SandboxItemFireWebhookRequestWebhookCodeEnum, Transaction } from 'plaid';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -94,7 +94,7 @@ async function main() {
       console.log('✓ Transaction sync triggered, waiting 2 seconds...');
       await new Promise(resolve => setTimeout(resolve, 2000));
       console.log('✓ Ready to fetch data\n');
-    } catch (error: any) {
+    } catch {
       console.log('⚠️  Could not trigger webhook (continuing anyway)\n');
     }
 
@@ -121,7 +121,7 @@ async function main() {
     // Step 5: Fetch Transactions using transactionsSync (recommended method)
     console.log('Step 5: Fetching Transactions using sync...');
     let cursor: string | undefined = undefined;
-    let transactions: any[] = [];
+    let transactions: Transaction[] = [];
     let hasMore = true;
 
     while (hasMore) {
@@ -178,7 +178,7 @@ async function main() {
           console.log('');
         }
       }
-    } catch (error: any) {
+    } catch {
       console.log('⚠️  Liabilities data not available in sandbox (this is expected)');
     }
 
@@ -264,10 +264,11 @@ async function main() {
     console.log(`  1. Review the saved data in ${outputPath}`);
     console.log(`  2. Understand the structure for JSON/CSV conversion`);
     console.log(`  3. Plan signal detection algorithms based on this data`);
-  } catch (error: any) {
-    console.error('\n❌ Error:', error.message);
-    if (error.response?.data) {
-      console.error('Details:', JSON.stringify(error.response.data, null, 2));
+  } catch (error: unknown) {
+    const err = error as { message?: string; response?: { data?: unknown } };
+    console.error('\n❌ Error:', err.message || 'Unknown error');
+    if (err.response?.data) {
+      console.error('Details:', JSON.stringify(err.response.data, null, 2));
     }
     process.exit(1);
   }

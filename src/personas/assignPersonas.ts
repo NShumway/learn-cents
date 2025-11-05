@@ -33,7 +33,7 @@ export interface DecisionNode {
   checked: boolean;
   matched: boolean;
   criteria: string[];
-  evidence: Record<string, any>;
+  evidence: Record<string, unknown>;
 }
 
 /**

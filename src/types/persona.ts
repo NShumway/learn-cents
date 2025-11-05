@@ -18,7 +18,7 @@ export interface PersonaAssignment {
   reasoning: string[]; // Why this persona was assigned
   evidence: {
     // Key metrics that led to this assignment
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

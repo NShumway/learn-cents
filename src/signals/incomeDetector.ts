@@ -7,7 +7,7 @@
 import { PlaidAccount, PlaidTransaction } from '../types/plaid';
 import { IncomeSignal, TimeWindow } from '../types/signals';
 import { getTransactionsInWindow, daysBetween, median, average } from './utils/dateUtils';
-import { isIncomeTransaction, isPayrollTransaction } from './utils/transactionUtils';
+import { isIncomeTransaction } from './utils/transactionUtils';
 
 interface Frequency {
   type: 'weekly' | 'biweekly' | 'monthly';

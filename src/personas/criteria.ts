@@ -6,7 +6,6 @@
  */
 
 import { DetectedSignals } from '../types/signals';
-import { PersonaType } from '../types/persona';
 import { DecisionNode } from './assignPersonas';
 
 /**
@@ -16,7 +15,7 @@ import { DecisionNode } from './assignPersonas';
  */
 export function checkOverdraftVulnerable(signals: DetectedSignals): DecisionNode {
   const criteria: string[] = [];
-  const evidence: Record<string, any> = {};
+  const evidence: Record<string, unknown> = {};
 
   const overdraft30d = signals.overdrafts['30d'];
   const overdraft180d = signals.overdrafts['180d'];
@@ -62,7 +61,7 @@ export function checkOverdraftVulnerable(signals: DetectedSignals): DecisionNode
  */
 export function checkHighUtilization(signals: DetectedSignals): DecisionNode {
   const criteria: string[] = [];
-  const evidence: Record<string, any> = {};
+  const evidence: Record<string, unknown> = {};
 
   const credit30d = signals.credit['30d'];
   let matched = false;
@@ -148,7 +147,7 @@ export function checkHighUtilization(signals: DetectedSignals): DecisionNode {
  */
 export function checkVariableIncomeBudgeter(signals: DetectedSignals): DecisionNode {
   const criteria: string[] = [];
-  const evidence: Record<string, any> = {};
+  const evidence: Record<string, unknown> = {};
 
   const income180d = signals.income['180d'];
   let matched = false;
@@ -201,7 +200,7 @@ export function checkVariableIncomeBudgeter(signals: DetectedSignals): DecisionN
  */
 export function checkSubscriptionHeavy(signals: DetectedSignals): DecisionNode {
   const criteria: string[] = [];
-  const evidence: Record<string, any> = {};
+  const evidence: Record<string, unknown> = {};
 
   const subscriptions30d = signals.subscriptions['30d'];
   let matched = false;
@@ -266,7 +265,7 @@ export function checkSubscriptionHeavy(signals: DetectedSignals): DecisionNode {
  */
 export function checkSavingsBuilder(signals: DetectedSignals): DecisionNode {
   const criteria: string[] = [];
-  const evidence: Record<string, any> = {};
+  const evidence: Record<string, unknown> = {};
 
   const savings180d = signals.savings['180d'];
   const credit30d = signals.credit['30d'];
@@ -347,7 +346,7 @@ export function checkSavingsBuilder(signals: DetectedSignals): DecisionNode {
  */
 export function checkLowUse(signals: DetectedSignals): DecisionNode {
   const criteria: string[] = [];
-  const evidence: Record<string, any> = {};
+  const evidence: Record<string, unknown> = {};
 
   const activity180d = signals.bankingActivity['180d'];
   let matched = false;

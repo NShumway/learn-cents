@@ -62,8 +62,9 @@ async function main() {
     let rawData: string;
     try {
       rawData = await fs.readFile(dataPath, 'utf-8');
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      if (err.code === 'ENOENT') {
         console.error(`❌ Synthetic user data not found at ${dataPath}`);
         console.error(`   Run: npm run generate:data`);
         process.exit(1);
