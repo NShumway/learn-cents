@@ -17,7 +17,7 @@ import { UserFinancialData } from '../../src/types/plaid';
 describe('Plaid Data Integration', () => {
   it('should process real Plaid sandbox data without errors', async () => {
     // Load the committed Plaid sample data
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     // Extract user financial data from Plaid structure
@@ -32,7 +32,7 @@ describe('Plaid Data Integration', () => {
   });
 
   it('should detect signals from Plaid sandbox data', async () => {
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     const userData: UserFinancialData = {
@@ -54,7 +54,7 @@ describe('Plaid Data Integration', () => {
   });
 
   it('should assign persona from Plaid sandbox data', async () => {
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     const userData: UserFinancialData = {
@@ -75,7 +75,7 @@ describe('Plaid Data Integration', () => {
   });
 
   it('should generate complete assessment object from Plaid data', async () => {
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     const userData: UserFinancialData = {
@@ -108,7 +108,7 @@ describe('Plaid Data Integration', () => {
   });
 
   it('should handle Plaid data with credit accounts correctly', async () => {
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     const userData: UserFinancialData = {
@@ -127,7 +127,7 @@ describe('Plaid Data Integration', () => {
   });
 
   it('should handle Plaid data with no transactions gracefully', async () => {
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     const userData: UserFinancialData = {
@@ -149,7 +149,7 @@ describe('Plaid Data Integration', () => {
   });
 
   it('should detect various account types from Plaid data', async () => {
-    const rawData = await fs.readFile('./data/plaid-sandbox-sample.json', 'utf-8');
+    const rawData = await fs.readFile('./tests/fixtures/plaid-sandbox-sample.json', 'utf-8');
     const plaidData = JSON.parse(rawData);
 
     // Verify the sample data has various account types

@@ -83,12 +83,12 @@ async function main() {
     };
   } else {
     // Load Plaid sandbox data
-    // Try plaid-user-data.json first (from npm run explore:plaid), fallback to plaid-sandbox-sample.json
+    // Try plaid-user-data.json first (from npm run explore:plaid), fallback to test fixture
     let dataPath = './data/plaid-user-data.json';
     try {
       await fs.access(dataPath);
     } catch {
-      dataPath = './data/plaid-sandbox-sample.json';
+      dataPath = './tests/fixtures/plaid-sandbox-sample.json';
     }
     const rawData = await fs.readFile(dataPath, 'utf-8');
     const plaidData = JSON.parse(rawData);
