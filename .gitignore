@@ -35,3 +35,6 @@ coverage/
 
 # Original PRD
 PRD.pdf
+
+# Generated data files (entire data directory)
+data/

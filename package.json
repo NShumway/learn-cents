@@ -8,10 +8,13 @@
     "build": "tsc && vite build",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "test:personas": "tsx scripts/testPersonaAssignment.ts",
+    "run:assessment": "tsx scripts/viewAssessmentObject.ts",
     "lint": "eslint . --ext ts,tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "typecheck": "tsc --noEmit",
     "generate:data": "tsx scripts/generateRandomPlaidData.ts",
+    "explore:plaid": "tsx scripts/explorePlaidSandbox.ts",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
@@ -47,6 +50,7 @@
     "@prisma/client": "^6.18.0",
     "@supabase/supabase-js": "^2.79.0",
     "dotenv": "^17.2.3",
+    "plaid": "^39.1.0",
     "prisma": "^6.18.0"
   }
 }
