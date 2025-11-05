@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# SECURITY NOTICE:
+# This script handles sensitive environment variables.
+# - Never echo or print environment variable VALUES
+# - Only print variable NAMES when they are missing
+# - Sensitive values should only be read from .env file
+
 echo "===================================="
 echo "Learning Cents - Project Setup"
 echo "===================================="
@@ -23,6 +29,7 @@ else
     echo ".env file already exists. Checking for missing variables..."
 
     # Extract variable names from .env.example (lines with =)
+    # SECURITY: Only prints variable NAMES, appends template lines (with placeholder values)
     while IFS= read -r line; do
         # Skip comments and empty lines
         if [[ "$line" =~ ^[[:space:]]*# ]] || [[ -z "$line" ]]; then
@@ -49,9 +56,10 @@ echo "Installing dependencies..."
 npm install
 
 # Validate environment variables
+# SECURITY: Only prints variable NAMES, never values
 echo ""
 echo "Validating environment configuration..."
-node -e "require('dotenv').config(); const missing = []; ['OPENAI_API_KEY','SUPABASE_URL','SUPABASE_ANON_KEY','DATABASE_URL'].forEach(key => { if (!process.env[key]) missing.push(key); }); if (missing.length > 0) { console.log('Missing required environment variables:', missing.join(', ')); process.exit(1); } else { console.log('Environment configuration valid!'); }"
+node -e "require('dotenv').config(); const missing = []; ['OPENAI_API_KEY','SUPABASE_URL','SUPABASE_ANON_KEY','DATABASE_URL'].forEach(key => { if (!process.env[key]) missing.push(key); }); if (missing.length > 0) { console.log('⚠️  Missing required environment variables:', missing.join(', ')); process.exit(1); } else { console.log('✓ Environment configuration valid!'); }"
 
 if [ $? -ne 0 ]; then
     echo ""

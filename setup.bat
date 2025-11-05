@@ -1,4 +1,11 @@
 @echo off
+
+REM SECURITY NOTICE:
+REM This script handles sensitive environment variables.
+REM - Never echo or print environment variable VALUES
+REM - Only print variable NAMES when they are missing
+REM - Sensitive values should only be read from .env file
+
 echo ====================================
 echo Learning Cents - Project Setup
 echo ====================================
@@ -22,6 +29,7 @@ if not exist .env (
     echo .env file already exists. Checking for missing variables...
 
     REM Check each variable from .env.example and append if missing
+    REM SECURITY: Only prints variable NAMES, appends template lines (with placeholder values)
     for /f "tokens=1 delims==" %%v in (.env.example) do (
         REM Skip comments and empty lines
         echo %%v | findstr /r "^#" >nul && (
@@ -47,10 +55,11 @@ if not exist .env (
 echo Installing dependencies...
 call npm install
 
-REM Validate environment variables (to be expanded in Story 19)
+REM Validate environment variables
+REM SECURITY: Only prints variable NAMES, never values
 echo.
 echo Validating environment configuration...
-node -e "require('dotenv').config(); const missing = []; ['OPENAI_API_KEY','SUPABASE_URL','SUPABASE_ANON_KEY','DATABASE_URL'].forEach(key => { if (!process.env[key]) missing.push(key); }); if (missing.length > 0) { console.log('Missing required environment variables:', missing.join(', ')); process.exit(1); } else { console.log('Environment configuration valid!'); }"
+node -e "require('dotenv').config(); const missing = []; ['OPENAI_API_KEY','SUPABASE_URL','SUPABASE_ANON_KEY','DATABASE_URL'].forEach(key => { if (!process.env[key]) missing.push(key); }); if (missing.length > 0) { console.log('WARNING: Missing required environment variables:', missing.join(', ')); process.exit(1); } else { console.log('Environment configuration valid!'); }"
 
 if %ERRORLEVEL% NEQ 0 (
     echo.

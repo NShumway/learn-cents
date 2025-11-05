@@ -208,6 +208,7 @@
 ---
 
 ✅ **Next Steps / Open Questions (Post-MVP):**
+- **Admin UI for Partner Offer Editing**: Build UI for admins to create, edit, and delete partner offers including eligibility requirements without code changes. Currently partner offers managed via CLI only.
 - **User Feedback Mechanism**: Consider adding feature for users to report inaccurate behavioral signal detection (e.g., "This isn't a subscription" button). Would improve algorithm refinement beyond admin oversight alone.
 - **Automated Plaid Refresh Prompts**: Consider prompting users to refresh Plaid connection after X days (e.g., 30, 60, 90 days) to ensure insights remain current. Balance between data freshness and user friction.
 - **Admin Management System**: MVP uses CLI to promote users to admin. Future: consider invite system, separate admin signup flow, or approval workflow with role-based permissions.

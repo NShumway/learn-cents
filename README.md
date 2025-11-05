@@ -74,24 +74,14 @@ npm run dev
 # Run tests
 npm test
 
-# Run tests with UI
-npm run test:ui
-
 # Type check
 npm run typecheck
 
 # Lint
 npm run lint
-
-# Format code
-npm run format
-
-# Generate synthetic test data
-npm run generate:data
-
-# Explore Plaid sandbox data
-npm run explore:plaid
 ```
+
+For a complete list of all CLI tools including data generation, testing, and analysis commands, see the [CLI Tools Reference](./docs/cli-tools.md).
 
 ## Project Structure
 
@@ -149,6 +139,9 @@ Automatic deployment via GitHub Actions:
 - [Plaid Data Structure](./docs/plaid-data-structure.md) - Plaid API data format and field specifications
 - [Data Ingestion Format](./docs/data-ingestion-format.md) - JSON/CSV ingestion specification
 - [Signal Detection](./docs/signal-detection.md) - Behavioral signal detection criteria and algorithms
+
+### Developer Tools
+- [CLI Tools Reference](./docs/cli-tools.md) - Complete reference for all CLI tools (testing, data generation, analysis)
 
 ## License
 

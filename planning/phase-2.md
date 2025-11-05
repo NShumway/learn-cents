@@ -1017,23 +1017,22 @@ describe('Persona Criteria', () => {
 
 ---
 
-## Story 6: Assessment Engine Core
+## Story 6: Assessment Rendering Functions
 
 ### Goals
 - Generate assessment with underlying data structures for each persona
-- Calculate eligibility metrics for partner offers
-- Build rendering functions for user display and AI context
+- Build rendering functions that reference central text repo to translate assessment objects into targeted financial education for the user
 - Create decision trees showing why each persona was assigned
-- Hardcode education content per persona
-- Centralize all insight text for legal review
+- Centralize all insight text for legal review in central text repo
+
+**Note**: Eligibility engine for partner offers will be built in Phase 4 (Story 9). AI-powered assessment rendering will be built in Phase 5 (Story 19).
 
 ### File Structure
 
 ```
 recommend/
-├── index.ts                        # Main assessment engine
+├── index.ts                        # Main assessment builder
 ├── assessmentBuilder.ts            # Build assessment from personas
-├── eligibilityCalculator.ts        # Calculate offer eligibility metrics
 ├── decisionTree.ts                 # Generate decision trace
 ├── renderingFunctions/
 │   ├── highUtilization.ts          # Render High Utilization insights
@@ -1045,7 +1044,7 @@ recommend/
 │   ├── general.ts                  # Render General insights
 │   └── types.ts                    # Rendering function types
 ├── content/
-│   └── insightText.ts              # CENTRAL LOCATION - All insight text for legal review
+│   └── insightText.ts              # CENTRAL TEXT REPO - All insight text for legal review
 └── types.ts                        # Assessment type definitions
 
 docs/
@@ -1059,14 +1058,17 @@ tests/
 
 ### Implementation Details
 
-#### 1. Insight Text - CENTRAL LOCATION (recommend/content/insightText.ts)
+#### 1. Insight Text - CENTRAL TEXT REPO (recommend/content/insightText.ts)
 
 ```typescript
 /**
- * CENTRAL LOCATION FOR ALL INSIGHT TEXT
+ * CENTRAL TEXT REPO FOR ALL INSIGHT TEXT
  *
- * ALL user-facing text must be defined here for legal review.
+ * ALL user-facing educational content must be defined here for legal review.
  * No insight text should be hardcoded elsewhere in the application.
+ *
+ * Rendering functions reference this repo to translate assessment data structures
+ * into targeted financial education for the user.
  *
  * Text uses template variables for data insertion:
  * - {variable} = insert data
@@ -1134,15 +1136,6 @@ export const SUBSCRIPTION_HEAVY_TEXT = { /* ... */ };
 export const SAVINGS_BUILDER_TEXT = { /* ... */ };
 export const BLANK_SLATE_TEXT = { /* ... */ };
 export const GENERAL_TEXT = { /* ... */ };
-
-/**
- * Partner offer text templates
- * (Will be populated from PartnerOffer catalog in later story)
- */
-export interface PartnerOfferText {
-  offerName: string;
-  pitch: string; // Direct from catalog
-}
 ```
 
 #### 2. Assessment Types (recommend/types.ts)
@@ -1153,12 +1146,10 @@ import type { DetectedSignals } from '../features/signals/types';
 
 /**
  * Assessment - the complete analysis for a user
- * This is what gets stored in the database
  */
 export interface Assessment {
   priorityInsight: Insight;
   additionalInsights: Insight[];
-  eligibilityMetrics: EligibilityMetrics;
   decisionTree: DecisionTree;
 }
 
@@ -1169,16 +1160,14 @@ export interface Insight {
   personaType: string;
   priority: number;
 
-  // Underlying data (stored in DB)
-  underlyingData: any; // Flexible structure per persona
+  // Underlying data (stored - flexible structure per persona)
+  underlyingData: any;
 
-  // Rendered text (generated on-demand, not stored)
+  // Rendered text (generated on-demand from central text repo)
   renderedForUser?: string;
-  renderedForAI?: string;
 
-  // Education and offers
+  // Education content (hardcoded per persona)
   educationItems: EducationItem[];
-  partnerOffers: PartnerOfferReference[];
 }
 
 /**
@@ -1188,45 +1177,6 @@ export interface EducationItem {
   title: string;
   description: string;
   // Future: url, category, etc.
-}
-
-/**
- * Partner offer reference
- * (Actual offer comes from PartnerOffer catalog)
- */
-export interface PartnerOfferReference {
-  offerId: string;
-  offerName: string;
-  eligible: boolean;
-  rationale: string; // Why user is/isn't eligible
-}
-
-/**
- * Eligibility metrics - stored with assessment
- * Used to determine which partner offers to show
- */
-export interface EligibilityMetrics {
-  // Credit metrics
-  maxCreditUtilization: number;
-  avgCreditUtilization: number;
-  totalCreditBalance: number;
-  totalCreditLimit: number;
-  totalInterestPaid: number;
-
-  // Savings metrics
-  totalSavingsBalance: number;
-  emergencyFundCoverage: number; // Months
-
-  // Income metrics
-  estimatedMonthlyIncome: number;
-  incomeStability: 'stable' | 'variable' | 'unknown';
-
-  // Existing accounts
-  hasCheckingAccount: boolean;
-  hasSavingsAccount: boolean;
-  hasCreditCard: boolean;
-  hasMoneyMarket: boolean;
-  hasHSA: boolean;
 }
 
 /**
@@ -1251,6 +1201,7 @@ import { HIGH_UTILIZATION_TEXT } from '../content/insightText';
 
 /**
  * Render High Utilization insight for user display
+ * References central text repo and populates with assessment data
  */
 export function renderForUser(insight: Insight): string {
   const { underlyingData } = insight;
@@ -1262,33 +1213,12 @@ export function renderForUser(insight: Insight): string {
     )
     .join('\n');
 
+  // Reference central text repo and populate template variables
   const text = HIGH_UTILIZATION_TEXT.detailedInsight(underlyingData)
     .replace('{cardCount}', underlyingData.cards.length.toString())
     .replace('{cardList}', cardList);
 
   return text;
-}
-
-/**
- * Render High Utilization insight for AI context
- */
-export function renderForAI(insight: Insight): string {
-  const { underlyingData } = insight;
-
-  return `
-PERSONA: High Credit Utilization
-
-DATA:
-${JSON.stringify(underlyingData, null, 2)}
-
-INSIGHT: ${HIGH_UTILIZATION_TEXT.summary}
-
-USER IS SHOWN:
-${renderForUser(insight)}
-
-EDUCATION TOPICS:
-${HIGH_UTILIZATION_TEXT.educationItems.map(e => `- ${e.title}: ${e.description}`).join('\n')}
-  `.trim();
 }
 ```
 
@@ -1298,7 +1228,6 @@ ${HIGH_UTILIZATION_TEXT.educationItems.map(e => `- ${e.title}: ${e.description}`
 import type { AssignedPersonas } from '../personas/types';
 import type { DetectedSignals } from '../features/signals/types';
 import type { Assessment, Insight } from './types';
-import { calculateEligibilityMetrics } from './eligibilityCalculator';
 import { buildDecisionTree } from './decisionTree';
 import { buildInsight } from './insightBuilder';
 
@@ -1315,79 +1244,18 @@ export async function buildAssessment(
     personas.additional.map(p => buildInsight(p, signals))
   );
 
-  // Calculate eligibility metrics
-  const eligibilityMetrics = calculateEligibilityMetrics(signals);
-
   // Build decision tree
   const decisionTree = buildDecisionTree(personas, signals);
 
   return {
     priorityInsight,
     additionalInsights,
-    eligibilityMetrics,
     decisionTree
   };
 }
 ```
 
-#### 5. Eligibility Calculator Stub (recommend/eligibilityCalculator.ts)
-
-```typescript
-import type { DetectedSignals } from '../features/signals/types';
-import type { EligibilityMetrics } from './types';
-
-/**
- * Calculate eligibility metrics from signals
- * These metrics are used to determine which partner offers to show
- */
-export function calculateEligibilityMetrics(signals: DetectedSignals): EligibilityMetrics {
-  const { credit180d, savings180d, income180d } = signals;
-
-  return {
-    // Credit metrics
-    maxCreditUtilization: credit180d.detected
-      ? Math.max(...credit180d.evidence.accounts.map(a => a.utilization))
-      : 0,
-    avgCreditUtilization: credit180d.detected
-      ? credit180d.evidence.avgUtilization
-      : 0,
-    totalCreditBalance: credit180d.detected
-      ? credit180d.evidence.accounts.reduce((sum, a) => sum + a.balance, 0)
-      : 0,
-    totalCreditLimit: credit180d.detected
-      ? credit180d.evidence.accounts.reduce((sum, a) => sum + a.limit, 0)
-      : 0,
-    totalInterestPaid: credit180d.detected
-      ? credit180d.evidence.accounts.reduce((sum, a) => sum + (a.hasInterestCharges ? 50 : 0), 0) // Estimate
-      : 0,
-
-    // Savings metrics
-    totalSavingsBalance: savings180d.detected
-      ? savings180d.evidence.totalSavings
-      : 0,
-    emergencyFundCoverage: savings180d.detected
-      ? savings180d.evidence.emergencyFundCoverage
-      : 0,
-
-    // Income metrics
-    estimatedMonthlyIncome: income180d.detected
-      ? income180d.evidence.averageIncome
-      : 0,
-    incomeStability: income180d.detected
-      ? (income180d.evidence.frequency === 'irregular' ? 'variable' : 'stable')
-      : 'unknown',
-
-    // Existing accounts (stub - will be implemented)
-    hasCheckingAccount: true, // TODO: Detect from accounts
-    hasSavingsAccount: savings180d.detected,
-    hasCreditCard: credit180d.detected,
-    hasMoneyMarket: false, // TODO: Detect
-    hasHSA: false // TODO: Detect
-  };
-}
-```
-
-#### 6. CLI Test Script (scripts/testAssessment.ts)
+#### 5. CLI Test Script (scripts/testAssessment.ts)
 
 ```typescript
 #!/usr/bin/env tsx
@@ -1420,8 +1288,6 @@ async function main() {
   console.log('ASSESSMENT COMPLETE\n');
   console.log('Priority Insight:', assessment.priorityInsight.personaType);
   console.log('Additional Insights:', assessment.additionalInsights.map(i => i.personaType).join(', '));
-  console.log('\nEligibility Metrics:');
-  console.log(JSON.stringify(assessment.eligibilityMetrics, null, 2));
   console.log('\nDecision Tree:');
   console.log(JSON.stringify(assessment.decisionTree, null, 2));
 }
@@ -1432,10 +1298,10 @@ main().catch(console.error);
 ### Acceptance Criteria
 
 - [ ] Assessment data structure finalized and documented
-- [ ] All insight text centralized in `recommend/content/insightText.ts`
+- [ ] All insight text centralized in `recommend/content/insightText.ts` (central text repo)
 - [ ] Rendering functions implemented for all 7 personas
+- [ ] Rendering functions reference central text repo to translate data structures into user-facing text
 - [ ] Education items hardcoded for each persona (3-5 items)
-- [ ] Eligibility metrics calculator working
 - [ ] Decision tree generator working
 - [ ] Assessment builder creates complete assessment
 - [ ] CLI test script generates full assessment
@@ -1452,12 +1318,15 @@ main().catch(console.error);
 ## Story 7: CLI Assessment Generation
 
 ### Goals
-- Build CLI-based assessment generation using JSON/CSV files (NO Plaid yet - that's Phase 4)
+- Build CLI-based assessment generation using JSON/CSV files (NO Plaid yet - that's Phase 3)
 - Create file parsers for JSON and CSV formats
+- Implement graceful error handling: validate data but proceed with partial data where possible
 - Integrate parsers with assessment engine
 - Generate complete assessment via CLI in <1 second (target)
 - Test full pipeline on synthetic data
 - Verify data processing and flushing works correctly
+
+**Data Validation Philosophy**: If we can detect one signal but not another due to incomplete data, proceed and flag what we can find. Warn rather than block. Only fail hard on completely unusable data.
 
 ### File Structure
 
@@ -1545,7 +1414,9 @@ import type { UserFinancialData } from './jsonParser';
 
 /**
  * Validate that ingested data matches expected schema
- * Throws error if validation fails
+ *
+ * Philosophy: Graceful degradation - warn but proceed with partial data.
+ * Only throw errors for completely unusable data.
  */
 export function validateData(data: UserFinancialData): void {
   if (!data) {
@@ -1566,10 +1437,19 @@ export function validateData(data: UserFinancialData): void {
 
   // Validate at least one account exists
   if (data.accounts.length === 0) {
-    throw new Error('No accounts found in data');
+    throw new Error('No accounts found in data - cannot proceed');
   }
 
-  console.log(`✓ Data validation passed: ${data.accounts.length} accounts, ${data.transactions.length} transactions`);
+  // Warn about missing data but don't block
+  if (data.transactions.length === 0) {
+    console.warn('⚠ No transactions found - limited signal detection possible');
+  }
+
+  if (data.liabilities.length === 0) {
+    console.warn('⚠ No liabilities found - credit signal detection unavailable');
+  }
+
+  console.log(`✓ Data validation passed: ${data.accounts.length} accounts, ${data.transactions.length} transactions, ${data.liabilities.length} liabilities`);
 }
 ```
 
@@ -1771,7 +1651,8 @@ main().catch(console.error);
 
 - [ ] JSON parser handles both single-user and SyntheticDataset formats
 - [ ] CSV parser stub created (can be implemented later if needed)
-- [ ] Data validator checks for required fields
+- [ ] Data validator implements graceful degradation (warn but proceed with partial data)
+- [ ] Data validator only fails hard on completely unusable data
 - [ ] Transactions sorted by date after loading
 - [ ] Complete pipeline generates assessment from file
 - [ ] Performance target: <1 second for typical user (flexible for large datasets)
@@ -1839,11 +1720,10 @@ npm run generate:assessment ./data/synthetic-users.json
 - [ ] CLI test script works
 - [ ] Unit tests pass
 
-### Story 6: Assessment Engine Core
-- [ ] All insight text centralized in one file
-- [ ] Rendering functions for all personas
+### Story 6: Assessment Rendering Functions
+- [ ] All insight text centralized in central text repo
+- [ ] Rendering functions for all personas reference central text repo
 - [ ] Education items hardcoded (3-5 per persona)
-- [ ] Eligibility metrics calculator working
 - [ ] Decision tree generator working
 - [ ] CLI test script works
 - [ ] Unit tests pass
@@ -1851,7 +1731,7 @@ npm run generate:assessment ./data/synthetic-users.json
 ### Story 7: CLI Assessment Generation
 - [ ] JSON parser working (handles single-user and dataset formats)
 - [ ] CSV parser stub created
-- [ ] Data validator working
+- [ ] Data validator implements graceful degradation
 - [ ] Full pipeline generates assessment from file
 - [ ] Performance <1s for typical user
 - [ ] Data flushing verified
@@ -1869,5 +1749,5 @@ npm run generate:assessment ./data/synthetic-users.json
 
 ## Next Steps
 
-After completing Phase 2, move to Phase 3: Core Functionality - Part 2 (Stories 8-11)
-See `phases_3.md` for detailed implementation guide.
+After completing Phase 2, move to Phase 3: User Interface (Stories 8-11)
+See `phase-3.md` for detailed implementation guide.
