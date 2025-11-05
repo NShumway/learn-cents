@@ -39,4 +39,4 @@ PRD.pdf
 # Generated data files
 data/plaid-user-data.json
 data/synthetic-users.json
-data/assessment-user-*.json
+data/assessment-*.json
