@@ -21,6 +21,7 @@ import * as path from 'path';
 import { SyntheticDataset, UserFinancialData } from '../src/types/plaid';
 import { detectAllSignals } from '../src/signals';
 import { assignPersona } from '../src/personas';
+import { buildAssessment } from '../src/assessment/buildAssessment';
 
 async function main() {
   console.log('📋 Assessment Object Structure\n');
@@ -128,6 +129,7 @@ async function main() {
   console.log('🔄 Generating assessment...\n');
   const signals = detectAllSignals(userData);
   const personaResult = assignPersona(signals);
+  const assessment = buildAssessment(personaResult, signals);
 
   // This is the complete assessment object
   const assessmentObject = {
@@ -135,12 +137,7 @@ async function main() {
     userName,
     dataSource: source,
     generatedAt: new Date().toISOString(),
-
-    // Signal detection results
-    signals,
-
-    // Persona assignment result
-    persona: personaResult,
+    assessment,
   };
 
   console.log('════════════════════════════════════════════════════════════════════════════════');
@@ -161,12 +158,18 @@ async function main() {
   console.log('════════════════════════════════════════════════════════════════════════════════');
   console.log('SUMMARY');
   console.log('════════════════════════════════════════════════════════════════════════════════');
-  console.log(`\nPrimary Persona: ${personaResult.personas[0].persona}`);
-  if (personaResult.personas.length > 1) {
-    console.log(`Additional Personas: ${personaResult.personas.slice(1).map(p => p.persona).join(', ')}`);
+  console.log(`\nPrimary Persona: ${assessment.priorityInsight.personaLabel} (${assessment.priorityInsight.personaType})`);
+  if (assessment.additionalInsights.length > 0) {
+    console.log(`Additional Personas: ${assessment.additionalInsights.map(i => i.personaLabel).join(', ')}`);
+  }
+  console.log(`\nPriority Insight:`);
+  console.log(`  ${assessment.priorityInsight.renderedForUser}`);
+  console.log(`\nEducation Items: ${assessment.priorityInsight.educationItems.length}`);
+  for (const item of assessment.priorityInsight.educationItems) {
+    console.log(`  • ${item.title}`);
   }
   console.log(`\nSignals Detected:`);
-  for (const signal of personaResult.decisionTree.signalsDetected) {
+  for (const signal of assessment.decisionTree.signalsDetected) {
     console.log(`  ✓ ${signal}`);
   }
   console.log(`\nObject Size: ${JSON.stringify(assessmentObject).length.toLocaleString()} bytes`);
