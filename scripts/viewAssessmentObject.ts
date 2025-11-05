@@ -17,6 +17,7 @@
  */
 
 import * as fs from 'fs/promises';
+import * as path from 'path';
 import { SyntheticDataset, UserFinancialData } from '../src/types/plaid';
 import { detectAllSignals } from '../src/signals';
 import { assignPersona } from '../src/personas';
@@ -58,7 +59,17 @@ async function main() {
 
   if (source === 'synthetic') {
     const dataPath = './data/synthetic-users.json';
-    const rawData = await fs.readFile(dataPath, 'utf-8');
+    let rawData: string;
+    try {
+      rawData = await fs.readFile(dataPath, 'utf-8');
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        console.error(`❌ Synthetic user data not found at ${dataPath}`);
+        console.error(`   Run: npm run generate:data`);
+        process.exit(1);
+      }
+      throw error;
+    }
     const dataset: SyntheticDataset = JSON.parse(rawData);
 
     if (userIndex < 0 || userIndex >= dataset.users.length) {
@@ -140,6 +151,8 @@ async function main() {
   const outputPath = source === 'synthetic'
     ? `./data/assessment-user-${userIndex}.json`
     : `./data/assessment-plaid.json`;
+  // Ensure output directory exists
+  await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, JSON.stringify(assessmentObject, null, 2));
   console.log(`\n\n✅ Assessment object saved to: ${outputPath}\n`);
 

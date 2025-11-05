@@ -13,6 +13,7 @@
 import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, SandboxItemFireWebhookRequestWebhookCodeEnum } from 'plaid';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs/promises';
+import * as path from 'path';
 
 dotenv.config();
 
@@ -223,6 +224,8 @@ async function main() {
     };
 
     const outputPath = './data/plaid-user-data.json';
+    // Ensure output directory exists
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, JSON.stringify(outputData, null, 2));
     console.log(`✓ Data saved to ${outputPath}\n`);
 

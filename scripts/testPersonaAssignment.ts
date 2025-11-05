@@ -27,7 +27,17 @@ async function main() {
 
   // Load synthetic data
   const dataPath = './data/synthetic-users.json';
-  const rawData = await fs.readFile(dataPath, 'utf-8');
+  let rawData: string;
+  try {
+    rawData = await fs.readFile(dataPath, 'utf-8');
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      console.error(`❌ Synthetic user data not found at ${dataPath}`);
+      console.error(`   Run: npm run generate:data`);
+      process.exit(1);
+    }
+    throw error;
+  }
   const dataset: SyntheticDataset = JSON.parse(rawData);
 
   console.log(`📊 Loaded ${dataset.users.length} synthetic users\n`);
