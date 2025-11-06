@@ -33,6 +33,7 @@ export async function fetchLinkToken(): Promise<string> {
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ userId: 'demo-user' }),
     });
 
     if (!response.ok) {
