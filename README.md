@@ -5,6 +5,7 @@ Financial education platform that transforms transaction data into personalized 
 ## Overview
 
 Learning Cents analyzes financial transaction data (via Plaid integration) to:
+
 - Detect behavioral patterns (subscriptions, savings, credit, income, overdrafts)
 - Assign users to financial personas (7 types)
 - Generate personalized educational insights
@@ -13,6 +14,7 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 ## Key Features
 
 ### Decision Flow
+
 1. **Data Import**: User connects Plaid account (OAuth)
 2. **Client-Side Processing**: Browser processes transaction data locally (<1s)
 3. **Signal Detection**: Identifies behavioral patterns (30-day & 180-day windows)
@@ -21,6 +23,7 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 6. **AI Chat**: Follow-up questions with guardrails (tone, legal, eligibility)
 
 ### 7 Financial Personas
+
 1. **High Utilization** - Credit card utilization ≥50% or paying interest
 2. **Frequent Overdrafts** - Negative balances, NSF fees detected
 3. **Variable Income Budgeter** - Irregular income, low cash buffer
@@ -32,6 +35,7 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 ## Setup
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - OpenAI API key
 - Supabase account
@@ -40,17 +44,20 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 ### Installation
 
 **Windows:**
+
 ```bash
 setup.bat
 ```
 
 **Mac/Linux:**
+
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
 The setup script will:
+
 1. Create `.env` file from `.env.example`
 2. Install dependencies
 3. Validate environment configuration
@@ -58,6 +65,7 @@ The setup script will:
 ### Environment Variables
 
 Edit `.env` and add your API keys:
+
 - `OPENAI_API_KEY` - OpenAI API key for AI chat
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_ANON_KEY` - Supabase anonymous key
@@ -74,12 +82,11 @@ npm run dev
 # Run tests
 npm test
 
-# Type check
-npm run typecheck
-
-# Lint
-npm run lint
+# Type check and lint
+npm run check
 ```
+
+**Pre-commit Hooks**: This project uses husky and lint-staged to automatically format and lint code before commits. All staged files are formatted with Prettier and linted with ESLint on every commit.
 
 For a complete list of all CLI tools including data generation, testing, and analysis commands, see the [CLI Tools Reference](./docs/cli-tools.md).
 
@@ -124,23 +131,27 @@ npm test -- --coverage
 ## Deployment
 
 Automatic deployment via GitHub Actions:
+
 - Push to `main` branch → Deploy to Vercel production
 - Pull requests → Deploy preview environment
 
 ## Documentation
 
 ### Planning
+
 - [PRD](./planning/PRD.md) - Product Requirements Document
 - [Development Phases](./planning/dev-phases.md) - Development roadmap
 - [Phase 1](./planning/phase-1.md) - Foundation phase details
 - [Phase 2](./planning/phase-2.md) - Core functionality implementation
 
 ### Technical Specs
+
 - [Plaid Data Structure](./docs/plaid-data-structure.md) - Plaid API data format and field specifications
 - [Data Ingestion Format](./docs/data-ingestion-format.md) - JSON/CSV ingestion specification
 - [Signal Detection](./docs/signal-detection.md) - Behavioral signal detection criteria and algorithms
 
 ### Developer Tools
+
 - [CLI Tools Reference](./docs/cli-tools.md) - Complete reference for all CLI tools (testing, data generation, analysis)
 
 ## License

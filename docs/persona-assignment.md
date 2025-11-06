@@ -80,11 +80,13 @@ flowchart TD
 **Signal:** `overdrafts.detected === true`
 
 **Formula:**
+
 ```typescript
 count30d >= 1 OR count180d >= 2
 ```
 
 **Evidence Required:**
+
 - `overdrafts['30d'].evidence.count30d` OR
 - `overdrafts['180d'].evidence.count180d`
 
@@ -97,6 +99,7 @@ count30d >= 1 OR count180d >= 2
 **Signal:** `credit.detected === true`
 
 **Formula:**
+
 ```typescript
 ANY account with:
   utilizationBucket === '50_to_80' OR
@@ -107,9 +110,11 @@ ANY account with:
 ```
 
 **Evidence Required:**
+
 - `credit['30d'].evidence.accounts[]` - check each account's utilizationBucket
 
 **Note:** Utilization buckets are:
+
 - `under_30`: < 30%
 - `30_to_50`: 30-50%
 - `50_to_80`: 50-80%
@@ -122,11 +127,13 @@ ANY account with:
 **Signal:** `income.detected === true`
 
 **Formula:**
+
 ```typescript
 medianPayGap > 45 AND cashFlowBuffer < 1
 ```
 
 **Evidence Required:**
+
 - `income['180d'].evidence.medianPayGap`
 - `income['180d'].evidence.cashFlowBuffer`
 
@@ -139,6 +146,7 @@ medianPayGap > 45 AND cashFlowBuffer < 1
 **Signal:** `subscriptions.detected === true`
 
 **Formula:**
+
 ```typescript
 subscriptions.length >= 3 AND (
   totalMonthlySpend >= 50 (in 30d window) OR
@@ -147,6 +155,7 @@ subscriptions.length >= 3 AND (
 ```
 
 **Evidence Required:**
+
 - `subscriptions['30d'].evidence.subscriptions.length`
 - `subscriptions['30d'].evidence.totalMonthlySpend`
 - `subscriptions['30d'].evidence.subscriptionShareOfSpend`
@@ -160,6 +169,7 @@ subscriptions.length >= 3 AND (
 **Signal:** `bankingActivity.detected === true`
 
 **Formula:**
+
 ```typescript
 outboundPaymentCount180d < 10 AND
 outboundPaymentCount30d < 5 AND
@@ -167,6 +177,7 @@ uniquePaymentMerchants < 5
 ```
 
 **Evidence Required:**
+
 - `bankingActivity['180d'].evidence.outboundPaymentCount180d`
 - `bankingActivity['180d'].evidence.outboundPaymentCount30d`
 - `bankingActivity['180d'].evidence.uniquePaymentMerchants`
@@ -180,12 +191,14 @@ uniquePaymentMerchants < 5
 **Signal:** `savings.detected === true`
 
 **Formula:**
+
 ```typescript
 (growthRate >= 2 OR netInflow >= 200/month) AND
 overallUtilization.bucket === 'under_30'
 ```
 
 **Evidence Required:**
+
 - `savings['180d'].evidence.accounts[]` - check growth or inflow
 - `credit['30d'].evidence.overallUtilization.bucket` - verify overall utilization < 30%
 
@@ -198,6 +211,7 @@ overallUtilization.bucket === 'under_30'
 **Signal:** `bankingActivity.detected === true`
 
 **Formula:**
+
 ```typescript
 outboundPaymentCount180d < 10 AND
 outboundPaymentCount30d < 5 AND
@@ -205,6 +219,7 @@ uniquePaymentMerchants < 5
 ```
 
 **Evidence Required:**
+
 - `bankingActivity['180d'].evidence.outboundPaymentCount180d`
 - `bankingActivity['180d'].evidence.outboundPaymentCount30d`
 - `bankingActivity['180d'].evidence.uniquePaymentMerchants`
@@ -216,6 +231,7 @@ uniquePaymentMerchants < 5
 **Default persona when no other conditions match.**
 
 **Formula:**
+
 ```typescript
 No other persona detected
 ```
@@ -246,7 +262,7 @@ No other persona detected
 interface PersonaAssignment {
   persona: PersonaType;
   priority: 'highest' | 'high' | 'medium' | 'low' | 'default';
-  confidence: number;  // 0-100
+  confidence: number; // 0-100
   reasoning: string[]; // Why this persona was assigned
   evidence: {
     // Key metrics that led to this assignment
@@ -265,6 +281,7 @@ Confidence indicates how strongly the signals match the persona:
 - **< 50%:** Default persona (no strong signals)
 
 Example:
+
 - Overdraft Prone with 5 incidents in 30d → 100% confidence
 - Credit Stressed with 51% utilization only → 65% confidence
 

@@ -107,7 +107,9 @@ async function main() {
     const plaidData = JSON.parse(rawData);
 
     if (userIndex !== 0) {
-      console.warn(`⚠️  Plaid sandbox data contains only one user. Ignoring index ${userIndex}, using index 0.\n`);
+      console.warn(
+        `⚠️  Plaid sandbox data contains only one user. Ignoring index ${userIndex}, using index 0.\n`
+      );
     }
 
     userId = plaidData.item_id || 'plaid-sandbox-user';
@@ -146,9 +148,10 @@ async function main() {
   console.log(JSON.stringify(assessmentObject, null, 2));
 
   // Also save to file
-  const outputPath = source === 'synthetic'
-    ? `./data/assessment-user-${userIndex}.json`
-    : `./data/assessment-plaid.json`;
+  const outputPath =
+    source === 'synthetic'
+      ? `./data/assessment-user-${userIndex}.json`
+      : `./data/assessment-plaid.json`;
   // Ensure output directory exists
   await fs.mkdir(path.dirname(outputPath), { recursive: true });
   await fs.writeFile(outputPath, JSON.stringify(assessmentObject, null, 2));
@@ -158,9 +161,13 @@ async function main() {
   console.log('════════════════════════════════════════════════════════════════════════════════');
   console.log('SUMMARY');
   console.log('════════════════════════════════════════════════════════════════════════════════');
-  console.log(`\nPrimary Persona: ${assessment.priorityInsight.personaLabel} (${assessment.priorityInsight.personaType})`);
+  console.log(
+    `\nPrimary Persona: ${assessment.priorityInsight.personaLabel} (${assessment.priorityInsight.personaType})`
+  );
   if (assessment.additionalInsights.length > 0) {
-    console.log(`Additional Personas: ${assessment.additionalInsights.map(i => i.personaLabel).join(', ')}`);
+    console.log(
+      `Additional Personas: ${assessment.additionalInsights.map((i) => i.personaLabel).join(', ')}`
+    );
   }
   console.log(`\nPriority Insight:`);
   console.log(`  ${assessment.priorityInsight.renderedForUser}`);

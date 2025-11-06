@@ -7,6 +7,7 @@
 ## Story 1: Project Setup & Infrastructure
 
 ### Goals
+
 - Initialize Node.js/TypeScript project with proper configuration
 - Create modular folder structure aligned with system architecture
 - Set up environment configuration with proper security (.env management)
@@ -284,7 +285,7 @@ echo ""
 
 #### 9. README.md (Skeleton)
 
-```markdown
+````markdown
 # Learning Cents
 
 Financial education platform that transforms transaction data into personalized behavioral insights.
@@ -292,6 +293,7 @@ Financial education platform that transforms transaction data into personalized 
 ## Overview
 
 Learning Cents analyzes financial transaction data (via Plaid integration) to:
+
 - Detect behavioral patterns (subscriptions, savings, credit, income, overdrafts)
 - Assign users to financial personas (7 types)
 - Generate personalized educational insights
@@ -300,6 +302,7 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 ## Key Features
 
 ### Decision Flow
+
 1. **Data Import**: User connects Plaid account (OAuth)
 2. **Client-Side Processing**: Browser processes transaction data locally (<1s)
 3. **Signal Detection**: Identifies behavioral patterns (30-day & 180-day windows)
@@ -308,6 +311,7 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 6. **AI Chat**: Follow-up questions with guardrails (tone, legal, eligibility)
 
 ### 7 Financial Personas
+
 1. **High Utilization** - Credit card utilization ≥50% or paying interest
 2. **Frequent Overdrafts** - Negative balances, NSF fees detected
 3. **Variable Income Budgeter** - Irregular income, low cash buffer
@@ -319,6 +323,7 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 ## Setup
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - OpenAI API key
 - Supabase account
@@ -327,17 +332,21 @@ Learning Cents analyzes financial transaction data (via Plaid integration) to:
 ### Installation
 
 **Windows:**
+
 ```bash
 setup.bat
 ```
+````
 
 **Mac/Linux:**
+
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
 The setup script will:
+
 1. Create `.env` file from `.env.example`
 2. Install dependencies
 3. Validate environment configuration
@@ -345,6 +354,7 @@ The setup script will:
 ### Environment Variables
 
 Edit `.env` and add your API keys:
+
 - `OPENAI_API_KEY` - OpenAI API key for AI chat
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_ANON_KEY` - Supabase anonymous key
@@ -364,11 +374,8 @@ npm test
 # Run tests with UI
 npm run test:ui
 
-# Type check
-npm run typecheck
-
-# Lint
-npm run lint
+# Type check and lint
+npm run check
 
 # Format code
 npm run format
@@ -415,6 +422,7 @@ npm test -- --coverage
 ## Deployment
 
 Automatic deployment via GitHub Actions:
+
 - Push to `main` branch → Deploy to Vercel production
 - Pull requests → Deploy preview environment
 
@@ -431,7 +439,8 @@ MIT
 ---
 
 **Note**: This is educational software, not financial advice. All recommendations include appropriate disclaimers.
-```
+
+````
 
 #### 10. GitHub Actions Workflow (.github/workflows/deploy.yml)
 
@@ -466,14 +475,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run type check
-        run: npm run typecheck
+      - name: Run type check and lint
+        run: npm run check
 
       - name: Run tests
         run: npm test -- --run
-
-      - name: Run lint
-        run: npm run lint
 
   deploy:
     needs: test
@@ -494,7 +500,7 @@ jobs:
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-```
+````
 
 #### 11. Create Empty Module Folders
 
@@ -531,6 +537,7 @@ touch ingest/.gitkeep features/.gitkeep personas/.gitkeep recommend/.gitkeep gua
 ## Story 2: Synthetic Data Generator (CLI)
 
 ### Goals
+
 - Create TypeScript CLI tool to generate realistic synthetic financial data
 - Output Plaid-compatible JSON/CSV format
 - Support 50-100 diverse user profiles
@@ -651,7 +658,7 @@ async function main() {
   const options: CLIOptions = {
     count: 50,
     format: 'json',
-    output: './data/synthetic-users'
+    output: './data/synthetic-users',
   };
 
   // Simple argument parsing
@@ -680,7 +687,7 @@ async function main() {
   const dataset: SyntheticDataset = {
     users,
     generated_at: new Date().toISOString(),
-    count: users.length
+    count: users.length,
   };
 
   // Ensure output directory exists
@@ -742,7 +749,7 @@ export function generateSyntheticUsers(count: number): PlaidUser[] {
       name,
       accounts,
       transactions,
-      liabilities
+      liabilities,
     });
   }
 
@@ -788,11 +795,13 @@ function generateCheckingAccount(userId: string): PlaidAccount {
       available: balance,
       current: balance,
       limit: null,
-      iso_currency_code: 'USD'
+      iso_currency_code: 'USD',
     },
     holder_category: 'personal',
     name: 'Checking Account',
-    mask: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    mask: Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0'),
   };
 }
 
@@ -807,11 +816,13 @@ function generateSavingsAccount(userId: string): PlaidAccount {
       available: balance,
       current: balance,
       limit: null,
-      iso_currency_code: 'USD'
+      iso_currency_code: 'USD',
     },
     holder_category: 'personal',
     name: 'Savings Account',
-    mask: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    mask: Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0'),
   };
 }
 
@@ -828,11 +839,13 @@ function generateCreditCard(userId: string): PlaidAccount {
       available: limit - balance,
       current: balance,
       limit: limit,
-      iso_currency_code: 'USD'
+      iso_currency_code: 'USD',
     },
     holder_category: 'personal',
     name: 'Credit Card',
-    mask: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    mask: Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0'),
   };
 }
 
@@ -842,13 +855,35 @@ function generateCreditCard(userId: string): PlaidAccount {
 #### 5. Faker Utilities (scripts/lib/utils/faker.ts)
 
 ```typescript
-const FIRST_NAMES = ['John', 'Jane', 'Michael', 'Sarah', 'David', 'Emily', 'Chris', 'Jessica', 'Robert', 'Lisa'];
-const LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+const FIRST_NAMES = [
+  'John',
+  'Jane',
+  'Michael',
+  'Sarah',
+  'David',
+  'Emily',
+  'Chris',
+  'Jessica',
+  'Robert',
+  'Lisa',
+];
+const LAST_NAMES = [
+  'Smith',
+  'Johnson',
+  'Williams',
+  'Brown',
+  'Jones',
+  'Garcia',
+  'Miller',
+  'Davis',
+  'Rodriguez',
+  'Martinez',
+];
 
 export function randomName(): { first: string; last: string } {
   return {
     first: FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)],
-    last: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)]
+    last: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)],
   };
 }
 
@@ -905,7 +940,7 @@ describe('Synthetic Data Generator', () => {
 
   it('each user has required fields', () => {
     const users = generateSyntheticUsers(5);
-    users.forEach(user => {
+    users.forEach((user) => {
       expect(user.user_id).toBeDefined();
       expect(user.name.first).toBeDefined();
       expect(user.name.last).toBeDefined();
@@ -916,8 +951,8 @@ describe('Synthetic Data Generator', () => {
 
   it('generates valid account structures', () => {
     const users = generateSyntheticUsers(5);
-    users.forEach(user => {
-      user.accounts.forEach(account => {
+    users.forEach((user) => {
+      user.accounts.forEach((account) => {
         expect(account.account_id).toBeDefined();
         expect(account.type).toMatch(/depository|credit|loan/);
         expect(account.balances.current).toBeTypeOf('number');
@@ -935,6 +970,7 @@ describe('Synthetic Data Generator', () => {
 ## Story 3: Database Schema & Authentication
 
 ### Goals
+
 - Design Prisma schema based on synthetic data structure
 - Set up Supabase project
 - Configure Supabase authentication
@@ -1076,14 +1112,14 @@ if (!process.env.SUPABASE_ANON_KEY) {
   throw new Error('Missing SUPABASE_ANON_KEY environment variable');
 }
 
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+export const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // Auth helpers
 export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error) throw error;
   return user;
 }
@@ -1091,7 +1127,7 @@ export async function getCurrentUser() {
 export async function signIn(email: string, password: string) {
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
-    password
+    password,
   });
   if (error) throw error;
   return data;
@@ -1100,7 +1136,7 @@ export async function signIn(email: string, password: string) {
 export async function signUp(email: string, password: string) {
   const { data, error } = await supabase.auth.signUp({
     email,
-    password
+    password,
   });
   if (error) throw error;
   return data;
@@ -1121,9 +1157,11 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-});
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
@@ -1183,8 +1221,8 @@ describe('Database Connection', () => {
     const user = await prisma.user.create({
       data: {
         email,
-        consentStatus: true
-      }
+        consentStatus: true,
+      },
     });
 
     expect(user.id).toBeDefined();
@@ -1203,6 +1241,7 @@ describe('Database Connection', () => {
 ## Phase 1 Completion Checklist
 
 ### Story 1: Project Setup & Infrastructure
+
 - [ ] All dependencies installed
 - [ ] TypeScript configured with path aliases
 - [ ] Environment variables configured (.env from .env.example)
@@ -1213,6 +1252,7 @@ describe('Database Connection', () => {
 - [ ] Git repository initialized with proper .gitignore
 
 ### Story 2: Synthetic Data Generator
+
 - [ ] CLI script generates 50-100 users
 - [ ] Data matches Plaid schema structure
 - [ ] Diverse financial situations represented
@@ -1221,6 +1261,7 @@ describe('Database Connection', () => {
 - [ ] Unit tests pass
 
 ### Story 3: Database Schema & Authentication
+
 - [ ] Prisma schema created
 - [ ] Supabase project configured
 - [ ] Initial migration successful
@@ -1229,6 +1270,7 @@ describe('Database Connection', () => {
 - [ ] All database models properly related
 
 ### Integration Test
+
 - [ ] Run `setup.bat` / `setup.sh` on fresh clone
 - [ ] Generate synthetic data
 - [ ] Connect to database and create test user

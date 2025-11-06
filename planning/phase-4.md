@@ -2,6 +2,8 @@
 
 **Stories 12-17** - Server-side features: authentication, data storage, partner offers, consent management, and admin tools.
 
+**Architecture Note**: All server-side functionality uses **Vercel serverless functions** (`/api` routes). This unified serverless architecture handles Plaid integration, authentication, data persistence, consent checks, and AI integration (Phase 5). Deploy via GitHub push → Vercel auto-deploys.
+
 **Important**: Each story in this phase needs to be built BOTH in the UI and in the CLI. Everything needs well-documented CLI commands so devs can easily manage data.
 
 ---
@@ -9,6 +11,7 @@
 ## Story 12: Authentication & Account Creation
 
 ### Goals
+
 - Implement Supabase Auth for user authentication
 - Build signup/login flows in UI
 - Create user accounts table in database
@@ -16,6 +19,7 @@
 - Integrate auth with frontend from Phase 3
 
 ### Key Considerations
+
 - Split from Story 8 in old planning - auth was bundled with frontend setup
 - Use Supabase Auth (already in PRD tech stack)
 - Login cookies are the only persistent browser data
@@ -47,6 +51,7 @@ Frontend (React):
 ```
 
 ### Implementation Notes
+
 - Use Supabase Auth client in frontend
 - Protected routes require authentication
 - Auth context provides user session to components
@@ -54,6 +59,7 @@ Frontend (React):
 - Store session in Supabase (not browser, except login cookies)
 
 ### Acceptance Criteria
+
 - [ ] Users can sign up with email/password
 - [ ] Users can log in
 - [ ] Users can log out
@@ -67,6 +73,7 @@ Frontend (React):
 ## Story 13: Partner Offers Catalog & Eligibility Engine
 
 ### Goals
+
 - Create partner offers database table
 - Build eligibility calculator (moved from old Story 6)
 - Match offers to users based on eligibility requirements
@@ -75,6 +82,7 @@ Frontend (React):
 - Filter offers based on eligibility and prevent harmful suggestions
 
 ### Key Considerations
+
 - Split from old Story 6 (Assessment Engine Core) and old Story 8 (Partner Offers Catalog)
 - Eligibility engine was removed from Phase 2 Story 6
 - Uses eligibility metrics calculated from signals
@@ -200,6 +208,7 @@ Frontend (admin only):
 ```
 
 ### Acceptance Criteria
+
 - [ ] Partner offers table created in database
 - [ ] Eligibility metrics calculator working (from signals)
 - [ ] Eligibility matcher filters offers based on requirements
@@ -214,6 +223,7 @@ Frontend (admin only):
 ## Story 14: Consent Management
 
 ### Goals
+
 - Create consent table in database
 - Request explicit consent immediately after account creation
 - Server-side consent check before ALL processing operations
@@ -221,6 +231,7 @@ Frontend (admin only):
 - Block operations if consent missing or revoked
 
 ### Key Considerations
+
 - CRITICAL: Server-side consent check required before ANY data processing
 - Consent status fetched from Supabase before Plaid connection allowed
 - Consent verification before assessment generation
@@ -262,6 +273,7 @@ consent table:
 ### Consent Checks
 
 Every protected operation must check consent:
+
 - Plaid connection
 - Assessment generation (server-side storage)
 - AI chat
@@ -284,6 +296,7 @@ Frontend:
 ```
 
 ### Acceptance Criteria
+
 - [ ] Consent table created
 - [ ] Consent requested immediately after signup
 - [ ] Server checks consent before Plaid connection
@@ -298,6 +311,7 @@ Frontend:
 ## Story 15: Assessment Storage & Archival
 
 ### Goals
+
 - Create assessments table in database
 - Store assessment with underlying data structures (NOT raw financial data)
 - Store eligibility metrics with assessment
@@ -306,6 +320,7 @@ Frontend:
 - Most recent assessment is always active (no archived flag needed)
 
 ### Key Considerations
+
 - Raw financial data NEVER reaches server (processed client-side in Phase 3)
 - Store underlying data structures for each insight (e.g., subscription arrays)
 - Store eligibility metrics to support confident partner offer suggestions
@@ -382,6 +397,7 @@ Frontend:
 ```
 
 ### Acceptance Criteria
+
 - [ ] Assessments table created
 - [ ] Assessment stored with underlying data structures
 - [ ] Eligibility metrics stored with assessment
@@ -397,6 +413,7 @@ Frontend:
 ## Story 16: Admin Dashboard UI
 
 ### Goals
+
 - Build admin dashboard for viewing user assessments
 - Admin sees everything user sees (including specific financial numbers)
 - Username/email masked, internal account ID shown
@@ -405,6 +422,7 @@ Frontend:
 - Flag problematic AI responses for developer review
 
 ### Key Considerations
+
 - Admins see specific financial data from assessments (not raw Plaid data)
 - Admins do NOT see username/email (anonymized)
 - Admins see internal account ID for reference
@@ -465,6 +483,7 @@ Frontend:
 ```
 
 ### Acceptance Criteria
+
 - [ ] Admin dashboard displays user list (account IDs only)
 - [ ] Admin can view user assessment
 - [ ] Username/email masked in admin view
@@ -480,6 +499,7 @@ Frontend:
 ## Story 17: CLI Admin Tools
 
 ### Goals
+
 - Build CLI tools for admin operations
 - Promote users to admin via CLI
 - View user data via CLI
@@ -552,6 +572,7 @@ if (!confirmed) {
 ```
 
 ### Acceptance Criteria
+
 - [ ] CLI can promote users to admin
 - [ ] CLI can list all users
 - [ ] CLI can view user details
@@ -566,6 +587,7 @@ if (!confirmed) {
 ## Phase 4 Completion Checklist
 
 ### Story 12: Authentication & Account Creation
+
 - [ ] Supabase Auth integrated
 - [ ] Signup/login flows working
 - [ ] Users table created
@@ -573,6 +595,7 @@ if (!confirmed) {
 - [ ] Session persists across refreshes
 
 ### Story 13: Partner Offers Catalog & Eligibility Engine
+
 - [ ] Partner offers table created
 - [ ] Eligibility metrics calculator working
 - [ ] Eligibility matcher filters offers
@@ -581,6 +604,7 @@ if (!confirmed) {
 - [ ] Offers attached to insights
 
 ### Story 14: Consent Management
+
 - [ ] Consent table created
 - [ ] Consent requested after signup
 - [ ] Server checks consent before operations
@@ -588,6 +612,7 @@ if (!confirmed) {
 - [ ] Revocation blocks operations
 
 ### Story 15: Assessment Storage & Archival
+
 - [ ] Assessments table created
 - [ ] Assessment storage working
 - [ ] Previous assessments archived
@@ -595,6 +620,7 @@ if (!confirmed) {
 - [ ] NO raw financial data stored
 
 ### Story 16: Admin Dashboard UI
+
 - [ ] Admin dashboard displays users
 - [ ] Admin can view assessments
 - [ ] Username/email masked
@@ -602,6 +628,7 @@ if (!confirmed) {
 - [ ] Protected admin-only access
 
 ### Story 17: CLI Admin Tools
+
 - [ ] CLI can promote admins
 - [ ] CLI can manage users
 - [ ] CLI can manage offers
@@ -609,6 +636,7 @@ if (!confirmed) {
 - [ ] Database operations via CLI
 
 ### Integration Test
+
 - [ ] Full flow: Signup → Consent → Plaid → Assessment → Storage
 - [ ] Admin can view stored assessment
 - [ ] User can flush data successfully

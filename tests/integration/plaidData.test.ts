@@ -120,7 +120,9 @@ describe('Plaid Data Integration', () => {
     const signals = detectAllSignals(userData);
 
     // The sample data has credit cards, so credit signal should be detected
-    const creditAccounts = plaidData.accounts.filter((acc: { type: string }) => acc.type === 'credit');
+    const creditAccounts = plaidData.accounts.filter(
+      (acc: { type: string }) => acc.type === 'credit'
+    );
     if (creditAccounts.length > 0) {
       expect(signals.credit['30d'].detected).toBeDefined();
     }

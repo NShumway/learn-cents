@@ -2,11 +2,14 @@
 
 **Stories 18-19** - AI-powered chat with guardrails and AI-enhanced assessment rendering.
 
+**Architecture Note**: AI integration uses **Vercel AI SDK** with **Vercel serverless functions** (`/api/chat` routes). Leverages the unified serverless architecture from Phase 4 for authentication, database access, and chat history storage.
+
 ---
 
 ## Story 18: AI Integration - Core
 
 ### Goals
+
 - Integrate Vercel AI SDK with OpenAI GPT-4
 - Implement function calling for guardrails (tone, legal compliance, eligibility)
 - Send assessment data structure (not raw financial data) to AI for context
@@ -15,6 +18,7 @@
 - Admin review of chat history with flagging for guardrail refinement
 
 ### Key Considerations
+
 - AI receives assessment data structure (underlying data) NOT raw Plaid transactions
 - Chat history stored server-side with assessment ID reference
 - Function calling enforces guardrails BEFORE response delivery
@@ -36,9 +40,9 @@ const functions = [
       properties: {
         response: { type: 'string' },
         isCompliant: { type: 'boolean' },
-        issues: { type: 'array', items: { type: 'string' } }
-      }
-    }
+        issues: { type: 'array', items: { type: 'string' } },
+      },
+    },
   },
   {
     name: 'checkLegalCompliance',
@@ -48,9 +52,9 @@ const functions = [
       properties: {
         response: { type: 'string' },
         isCompliant: { type: 'boolean' },
-        issues: { type: 'array', items: { type: 'string' } }
-      }
-    }
+        issues: { type: 'array', items: { type: 'string' } },
+      },
+    },
   },
   {
     name: 'checkOfferEligibility',
@@ -60,16 +64,17 @@ const functions = [
       properties: {
         offerId: { type: 'string' },
         isEligible: { type: 'boolean' },
-        rationale: { type: 'string' }
-      }
-    }
-  }
+        rationale: { type: 'string' },
+      },
+    },
+  },
 ];
 ```
 
 ### Chat Context Structure
 
 What gets sent to AI:
+
 ```typescript
 {
   assessmentSummary: {
@@ -89,6 +94,7 @@ What gets sent to AI:
 ```
 
 What does NOT get sent to AI:
+
 - Raw Plaid transaction data
 - Account numbers
 - Username/email
@@ -165,6 +171,7 @@ Disclaimer to include: "This is educational content, not financial advice. Consu
 ```
 
 ### Acceptance Criteria
+
 - [ ] Vercel AI SDK integrated with OpenAI GPT-4
 - [ ] Function calling guardrails implemented
 - [ ] Assessment data structure sent to AI (not raw data)
@@ -181,6 +188,7 @@ Disclaimer to include: "This is educational content, not financial advice. Consu
 ## Story 19: AI Chat Interface & Assessment Rendering
 
 ### Goals
+
 - Build chat UI for user follow-up questions
 - Button to reveal additional insights opens chat window
 - AI-powered assessment rendering (moved from old Story 6)
@@ -188,6 +196,7 @@ Disclaimer to include: "This is educational content, not financial advice. Consu
 - Display loading states and error handling
 
 ### Key Considerations
+
 - Split from old Story 6 (Assessment Engine Core) - AI rendering was deferred
 - User views priority insight first
 - Button to reveal additional insights opens chat window
@@ -222,34 +231,28 @@ Assessment Page:
   <ChatMessages>
     {/* Auto-rendered additional insights */}
     <AssistantMessage>
-      Here are your additional insights:
-      - Subscription-Heavy: You have 6 recurring subscriptions...
+      Here are your additional insights: - Subscription-Heavy: You have 6 recurring subscriptions...
       - Savings Builder: Your savings have grown 5% in the last 180 days...
     </AssistantMessage>
 
     {/* User question */}
-    <UserMessage>
-      How can I reduce my subscriptions?
-    </UserMessage>
+    <UserMessage>How can I reduce my subscriptions?</UserMessage>
 
     {/* AI response with guardrails */}
     <AssistantMessage>
-      Great question! Here are some strategies for reducing subscription costs...
-      [Educational content]
-      Disclaimer: This is educational content, not financial advice.
+      Great question! Here are some strategies for reducing subscription costs... [Educational
+      content] Disclaimer: This is educational content, not financial advice.
     </AssistantMessage>
   </ChatMessages>
 
-  <ChatInput
-    onSend={handleSend}
-    placeholder="Ask a question about your assessment..."
-  />
+  <ChatInput onSend={handleSend} placeholder="Ask a question about your assessment..." />
 </ChatWindow>
 ```
 
 ### AI Assessment Rendering Options
 
 User can request different rendering styles:
+
 - **Conversational**: "Explain my assessment like I'm talking to a friend"
 - **Detailed**: "Give me all the details about my credit utilization"
 - **Simplified**: "Explain this in simple terms"
@@ -273,6 +276,7 @@ Frontend:
 ```
 
 ### Acceptance Criteria
+
 - [ ] Chat window opens when "View Additional Insights" clicked
 - [ ] Additional insights rendered in chat
 - [ ] User can ask follow-up questions
@@ -289,6 +293,7 @@ Frontend:
 ## Phase 5 Completion Checklist
 
 ### Story 18: AI Integration - Core
+
 - [ ] Vercel AI SDK integrated
 - [ ] Function calling guardrails working
 - [ ] Assessment data sent to AI (not raw data)
@@ -298,6 +303,7 @@ Frontend:
 - [ ] Response latency acceptable
 
 ### Story 19: AI Chat Interface & Assessment Rendering
+
 - [ ] Chat window UI complete
 - [ ] Additional insights rendered in chat
 - [ ] User can ask follow-up questions
@@ -306,6 +312,7 @@ Frontend:
 - [ ] Chat integrates with assessment
 
 ### Integration Test
+
 - [ ] Full flow: Assessment → Additional Insights → Chat
 - [ ] AI guardrails prevent inappropriate responses
 - [ ] Chat history persists and resumes

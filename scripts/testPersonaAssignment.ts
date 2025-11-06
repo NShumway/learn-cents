@@ -65,7 +65,8 @@ async function main() {
       const signals = detectAllSignals(userData);
       const result = assignPersona(signals);
 
-      personaCounts[result.personas[0].persona] = (personaCounts[result.personas[0].persona] || 0) + 1;
+      personaCounts[result.personas[0].persona] =
+        (personaCounts[result.personas[0].persona] || 0) + 1;
 
       console.log(
         `User ${i + 1}/${dataset.users.length}: ${user.name.first} ${user.name.last} → ${PERSONA_LABELS[result.personas[0].persona]}`
@@ -79,7 +80,9 @@ async function main() {
     for (const [persona, count] of sortedPersonas) {
       const percentage = ((count / dataset.users.length) * 100).toFixed(1);
       const bar = '█'.repeat(Math.floor((count / dataset.users.length) * 50));
-      console.log(`  ${PERSONA_LABELS[persona as keyof typeof PERSONA_LABELS].padEnd(25)} ${count.toString().padStart(3)} (${percentage.padStart(5)}%) ${bar}`);
+      console.log(
+        `  ${PERSONA_LABELS[persona as keyof typeof PERSONA_LABELS].padEnd(25)} ${count.toString().padStart(3)} (${percentage.padStart(5)}%) ${bar}`
+      );
     }
   } else {
     // Test single user
@@ -141,7 +144,9 @@ async function main() {
       const p = result.personas[i];
       const isPrimary = i === 0;
 
-      console.log(`\n${isPrimary ? '📌' : '○'} ${PERSONA_LABELS[p.persona]}${isPrimary ? ' (PRIMARY)' : ''}`);
+      console.log(
+        `\n${isPrimary ? '📌' : '○'} ${PERSONA_LABELS[p.persona]}${isPrimary ? ' (PRIMARY)' : ''}`
+      );
       console.log(`   ${PERSONA_DESCRIPTIONS[p.persona]}`);
 
       console.log(`\n   Reasoning:`);
@@ -160,7 +165,9 @@ async function main() {
     console.log('DECISION TREE');
     console.log('═'.repeat(80));
 
-    console.log(`\n🔍 Signals Detected: ${result.decisionTree.signalsDetected.join(', ') || 'none'}`);
+    console.log(
+      `\n🔍 Signals Detected: ${result.decisionTree.signalsDetected.join(', ') || 'none'}`
+    );
     console.log(`\n📊 Personas Evaluated:\n`);
 
     for (let i = 0; i < result.decisionTree.personasEvaluated.length; i++) {
@@ -169,7 +176,9 @@ async function main() {
       const priorityLabel = `Priority ${i + 1}`;
 
       if (node.matched) {
-        console.log(`  ${isPrimary ? '✓' : '○'} ${priorityLabel}: ${PERSONA_LABELS[node.persona]} ${isPrimary ? '← PRIMARY' : ''}`);
+        console.log(
+          `  ${isPrimary ? '✓' : '○'} ${priorityLabel}: ${PERSONA_LABELS[node.persona]} ${isPrimary ? '← PRIMARY' : ''}`
+        );
         console.log(`     Matched: YES`);
         for (const criterion of node.criteria) {
           console.log(`       • ${criterion}`);

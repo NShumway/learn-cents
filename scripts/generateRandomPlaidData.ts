@@ -14,10 +14,30 @@ interface CLIOptions {
 async function main() {
   // Parse command line arguments
   const args = process.argv.slice(2);
+
+  // Show help
+  if (args.includes('--help')) {
+    console.log(`
+Usage: npm run generate:data [options]
+
+Options:
+  --count <number>    Number of users to generate (default: 50)
+  --format <type>     Output format: json or csv (default: json)
+  --output <path>     Output file path (default: ./data/synthetic-users)
+  --help              Show this help message
+
+Examples:
+  npm run generate:data
+  npm run generate:data -- --count 100
+  npm run generate:data -- --count 10 --output ~/Documents/test-data
+    `);
+    process.exit(0);
+  }
+
   const options: CLIOptions = {
     count: 50,
     format: 'json',
-    output: './data/synthetic-users'
+    output: './data/synthetic-users',
   };
 
   // Simple argument parsing
@@ -46,7 +66,7 @@ async function main() {
   const dataset: SyntheticDataset = {
     users,
     generated_at: new Date().toISOString(),
-    count: users.length
+    count: users.length,
   };
 
   // Ensure output directory exists

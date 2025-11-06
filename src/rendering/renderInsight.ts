@@ -28,7 +28,8 @@ export function renderOverdraftVulnerable(signals: DetectedSignals): string {
     text += `, costing you $${totalFees.toFixed(2)} in fees`;
   }
 
-  text += '. Overdrafts can be stressful and expensive. Let us work on building a small buffer to prevent these in the future.';
+  text +=
+    '. Overdrafts can be stressful and expensive. Let us work on building a small buffer to prevent these in the future.';
 
   return text;
 }
@@ -42,15 +43,25 @@ export function renderHighUtilization(signals: DetectedSignals): string {
 
   const utilizationPercent = overallUtilization.percent;
   const accountsWithInterest = accounts.filter((a) => a.hasInterestCharges).length;
+  const isHighUtil = utilizationPercent >= 50;
 
-  let text = `Your credit card usage is running high. You are carrying balances that put you at ${utilizationPercent}% utilization across your cards.`;
+  let text = '';
 
-  if (utilizationPercent >= 50) {
+  // Lead with the primary concern
+  if (isHighUtil && accountsWithInterest > 0) {
+    // Both high utilization AND interest charges
+    text = `Your credit card usage is running high. You are carrying balances that put you at ${utilizationPercent.toFixed(1)}% utilization across your cards, and you are paying interest charges on ${accountsWithInterest} account${accountsWithInterest === 1 ? '' : 's'}.`;
     text += ' This high utilization can significantly impact your credit score.';
-  }
-
-  if (accountsWithInterest > 0) {
-    text += ` You are paying interest charges on ${accountsWithInterest} account${accountsWithInterest === 1 ? '' : 's'}.`;
+  } else if (isHighUtil) {
+    // High utilization only
+    text = `Your credit card usage is running high. You are carrying balances that put you at ${utilizationPercent.toFixed(1)}% utilization across your cards.`;
+    text += ' This high utilization can significantly impact your credit score.';
+  } else if (accountsWithInterest > 0) {
+    // Interest charges but not high utilization
+    text = `You are paying interest charges on ${accountsWithInterest} credit card account${accountsWithInterest === 1 ? '' : 's'}. While your overall utilization is ${utilizationPercent.toFixed(1)}% (which is good), carrying balances that accrue interest can be costly over time.`;
+  } else {
+    // Edge case: matched high_utilization but not high util or interest (e.g., minimum payment only)
+    text = `You have credit card activity that needs attention. Your overall utilization is ${utilizationPercent.toFixed(1)}%.`;
   }
 
   text += ' Let us work on bringing these balances down.';
@@ -99,7 +110,8 @@ export function renderSubscriptionHeavy(signals: DetectedSignals): string {
   text += ` That is about ${sharePercent}% of your spending.`;
 
   if (count >= 5) {
-    text += ' Consider auditing which ones you actively use. Canceling just 1-2 unused services could free up money.';
+    text +=
+      ' Consider auditing which ones you actively use. Canceling just 1-2 unused services could free up money.';
   } else {
     text += ' It may be worth reviewing whether you are getting value from all of them.';
   }
@@ -146,7 +158,8 @@ export function renderLowUse(signals: DetectedSignals): string {
 
   let text = `Your banking activity has been light, with ${outboundPaymentCount180d} transaction${outboundPaymentCount180d === 1 ? '' : 's'} across ${uniquePaymentMerchants} merchant${uniquePaymentMerchants === 1 ? '' : 's'} in the past 6 months.`;
 
-  text += ' If you are just getting started with digital banking, that is great! Explore features like mobile check deposit and bill pay to make managing money easier.';
+  text +=
+    ' If you are just getting started with digital banking, that is great! Explore features like mobile check deposit and bill pay to make managing money easier.';
 
   return text;
 }
@@ -168,7 +181,8 @@ export function renderSteady(signals: DetectedSignals): string {
     text += ` You have ${signalsDetected.join(', ')}.`;
   }
 
-  text += ' Keep up the good work! Consider exploring ways to optimize your finances, like high-yield savings accounts or reviewing investment options.';
+  text +=
+    ' Keep up the good work! Consider exploring ways to optimize your finances, like high-yield savings accounts or reviewing investment options.';
 
   return text;
 }

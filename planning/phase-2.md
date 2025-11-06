@@ -7,6 +7,7 @@
 ## Story 4: Behavioral Signal Detection
 
 ### Goals
+
 - Research and document specific detection criteria for all 7 personas
 - Implement detection algorithms working with JSON/CSV files
 - Detect behavioral signals for: subscriptions, savings, credit, income, overdrafts
@@ -19,6 +20,7 @@
 Before implementing, create comprehensive documentation in `docs/signal-detection.md`:
 
 #### Required Research:
+
 1. **Subscription Detection**
    - Define: What constitutes a "recurring" transaction?
    - Cadence detection: Weekly, bi-weekly, monthly, quarterly?
@@ -52,7 +54,8 @@ Before implementing, create comprehensive documentation in `docs/signal-detectio
    - What data to store: Count, amounts, dates?
 
 #### Documentation Output (`docs/signal-detection.md`):
-```markdown
+
+````markdown
 # Signal Detection Specification
 
 ## Version 1.0
@@ -68,22 +71,27 @@ All thresholds and detection logic must be implemented exactly as specified.
 ### 2. Savings Signals
 
 **Growth Rate**:
+
 - Formula: (end_balance - start_balance) / start_balance
 - Threshold: ≥2% over 180-day window
-[etc.]
+  [etc.]
 
 ### 3. Credit Signals
+
 [etc.]
 
 ### 4. Income Stability
+
 [etc.]
 
 ### 5. Overdraft Patterns
+
 [etc.]
 
 ### Signal Output Format
 
 Each signal detector returns:
+
 ```typescript
 {
   detected: boolean,
@@ -96,35 +104,39 @@ Each signal detector returns:
   window: '30d' | '180d'
 }
 ```
+````
+
 ```
 
 ### File Structure
 
 ```
+
 features/
 ├── signals/
-│   ├── index.ts                    # Main signal detection orchestrator
-│   ├── subscriptionDetector.ts     # Subscription detection
-│   ├── savingsDetector.ts          # Savings signals
-│   ├── creditDetector.ts           # Credit signals
-│   ├── incomeDetector.ts           # Income stability
-│   ├── overdraftDetector.ts        # Overdraft patterns
-│   └── types.ts                    # Signal type definitions
+│ ├── index.ts # Main signal detection orchestrator
+│ ├── subscriptionDetector.ts # Subscription detection
+│ ├── savingsDetector.ts # Savings signals
+│ ├── creditDetector.ts # Credit signals
+│ ├── incomeDetector.ts # Income stability
+│ ├── overdraftDetector.ts # Overdraft patterns
+│ └── types.ts # Signal type definitions
 ├── utils/
-│   ├── dateUtils.ts                # Date range, window calculations
-│   └── transactionUtils.ts         # Transaction filtering, grouping
-└── index.ts                        # Export all feature detection
+│ ├── dateUtils.ts # Date range, window calculations
+│ └── transactionUtils.ts # Transaction filtering, grouping
+└── index.ts # Export all feature detection
 
 docs/
-└── signal-detection.md             # Specification (created during research)
+└── signal-detection.md # Specification (created during research)
 
 tests/
 └── features/
-    └── signals/
-        ├── subscriptionDetector.test.ts
-        ├── savingsDetector.test.ts
-        └── [etc.]
-```
+└── signals/
+├── subscriptionDetector.test.ts
+├── savingsDetector.test.ts
+└── [etc.]
+
+````
 
 ### Implementation Details
 
@@ -224,7 +236,7 @@ export interface DetectedSignals {
   overdrafts30d: SignalResult<OverdraftEvidence>;
   overdrafts180d: SignalResult<OverdraftEvidence>;
 }
-```
+````
 
 #### 2. Main Signal Detector (features/signals/index.ts)
 
@@ -260,7 +272,7 @@ export async function detectAllSignals(data: UserFinancialData): Promise<Detecte
     income30d,
     income180d,
     overdrafts30d,
-    overdrafts180d
+    overdrafts180d,
   ] = await Promise.all([
     detectSubscriptions(transactions30d, data.accounts, '30d'),
     detectSubscriptions(transactions180d, data.accounts, '180d'),
@@ -271,7 +283,7 @@ export async function detectAllSignals(data: UserFinancialData): Promise<Detecte
     detectIncome(transactions30d, data.accounts, '30d'),
     detectIncome(transactions180d, data.accounts, '180d'),
     detectOverdrafts(transactions30d, data.accounts, '30d'),
-    detectOverdrafts(transactions180d, data.accounts, '180d')
+    detectOverdrafts(transactions180d, data.accounts, '180d'),
   ]);
 
   return {
@@ -284,7 +296,7 @@ export async function detectAllSignals(data: UserFinancialData): Promise<Detecte
     income30d,
     income180d,
     overdrafts30d,
-    overdrafts180d
+    overdrafts180d,
   };
 }
 ```
@@ -320,9 +332,9 @@ export async function detectSubscriptions(
     evidence: {
       subscriptions: [],
       totalMonthlySpend: 0,
-      subscriptionShareOfSpend: 0
+      subscriptionShareOfSpend: 0,
     },
-    window
+    window,
   };
 }
 
@@ -342,7 +354,9 @@ function groupByMerchant(transactions: PlaidTransaction[]): Map<string, PlaidTra
 }
 
 // Helper: Detect cadence from transaction dates
-function detectCadence(transactions: PlaidTransaction[]): 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | null {
+function detectCadence(
+  transactions: PlaidTransaction[]
+): 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | null {
   // TODO: Implement cadence detection logic
   // Sort by date, calculate gaps between transactions, determine pattern
   return null;
@@ -365,7 +379,7 @@ export function getTransactionsInWindow(
   const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - days);
 
-  return transactions.filter(tx => {
+  return transactions.filter((tx) => {
     const txDate = new Date(tx.date);
     return txDate >= startDate && txDate <= endDate;
   });
@@ -438,7 +452,7 @@ async function main() {
   const signals = await detectAllSignals({
     accounts: user.accounts,
     transactions: user.transactions,
-    liabilities: user.liabilities
+    liabilities: user.liabilities,
   });
 
   console.log('\nDetected Signals (180-day window):');
@@ -499,7 +513,7 @@ describe('Subscription Detection', () => {
         payment_channel: 'online',
         personal_finance_category: { primary: 'ENTERTAINMENT', detailed: 'STREAMING' },
         pending: false,
-        merchant_entity_id: null
+        merchant_entity_id: null,
       },
       {
         transaction_id: 't2',
@@ -511,7 +525,7 @@ describe('Subscription Detection', () => {
         payment_channel: 'online',
         personal_finance_category: { primary: 'ENTERTAINMENT', detailed: 'STREAMING' },
         pending: false,
-        merchant_entity_id: null
+        merchant_entity_id: null,
       },
       {
         transaction_id: 't3',
@@ -523,8 +537,8 @@ describe('Subscription Detection', () => {
         payment_channel: 'online',
         personal_finance_category: { primary: 'ENTERTAINMENT', detailed: 'STREAMING' },
         pending: false,
-        merchant_entity_id: null
-      }
+        merchant_entity_id: null,
+      },
     ];
 
     const result = await detectSubscriptions(transactions, [], '180d');
@@ -549,6 +563,7 @@ describe('Subscription Detection', () => {
 ## Story 5: Persona Assignment Logic
 
 ### Goals
+
 - Research and document persona assignment criteria for all 7 personas
 - Implement assignment logic that supports multiple persona matches
 - Define static priority ordering across all personas
@@ -559,6 +574,7 @@ describe('Subscription Detection', () => {
 Create `docs/persona-assignment.md` with detailed criteria:
 
 #### Required Research:
+
 1. **High Utilization**
    - Exact criteria: utilization ≥50% OR interest charges > 0 OR minimum-payment-only OR is_overdue?
    - Should ALL be checked or just ANY?
@@ -596,7 +612,8 @@ Create `docs/persona-assignment.md` with detailed criteria:
    - General always last?
 
 #### Documentation Output (`docs/persona-assignment.md`):
-```markdown
+
+````markdown
 # Persona Assignment Specification
 
 ## Version 1.0
@@ -619,9 +636,11 @@ The first insight shown is the PRIORITY INSIGHT based on static ordering below.
 ### Assignment Criteria
 
 #### 1. High Utilization
+
 **Triggers when**: [Define exact criteria from research]
 
 **Signals checked**:
+
 - credit180d: utilization ≥50% on any card
 - credit180d: interest charges detected
 - credit180d: minimum payment only
@@ -630,6 +649,7 @@ The first insight shown is the PRIORITY INSIGHT based on static ordering below.
 **Educational focus**: Reduce utilization, payment planning, autopay
 
 #### 2. Frequent Overdrafts
+
 [etc. for each persona]
 
 ### Assignment Algorithm
@@ -658,25 +678,29 @@ function assignPersonas(signals: DetectedSignals): AssignedPersona[] {
   return matched.sort((a, b) => a.priority - b.priority);
 }
 ```
+````
+
 ```
 
 ### File Structure
 
 ```
+
 personas/
-├── index.ts                  # Main persona assignment orchestrator
-├── criteria.ts               # Persona matching criteria
-├── types.ts                  # Persona type definitions
-└── personaDefinitions.ts     # Persona metadata (names, descriptions, priorities)
+├── index.ts # Main persona assignment orchestrator
+├── criteria.ts # Persona matching criteria
+├── types.ts # Persona type definitions
+└── personaDefinitions.ts # Persona metadata (names, descriptions, priorities)
 
 docs/
-└── persona-assignment.md     # Specification (created during research)
+└── persona-assignment.md # Specification (created during research)
 
 tests/
 └── personas/
-    ├── criteria.test.ts
-    └── index.test.ts
-```
+├── criteria.test.ts
+└── index.test.ts
+
+````
 
 ### Implementation Details
 
@@ -705,7 +729,7 @@ export interface AssignedPersonas {
   primary: PersonaMatch; // Highest priority match
   additional: PersonaMatch[]; // Other matches, sorted by priority
 }
-```
+````
 
 #### 2. Persona Definitions (personas/personaDefinitions.ts)
 
@@ -730,8 +754,8 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'Reduce credit card utilization below 30%',
       'Set up autopay for minimum payments',
-      'Understand impact of utilization on credit score'
-    ]
+      'Understand impact of utilization on credit score',
+    ],
   },
   {
     type: 'Frequent Overdrafts',
@@ -741,8 +765,8 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'Build cash buffer in checking account',
       'Set up low balance alerts',
-      'Review overdraft protection options'
-    ]
+      'Review overdraft protection options',
+    ],
   },
   {
     type: 'Variable Income Budgeter',
@@ -752,8 +776,8 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'Percent-based budgeting for variable income',
       'Build emergency fund for income gaps',
-      'Smoothing strategies for irregular paychecks'
-    ]
+      'Smoothing strategies for irregular paychecks',
+    ],
   },
   {
     type: 'Subscription-Heavy',
@@ -763,8 +787,8 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'Audit active subscriptions',
       'Negotiate or cancel unused services',
-      'Set up bill alerts for recurring charges'
-    ]
+      'Set up bill alerts for recurring charges',
+    ],
   },
   {
     type: 'Savings Builder',
@@ -774,8 +798,8 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'Set specific savings goals',
       'Automate savings transfers',
-      'Optimize APY with high-yield savings accounts'
-    ]
+      'Optimize APY with high-yield savings accounts',
+    ],
   },
   {
     type: 'Blank Slate',
@@ -785,8 +809,8 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'Budgeting basics for beginners',
       'Building good financial habits',
-      'Understanding checking vs savings accounts'
-    ]
+      'Understanding checking vs savings accounts',
+    ],
   },
   {
     type: 'General',
@@ -796,13 +820,13 @@ export const PERSONA_DEFINITIONS: PersonaDefinition[] = [
     educationalFocus: [
       'General money management tips',
       'Building financial literacy',
-      'Exploring partner offers'
-    ]
-  }
+      'Exploring partner offers',
+    ],
+  },
 ];
 
 export function getPersonaDefinition(type: PersonaType): PersonaDefinition {
-  const def = PERSONA_DEFINITIONS.find(p => p.type === type);
+  const def = PERSONA_DEFINITIONS.find((p) => p.type === type);
   if (!def) throw new Error(`Unknown persona type: ${type}`);
   return def;
 }
@@ -828,10 +852,10 @@ export function matchesHighUtilization(signals: DetectedSignals): PersonaMatch |
   // Check criteria (to be finalized in docs)
   // Example: utilization ≥50% OR interest charges > 0 OR minimum-payment-only OR is_overdue
 
-  const hasHighUtil = credit180d.evidence.accounts.some(acc => acc.utilization >= 50);
-  const hasInterest = credit180d.evidence.accounts.some(acc => acc.hasInterestCharges);
-  const minPaymentOnly = credit180d.evidence.accounts.some(acc => acc.minimumPaymentOnly);
-  const isOverdue = credit180d.evidence.accounts.some(acc => acc.isOverdue);
+  const hasHighUtil = credit180d.evidence.accounts.some((acc) => acc.utilization >= 50);
+  const hasInterest = credit180d.evidence.accounts.some((acc) => acc.hasInterestCharges);
+  const minPaymentOnly = credit180d.evidence.accounts.some((acc) => acc.minimumPaymentOnly);
+  const isOverdue = credit180d.evidence.accounts.some((acc) => acc.isOverdue);
 
   if (hasHighUtil) matchedCriteria.push('Utilization ≥50%');
   if (hasInterest) matchedCriteria.push('Interest charges detected');
@@ -845,7 +869,7 @@ export function matchesHighUtilization(signals: DetectedSignals): PersonaMatch |
     type: 'High Utilization',
     priority: def.priority,
     matchedCriteria,
-    signals
+    signals,
   };
 }
 
@@ -887,7 +911,7 @@ import {
   matchesVariableIncome,
   matchesSubscriptionHeavy,
   matchesSavingsBuilder,
-  matchesBlankSlate
+  matchesBlankSlate,
 } from './criteria';
 import { getPersonaDefinition } from './personaDefinitions';
 
@@ -922,7 +946,7 @@ export function assignPersonas(signals: DetectedSignals): AssignedPersonas {
       type: 'General',
       priority: def.priority,
       matchedCriteria: ['Default assignment - no specific patterns detected'],
-      signals
+      signals,
     });
   }
 
@@ -931,7 +955,7 @@ export function assignPersonas(signals: DetectedSignals): AssignedPersonas {
 
   return {
     primary: matches[0],
-    additional: matches.slice(1)
+    additional: matches.slice(1),
   };
 }
 ```
@@ -958,7 +982,7 @@ async function main() {
     const signals = await detectAllSignals({
       accounts: user.accounts,
       transactions: user.transactions,
-      liabilities: user.liabilities
+      liabilities: user.liabilities,
     });
 
     const personas = assignPersonas(signals);
@@ -968,7 +992,7 @@ async function main() {
     console.log(`  Criteria: ${personas.primary.matchedCriteria.join(', ')}`);
 
     if (personas.additional.length > 0) {
-      console.log(`  Additional: ${personas.additional.map(p => p.type).join(', ')}`);
+      console.log(`  Additional: ${personas.additional.map((p) => p.type).join(', ')}`);
     }
     console.log('');
   }
@@ -1020,6 +1044,7 @@ describe('Persona Criteria', () => {
 ## Story 6: Assessment Rendering Functions
 
 ### Goals
+
 - Generate assessment with underlying data structures for each persona
 - Build rendering functions that reference central text repo to translate assessment objects into targeted financial education for the user
 - Create decision trees showing why each persona was assigned
@@ -1076,12 +1101,22 @@ tests/
  */
 
 export const LEGAL_DISCLAIMER =
-  "This is educational content, not financial advice. Consult a licensed advisor for personalized guidance.";
+  'This is educational content, not financial advice. Consult a licensed advisor for personalized guidance.';
 
 export const HIGH_UTILIZATION_TEXT = {
-  title: "Reduce Credit Card Utilization",
-  summary: "Your credit card usage is high, which could impact your credit score and result in interest charges.",
-  detailedInsight: (data: { cards: Array<{ mask: string; utilization: number; balance: number; limit: number; interest: number }> }) => `
+  title: 'Reduce Credit Card Utilization',
+  summary:
+    'Your credit card usage is high, which could impact your credit score and result in interest charges.',
+  detailedInsight: (data: {
+    cards: Array<{
+      mask: string;
+      utilization: number;
+      balance: number;
+      limit: number;
+      interest: number;
+    }>;
+  }) =>
+    `
 We noticed you have {cardCount} credit card(s) with high utilization:
 
 {cardList}
@@ -1091,24 +1126,30 @@ Bringing your utilization below 30% could improve your credit score and reduce i
 
   educationItems: [
     {
-      title: "Understanding Credit Utilization",
-      description: "Learn how credit card utilization affects your credit score and financial health."
+      title: 'Understanding Credit Utilization',
+      description:
+        'Learn how credit card utilization affects your credit score and financial health.',
     },
     {
-      title: "Debt Paydown Strategies",
-      description: "Strategies for paying down credit card debt efficiently, including avalanche and snowball methods."
+      title: 'Debt Paydown Strategies',
+      description:
+        'Strategies for paying down credit card debt efficiently, including avalanche and snowball methods.',
     },
     {
-      title: "Setting Up Autopay",
-      description: "How to set up automatic payments to avoid missed payments and late fees."
-    }
-  ]
+      title: 'Setting Up Autopay',
+      description: 'How to set up automatic payments to avoid missed payments and late fees.',
+    },
+  ],
 };
 
 export const FREQUENT_OVERDRAFTS_TEXT = {
-  title: "Manage Account Overdrafts",
-  summary: "We detected overdraft fees or negative balances in your checking account.",
-  detailedInsight: (data: { incidents: Array<{ date: string; amount: number; type: string }>; totalFees: number }) => `
+  title: 'Manage Account Overdrafts',
+  summary: 'We detected overdraft fees or negative balances in your checking account.',
+  detailedInsight: (data: {
+    incidents: Array<{ date: string; amount: number; type: string }>;
+    totalFees: number;
+  }) =>
+    `
 In the last 180 days, you had {incidentCount} overdraft incident(s), resulting in ${data.totalFees.toFixed(2)} in fees.
 
 Building a cash buffer in your checking account can help avoid these fees.
@@ -1116,26 +1157,36 @@ Building a cash buffer in your checking account can help avoid these fees.
 
   educationItems: [
     {
-      title: "Building a Cash Buffer",
-      description: "Strategies for maintaining a minimum balance to avoid overdrafts."
+      title: 'Building a Cash Buffer',
+      description: 'Strategies for maintaining a minimum balance to avoid overdrafts.',
     },
     {
-      title: "Low Balance Alerts",
-      description: "How to set up alerts to notify you when your balance is low."
+      title: 'Low Balance Alerts',
+      description: 'How to set up alerts to notify you when your balance is low.',
     },
     {
-      title: "Overdraft Protection Options",
-      description: "Understanding different overdraft protection options and their costs."
-    }
-  ]
+      title: 'Overdraft Protection Options',
+      description: 'Understanding different overdraft protection options and their costs.',
+    },
+  ],
 };
 
 // TODO: Add text for all other personas
-export const VARIABLE_INCOME_TEXT = { /* ... */ };
-export const SUBSCRIPTION_HEAVY_TEXT = { /* ... */ };
-export const SAVINGS_BUILDER_TEXT = { /* ... */ };
-export const BLANK_SLATE_TEXT = { /* ... */ };
-export const GENERAL_TEXT = { /* ... */ };
+export const VARIABLE_INCOME_TEXT = {
+  /* ... */
+};
+export const SUBSCRIPTION_HEAVY_TEXT = {
+  /* ... */
+};
+export const SAVINGS_BUILDER_TEXT = {
+  /* ... */
+};
+export const BLANK_SLATE_TEXT = {
+  /* ... */
+};
+export const GENERAL_TEXT = {
+  /* ... */
+};
 ```
 
 #### 2. Assessment Types (recommend/types.ts)
@@ -1208,8 +1259,9 @@ export function renderForUser(insight: Insight): string {
 
   // Build card list with data insertion
   const cardList = underlyingData.cards
-    .map((card: any) =>
-      `- Card ending in ${card.mask}: ${card.utilization}% utilization ($${card.balance.toFixed(2)} of $${card.limit.toFixed(2)} limit)${card.interest > 0 ? `, $${card.interest.toFixed(2)}/month in interest` : ''}`
+    .map(
+      (card: any) =>
+        `- Card ending in ${card.mask}: ${card.utilization}% utilization ($${card.balance.toFixed(2)} of $${card.limit.toFixed(2)} limit)${card.interest > 0 ? `, $${card.interest.toFixed(2)}/month in interest` : ''}`
     )
     .join('\n');
 
@@ -1241,7 +1293,7 @@ export async function buildAssessment(
   // Build insights for all personas
   const priorityInsight = await buildInsight(personas.primary, signals);
   const additionalInsights = await Promise.all(
-    personas.additional.map(p => buildInsight(p, signals))
+    personas.additional.map((p) => buildInsight(p, signals))
   );
 
   // Build decision tree
@@ -1250,7 +1302,7 @@ export async function buildAssessment(
   return {
     priorityInsight,
     additionalInsights,
-    decisionTree
+    decisionTree,
   };
 }
 ```
@@ -1279,7 +1331,7 @@ async function main() {
   const signals = await detectAllSignals({
     accounts: user.accounts,
     transactions: user.transactions,
-    liabilities: user.liabilities
+    liabilities: user.liabilities,
   });
 
   const personas = assignPersonas(signals);
@@ -1287,7 +1339,10 @@ async function main() {
 
   console.log('ASSESSMENT COMPLETE\n');
   console.log('Priority Insight:', assessment.priorityInsight.personaType);
-  console.log('Additional Insights:', assessment.additionalInsights.map(i => i.personaType).join(', '));
+  console.log(
+    'Additional Insights:',
+    assessment.additionalInsights.map((i) => i.personaType).join(', ')
+  );
   console.log('\nDecision Tree:');
   console.log(JSON.stringify(assessment.decisionTree, null, 2));
 }
@@ -1318,6 +1373,7 @@ main().catch(console.error);
 ## Story 7: CLI Assessment Generation
 
 ### Goals
+
 - Build CLI-based assessment generation using JSON/CSV files (NO Plaid yet - that's Phase 3)
 - Create file parsers for JSON and CSV formats
 - Implement graceful error handling: validate data but proceed with partial data where possible
@@ -1354,7 +1410,11 @@ tests/
 
 ```typescript
 import fs from 'fs/promises';
-import type { PlaidAccount, PlaidTransaction, PlaidLiability } from '../scripts/lib/types/plaidData';
+import type {
+  PlaidAccount,
+  PlaidTransaction,
+  PlaidLiability,
+} from '../scripts/lib/types/plaidData';
 
 export interface UserFinancialData {
   accounts: PlaidAccount[];
@@ -1377,7 +1437,7 @@ export async function parseJSON(filePath: string): Promise<UserFinancialData> {
     return {
       accounts: user.accounts || [],
       transactions: user.transactions || [],
-      liabilities: user.liabilities || []
+      liabilities: user.liabilities || [],
     };
   }
 
@@ -1385,7 +1445,7 @@ export async function parseJSON(filePath: string): Promise<UserFinancialData> {
   return {
     accounts: data.accounts || [],
     transactions: data.transactions || [],
-    liabilities: data.liabilities || []
+    liabilities: data.liabilities || [],
   };
 }
 ```
@@ -1449,7 +1509,9 @@ export function validateData(data: UserFinancialData): void {
     console.warn('⚠ No liabilities found - credit signal detection unavailable');
   }
 
-  console.log(`✓ Data validation passed: ${data.accounts.length} accounts, ${data.transactions.length} transactions, ${data.liabilities.length} liabilities`);
+  console.log(
+    `✓ Data validation passed: ${data.accounts.length} accounts, ${data.transactions.length} transactions, ${data.liabilities.length} liabilities`
+  );
 }
 ```
 
@@ -1529,9 +1591,7 @@ export interface GenerateAssessmentOptions extends IngestionOptions {
  * Generate assessment from financial data file
  * For CLI testing - will adapt for browser in Phase 4
  */
-export async function generateAssessment(
-  options: GenerateAssessmentOptions
-): Promise<Assessment> {
+export async function generateAssessment(options: GenerateAssessmentOptions): Promise<Assessment> {
   const { onProgress } = options;
 
   try {
@@ -1565,7 +1625,6 @@ export async function generateAssessment(
 
     // Return ONLY assessment (no raw data)
     return assessment;
-
   } catch (error) {
     console.error('Assessment generation failed:', error);
     throw error;
@@ -1607,7 +1666,7 @@ async function main() {
     filePath,
     onProgress: (stage, percent) => {
       console.log(`[${percent}%] ${stage}`);
-    }
+    },
   });
 
   const duration = Date.now() - startTime;
@@ -1620,13 +1679,17 @@ async function main() {
   console.log(`Priority Insight: ${assessment.priorityInsight.personaType}`);
 
   if (assessment.additionalInsights.length > 0) {
-    console.log(`Additional Insights: ${assessment.additionalInsights.map(i => i.personaType).join(', ')}`);
+    console.log(
+      `Additional Insights: ${assessment.additionalInsights.map((i) => i.personaType).join(', ')}`
+    );
   }
 
   console.log('\nEligibility Metrics:');
   console.log(`  Max Credit Utilization: ${assessment.eligibilityMetrics.maxCreditUtilization}%`);
   console.log(`  Total Savings: $${assessment.eligibilityMetrics.totalSavingsBalance.toFixed(2)}`);
-  console.log(`  Estimated Monthly Income: $${assessment.eligibilityMetrics.estimatedMonthlyIncome.toFixed(2)}`);
+  console.log(
+    `  Estimated Monthly Income: $${assessment.eligibilityMetrics.estimatedMonthlyIncome.toFixed(2)}`
+  );
   console.log(`  Income Stability: ${assessment.eligibilityMetrics.incomeStability}`);
 
   console.log('\nDecision Tree:');
@@ -1705,6 +1768,7 @@ npm run generate:assessment ./data/synthetic-users.json
 ## Phase 2 Completion Checklist
 
 ### Story 4: Behavioral Signal Detection
+
 - [ ] Research documented in `docs/signal-detection.md`
 - [ ] All 5 signal types implemented
 - [ ] 30-day and 180-day windows calculated
@@ -1713,6 +1777,7 @@ npm run generate:assessment ./data/synthetic-users.json
 - [ ] Unit tests pass
 
 ### Story 5: Persona Assignment Logic
+
 - [ ] Research documented in `docs/persona-assignment.md`
 - [ ] All 7 persona criteria implemented
 - [ ] Static priority ordering defined
@@ -1721,6 +1786,7 @@ npm run generate:assessment ./data/synthetic-users.json
 - [ ] Unit tests pass
 
 ### Story 6: Assessment Rendering Functions
+
 - [ ] All insight text centralized in central text repo
 - [ ] Rendering functions for all personas reference central text repo
 - [ ] Education items hardcoded (3-5 per persona)
@@ -1729,6 +1795,7 @@ npm run generate:assessment ./data/synthetic-users.json
 - [ ] Unit tests pass
 
 ### Story 7: CLI Assessment Generation
+
 - [ ] JSON parser working (handles single-user and dataset formats)
 - [ ] CSV parser stub created
 - [ ] Data validator implements graceful degradation
@@ -1739,6 +1806,7 @@ npm run generate:assessment ./data/synthetic-users.json
 - [ ] Integration tests pass
 
 ### Integration Test
+
 - [ ] Run complete pipeline on 100 synthetic users
 - [ ] Verify all personas get assigned
 - [ ] Verify 100% coverage (General persona catches all)

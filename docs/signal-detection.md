@@ -26,11 +26,13 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Definition:** A recurring transaction is a payment to the same merchant (case-insensitive) that occurs at regular intervals.
 
 **Data Sources:**
+
 - Plaid's `/transactions/recurring/get` API (when available)
 - Custom pattern detection (fallback/supplement)
 - Deduplicated to avoid flagging same subscription twice
 
 **Criteria:**
+
 - Minimum occurrences: ≥3 transactions in the window
 - Cadence detection:
   - Weekly: 7 days ±2 days
@@ -41,6 +43,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 - Filters: Only outbound payments (positive amounts)
 
 **Output:**
+
 ```typescript
 {
   detected: boolean,
@@ -70,17 +73,20 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Definition:** Positive savings behavior based on account balance growth and net inflows.
 
 **Account Types Considered:**
+
 - `subtype === 'savings'`
 - `subtype === 'money market'`
 - `subtype === 'hsa'`
 
 **Criteria:**
+
 - Growth rate: `(endBalance - startBalance) / startBalance`
 - Positive growth threshold: ≥2% over 180-day window
 - Net inflow threshold: ≥$200/month average
 - Emergency fund coverage: `savingsBalance / averageMonthlyExpenses`
 
 **Output:**
+
 ```typescript
 {
   detected: boolean,
@@ -111,6 +117,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Account Types:** `type === 'credit'`
 
 **Criteria:**
+
 - Per-account utilization: `balance / limit * 100`
 - Overall utilization: `(sum of all balances) / (sum of all limits) * 100`
 - Utilization buckets:
@@ -123,6 +130,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 - Overdue: Check `is_overdue` field in liabilities
 
 **Output:**
+
 ```typescript
 {
   detected: boolean,
@@ -158,10 +166,12 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Definition:** Income payment frequency and consistency.
 
 **Transaction Categories:**
+
 - `personal_finance_category.primary === 'INCOME'`
 - Preferably `personal_finance_category.detailed === 'INCOME_PAYROLL'`
 
 **Criteria:**
+
 - Frequency detection:
   - Weekly: Average 7 days between deposits (±2 days)
   - Bi-weekly: Average 14 days between deposits (±3 days)
@@ -171,6 +181,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 - Cash-flow buffer: `checkingBalance / averageMonthlyExpenses`
 
 **Output:**
+
 ```typescript
 {
   detected: boolean,
@@ -199,15 +210,18 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Account Types:** `subtype === 'checking'` (primary focus)
 
 **Detection Methods:**
+
 - Negative balance: `balances.current < 0` OR `balances.available < 0`
 - Transaction name contains: "OVERDRAFT", "NSF", "INSUFFICIENT FUNDS"
 
 **Criteria:**
+
 - Count incidents in window
 - Track total fees paid
 - Store incident dates and amounts
 
 **Output:**
+
 ```typescript
 {
   detected: boolean,
@@ -236,6 +250,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Account Types:** All accounts (aggregated view)
 
 **Criteria:**
+
 - Count only outbound payments (positive amounts = debits/spending)
 - Income deposits (negative amounts) are excluded
 - Unique merchants counted from outbound payments only
@@ -245,6 +260,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
   - uniquePaymentMerchants < 5
 
 **Output:**
+
 ```typescript
 {
   detected: boolean,  // True = Low-Use
@@ -260,6 +276,7 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 **Detection threshold:** All three criteria must be met for Low-Use detection
 
 **Exemptions:**
+
 - Recent activity: If ≥5 payments in last 30d → NOT low-use
 - Merchant diversity: If ≥5 unique merchants → NOT low-use
 - Volume: If ≥10 payments in 180d → NOT low-use
@@ -267,26 +284,31 @@ We detect 6 behavioral signal types across 30-day and 180-day windows:
 ## Open Questions
 
 ### Subscription Detection
+
 - [ ] Should we filter by specific categories (e.g., entertainment, utilities)?
 - [ ] How to handle amount changes (price increases)?
 - [ ] Should we detect annual subscriptions?
 
 ### Savings Signals
+
 - [ ] How to calculate "average monthly expenses" without historical data?
 - [ ] Should we require minimum balance thresholds?
 - [ ] Should CD accounts count as savings?
 
 ### Credit Signals
+
 - [ ] How to detect "minimum payment only" from transaction data alone?
 - [ ] Should we flag any utilization >30% or just store the value?
 - [ ] How to estimate interest paid from transaction descriptions?
 
 ### Income Stability
+
 - [ ] Should we include other income sources beyond payroll?
 - [ ] How to handle gig workers with daily/weekly deposits?
 - [ ] What constitutes "high variance" in income?
 
 ### Overdraft Patterns
+
 - [ ] Should we weight recent overdrafts more heavily?
 - [ ] Should we track overdraft recovery time?
 - [ ] Are there grace periods to consider?
@@ -305,7 +327,7 @@ function getTransactionsInWindow(
   const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - days);
 
-  return transactions.filter(tx => {
+  return transactions.filter((tx) => {
     const txDate = new Date(tx.date);
     return txDate >= startDate && txDate <= endDate;
   });

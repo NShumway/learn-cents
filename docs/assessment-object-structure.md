@@ -58,6 +58,7 @@ income: {
 ```
 
 **Example:**
+
 ```json
 {
   "incomeBuckets": [
@@ -80,6 +81,7 @@ income: {
 ```
 
 **Rationale:**
+
 - **30d window** = 2 buckets (15 days each)
 - **180d window** = 12 buckets (15 days each)
 - Only includes buckets with income (sparse representation)
@@ -89,6 +91,7 @@ income: {
 ### Other Signals
 
 See `src/types/signals.ts` for complete signal definitions:
+
 - `subscriptions` - Recurring payment detection
 - `savings` - Savings account growth
 - `credit` - Credit utilization and health
@@ -98,6 +101,7 @@ See `src/types/signals.ts` for complete signal definitions:
 ## Persona Structure (Updated)
 
 **Key Changes:**
+
 1. **Removed confidence scores** - Matching is binary (match/no-match)
 2. **Array-based structure** - Personas stored as ordered array instead of primary/additional
 
@@ -120,20 +124,20 @@ persona: {
 ```
 
 **Key Points:**
+
 - `personas[0]` is ALWAYS the primary persona (highest priority match)
 - Subsequent entries are additional matching personas in priority order
 - If only one persona matches, array has length 1
 - Binary matching: either matches criteria or doesn't (no confidence score)
 
 **Example:**
+
 ```json
 {
   "personas": [
     {
       "persona": "high_utilization",
-      "reasoning": [
-        "1 card(s) with 50%+ utilization (max: 81%)"
-      ],
+      "reasoning": ["1 card(s) with 50%+ utilization (max: 81%)"],
       "evidence": {
         "highUtilizationAccounts": [
           {
@@ -154,6 +158,7 @@ persona: {
 ## File Size
 
 Typical assessment object sizes:
+
 - **User with high utilization**: ~5.3 KB
 - **User with no personas (Steady)**: ~5.3 KB
 
@@ -162,6 +167,7 @@ The 15-day bucketing reduced income data from storing potentially hundreds of tr
 ## Data Privacy
 
 The assessment object stores:
+
 - ✅ Aggregated financial metrics
 - ✅ Date ranges (not specific transaction dates)
 - ✅ Bucketed income totals
@@ -173,6 +179,7 @@ The assessment object stores:
 ## Usage
 
 ### CLI
+
 ```bash
 # Generate and view assessment
 npm run view:assessment 0
@@ -181,6 +188,7 @@ npm run view:assessment 0
 ```
 
 ### Programmatic
+
 ```typescript
 import { detectAllSignals } from './signals';
 import { assignPersona } from './personas';
@@ -207,6 +215,7 @@ const assessment = {
 ## Next Steps
 
 When building the full assessment engine (Stories 6-7), additional fields will be added:
+
 - Eligibility metrics
 - Rendered insights
 - Education content references

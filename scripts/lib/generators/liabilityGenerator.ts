@@ -4,7 +4,7 @@ export function generateLiabilities(accounts: PlaidAccount[], count: number): Pl
   const liabilities: PlaidLiability[] = [];
 
   // Find credit card accounts
-  const creditAccounts = accounts.filter(a => a.type === 'credit');
+  const creditAccounts = accounts.filter((a) => a.type === 'credit');
 
   for (let i = 0; i < count && i < creditAccounts.length; i++) {
     liabilities.push(generateCreditCardLiability(creditAccounts[i]));
@@ -23,14 +23,14 @@ function generateCreditCardLiability(account: PlaidAccount): PlaidLiability {
     aprs: [
       {
         apr_type: 'purchase_apr',
-        apr_percentage: Math.random() * 15 + 12 // 12% - 27% APR
-      }
+        apr_percentage: Math.random() * 15 + 12, // 12% - 27% APR
+      },
     ],
     minimum_payment_amount: Math.round(minimumPayment * 100) / 100,
     last_payment_amount: Math.random() < 0.8 ? minimumPayment * (Math.random() + 1) : 0,
     is_overdue: Math.random() < 0.1, // 10% overdue
     next_payment_due_date: getNextPaymentDate(),
-    last_statement_balance: currentBalance * (Math.random() * 0.2 + 0.9) // 90-110% of current
+    last_statement_balance: currentBalance * (Math.random() * 0.2 + 0.9), // 90-110% of current
   };
 }
 

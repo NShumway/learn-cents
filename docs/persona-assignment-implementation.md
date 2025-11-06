@@ -44,10 +44,10 @@ Example decision tree structure:
 
 ```typescript
 interface DecisionTree {
-  signalsDetected: string[];           // e.g., ['credit', 'income']
-  personasEvaluated: DecisionNode[];   // All 7 personas with match results
-  primaryPersona: PersonaType;         // The assigned persona
-  reasoning: string;                   // Human-readable explanation
+  signalsDetected: string[]; // e.g., ['credit', 'income']
+  personasEvaluated: DecisionNode[]; // All 7 personas with match results
+  primaryPersona: PersonaType; // The assigned persona
+  reasoning: string; // Human-readable explanation
 }
 ```
 
@@ -58,8 +58,9 @@ Each persona match includes detailed evidence showing the specific data points t
 ```typescript
 interface PersonaAssignment {
   persona: PersonaType;
-  reasoning: string[];    // List of criteria that matched
-  evidence: {            // Specific data points
+  reasoning: string[]; // List of criteria that matched
+  evidence: {
+    // Specific data points
     [key: string]: any;
   };
 }
@@ -184,6 +185,7 @@ According to `planning/phase-2.md`, the next story is:
 **Story 6: Assessment Engine Core** - Generate assessment with underlying data structures, eligibility metrics, and rendering functions.
 
 The persona assignment provides the foundation for the assessment engine by:
+
 1. Identifying the user's primary persona
 2. Providing the decision tree for transparency
 3. Including detailed evidence for insight generation

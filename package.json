@@ -4,22 +4,33 @@
   "description": "Financial education platform with behavioral insights",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch ui/app/main.ts",
+    "dev:ui": "vite",
+    "dev:api": "vercel dev --listen 3000",
     "build": "tsc && vite build",
+    "deploy": "vercel --prod",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:personas": "tsx scripts/testPersonaAssignment.ts",
     "run:assessment": "tsx scripts/viewAssessmentObject.ts",
-    "lint": "eslint . --ext ts,tsx",
+    "check": "tsc --noEmit && eslint . --ext ts,tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
-    "typecheck": "tsc --noEmit",
     "generate:data": "tsx scripts/generateRandomPlaidData.ts",
     "explore:plaid": "tsx scripts/explorePlaidSandbox.ts",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   },
   "keywords": [
     "fintech",
@@ -37,20 +48,40 @@
   },
   "homepage": "https://github.com/NShumway/learn-cents#readme",
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
     "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "@typescript-eslint/eslint-plugin": "^8.46.3",
     "@typescript-eslint/parser": "^8.46.3",
+    "@vercel/node": "^5.5.4",
+    "@vitejs/plugin-react": "^5.1.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "postcss": "^8.5.6",
     "prettier": "^3.6.2",
+    "tailwindcss": "^4.1.16",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
+    "vite-plugin-vercel": "^9.0.8",
     "vitest": "^4.0.7"
   },
   "dependencies": {
     "@prisma/client": "^6.18.0",
     "@supabase/supabase-js": "^2.79.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
+    "express": "^5.1.0",
     "plaid": "^39.1.0",
-    "prisma": "^6.18.0"
+    "prisma": "^6.18.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-plaid-link": "^4.1.1",
+    "react-router-dom": "^7.9.5"
   }
 }

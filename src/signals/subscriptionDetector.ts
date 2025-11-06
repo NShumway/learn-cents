@@ -102,8 +102,8 @@ export function detectSubscriptions(
 
     // Find matching cadence
     const medianGap = median(gaps);
-    const matchingCadence = CADENCES.find((cadence) =>
-      Math.abs(medianGap - cadence.avgDays) <= cadence.tolerance
+    const matchingCadence = CADENCES.find(
+      (cadence) => Math.abs(medianGap - cadence.avgDays) <= cadence.tolerance
     );
 
     if (!matchingCadence) continue;
@@ -111,9 +111,7 @@ export function detectSubscriptions(
     // Check amount consistency
     const amounts = sorted.map((tx) => tx.amount);
     const medianAmount = median(amounts);
-    const consistentAmounts = amounts.filter((amt) =>
-      isAmountConsistent(amt, medianAmount)
-    );
+    const consistentAmounts = amounts.filter((amt) => isAmountConsistent(amt, medianAmount));
 
     // Must have at least 3 consistent amounts
     if (consistentAmounts.length < 3) continue;
@@ -138,10 +136,10 @@ export function detectSubscriptions(
       sub.cadence === 'weekly'
         ? sub.amount * 4
         : sub.cadence === 'biweekly'
-        ? sub.amount * 2
-        : sub.cadence === 'monthly'
-        ? sub.amount
-        : sub.amount / 3;
+          ? sub.amount * 2
+          : sub.cadence === 'monthly'
+            ? sub.amount
+            : sub.amount / 3;
     return sum + monthlyAmount;
   }, 0);
 

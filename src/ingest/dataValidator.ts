@@ -50,9 +50,7 @@ export function validateData(data: UserFinancialData): void {
   // 5. Validate liabilities reference valid accounts
   for (const liability of data.liabilities) {
     if (!accountIds.has(liability.account_id)) {
-      throw new ValidationError(
-        `Liability references unknown account ${liability.account_id}`
-      );
+      throw new ValidationError(`Liability references unknown account ${liability.account_id}`);
     }
   }
 }
@@ -79,7 +77,9 @@ function validateTransaction(tx: PlaidTransaction): void {
     throw new ValidationError('Transaction missing required field: transaction_id');
   }
   if (!tx.account_id) {
-    throw new ValidationError(`Transaction ${tx.transaction_id} missing required field: account_id`);
+    throw new ValidationError(
+      `Transaction ${tx.transaction_id} missing required field: account_id`
+    );
   }
   if (!tx.date) {
     throw new ValidationError(`Transaction ${tx.transaction_id} missing required field: date`);
