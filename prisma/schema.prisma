@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // User model (integrates with Supabase Auth)
@@ -37,12 +38,20 @@ model Assessment {
 
   // Metadata
   createdAt         DateTime @default(now())
-  archived          Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+  isArchived        Boolean  @default(false) // Set to true when new assessment created
+
+  // Admin flagging (Story 16)
+  isFlagged         Boolean  @default(false)
+  flaggedAt         DateTime?
+  flaggedBy         String?  // Admin user ID who flagged
+  flagReason        String?  @db.Text
 
   chatMessages      ChatMessage[]
 
   @@map("assessments")
   @@index([userId, createdAt(sort: Desc)])
+  @@index([isFlagged])
 }
 
 // Partner Offer model

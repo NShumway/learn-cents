@@ -66,18 +66,58 @@ The setup script will:
 
 Edit `.env` and add your API keys:
 
+**Supabase Setup:**
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Go to `Settings > API` to get:
+   - `SUPABASE_URL` - Project URL
+   - `SUPABASE_ANON_KEY` - anon public key
+   - `SUPABASE_SERVICE_KEY` - service_role key (keep secret!)
+3. Go to `Settings > Database > Connection string > URI` (enable "Use connection pooling"):
+   - `DATABASE_URL` - Copy the full PostgreSQL connection string (format: `postgresql://...`)
+4. Add frontend environment variables:
+   - `VITE_SUPABASE_URL` - Same as SUPABASE_URL
+   - `VITE_SUPABASE_ANON_KEY` - Same as SUPABASE_ANON_KEY
+
+**Other Services:**
+
 - `OPENAI_API_KEY` - OpenAI API key for AI chat
-- `SUPABASE_URL` - Supabase project URL
-- `SUPABASE_ANON_KEY` - Supabase anonymous key
-- `DATABASE_URL` - Supabase database connection string
 - `PLAID_CLIENT_ID` - Plaid client ID (sandbox)
 - `PLAID_SECRET` - Plaid secret key (sandbox)
+
+**Important**: The `DATABASE_URL` must be the full PostgreSQL connection string starting with `postgresql://`, not the Supabase project URL.
+
+### Database Setup
+
+After configuring environment variables, run Prisma migrations:
+
+```bash
+# Generate Prisma client
+npm run db:generate
+
+# Run database migrations
+npm run db:migrate
+```
+
+This creates the required tables: `users`, `assessments`, `partner_offers`, `chat_messages`.
+
+**Create First Admin User:**
+
+1. Sign up at `http://localhost:5173/signup`
+2. Promote to admin via CLI:
+
+```bash
+npm run admin:promote your@email.com --confirm
+```
 
 ### Development
 
 ```bash
-# Start development server
-npm run dev
+# Start frontend (Vite)
+npm run dev:ui
+
+# Start API server (Vercel)
+npm run dev:api
 
 # Run tests
 npm test
@@ -85,6 +125,8 @@ npm test
 # Type check and lint
 npm run check
 ```
+
+Access the app at `http://localhost:5173`
 
 **Pre-commit Hooks**: This project uses husky and lint-staged to automatically format and lint code before commits. All staged files are formatted with Prettier and linted with ESLint on every commit.
 

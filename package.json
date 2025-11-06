@@ -21,6 +21,16 @@
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
+    "admin:promote": "tsx scripts/admin/promote.ts",
+    "admin:demote": "tsx scripts/admin/demote.ts",
+    "admin:list": "tsx scripts/admin/list.ts",
+    "user:list": "tsx scripts/users/list.ts",
+    "user:view": "tsx scripts/users/view.ts",
+    "user:delete": "tsx scripts/users/delete.ts",
+    "offers:list": "tsx scripts/manageOffers.ts list",
+    "offers:create": "tsx scripts/manageOffers.ts create",
+    "offers:update": "tsx scripts/manageOffers.ts update",
+    "offers:delete": "tsx scripts/manageOffers.ts delete",
     "prepare": "husky"
   },
   "lint-staged": {

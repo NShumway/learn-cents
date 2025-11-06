@@ -1,21 +1,43 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from '../contexts/AuthContext';
 import Layout from '../components/layout/Layout';
 import Home from '../pages/Home';
 import Assessment from '../pages/Assessment';
 import SyntheticData from '../pages/SyntheticData';
+import { Login } from '../pages/Login';
+import { Signup } from '../pages/Signup';
+import { Consent } from '../pages/Consent';
+import { Settings } from '../pages/Settings';
+import { AdminDashboard } from '../pages/admin/Dashboard';
+import { AdminUserDetail } from '../pages/admin/UserDetail';
 import NotFound from '../pages/NotFound';
 
 function App() {
   return (
     <BrowserRouter>
-      <Layout>
+      <AuthProvider>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/assessment" element={<Assessment />} />
-          <Route path="/synthetic-data" element={<SyntheticData />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/consent" element={<Consent />} />
+          <Route
+            path="/*"
+            element={
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/assessment" element={<Assessment />} />
+                  <Route path="/synthetic-data" element={<SyntheticData />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/admin/users/:userId" element={<AdminUserDetail />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Layout>
+            }
+          />
         </Routes>
-      </Layout>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
