@@ -10,7 +10,14 @@
  *   npm run explore:plaid
  */
 
-import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, SandboxItemFireWebhookRequestWebhookCodeEnum, Transaction } from 'plaid';
+import {
+  Configuration,
+  PlaidApi,
+  PlaidEnvironments,
+  Products,
+  CountryCode,
+  Transaction,
+} from 'plaid';
 import * as dotenv from 'dotenv';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -59,7 +66,10 @@ async function main() {
       language: 'en',
     });
 
-    console.log('✓ Link Token created:', linkTokenResponse.data.link_token.substring(0, 20) + '...\n');
+    console.log(
+      '✓ Link Token created:',
+      linkTokenResponse.data.link_token.substring(0, 20) + '...\n'
+    );
 
     // Step 2: For sandbox, we can directly exchange a public token
     // Use special test credentials that have transaction history
@@ -92,10 +102,15 @@ async function main() {
         access_token: accessToken,
       });
       console.log('✓ Transactions refresh triggered, waiting for data to populate...');
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 3000));
       console.log('✓ Ready to fetch data\n');
-    } catch (err: any) {
-      console.log('⚠️  Could not refresh transactions:', err.response?.data?.error_message || err.message, '\n');
+    } catch (err) {
+      const error = err as { response?: { data?: { error_message?: string } }; message?: string };
+      console.log(
+        '⚠️  Could not refresh transactions:',
+        error.response?.data?.error_message || error.message,
+        '\n'
+      );
     }
 
     // Step 4: Fetch Accounts
@@ -139,7 +154,7 @@ async function main() {
       // In sandbox, if we get an empty cursor, wait and retry
       if (cursor === '' && hasMore) {
         console.log('  Waiting for more transactions...');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
 
@@ -151,7 +166,9 @@ async function main() {
       console.log(`  ${tx.date} - ${tx.name}`);
       console.log(`    Amount: $${tx.amount.toFixed(2)}`);
       console.log(`    Merchant: ${tx.merchant_name || 'N/A'}`);
-      console.log(`    Category: ${tx.personal_finance_category?.primary || 'N/A'} > ${tx.personal_finance_category?.detailed || 'N/A'}`);
+      console.log(
+        `    Category: ${tx.personal_finance_category?.primary || 'N/A'} > ${tx.personal_finance_category?.detailed || 'N/A'}`
+      );
       console.log('');
     }
 
@@ -166,7 +183,9 @@ async function main() {
       const studentLoans = liabilitiesResponse.data.liabilities.student || [];
       const mortgages = liabilitiesResponse.data.liabilities.mortgage || [];
 
-      console.log(`✓ Found ${creditCards.length} credit cards, ${studentLoans.length} student loans, ${mortgages.length} mortgages\n`);
+      console.log(
+        `✓ Found ${creditCards.length} credit cards, ${studentLoans.length} student loans, ${mortgages.length} mortgages\n`
+      );
 
       if (creditCards.length > 0) {
         console.log('Credit Card Details:');
@@ -191,7 +210,7 @@ async function main() {
         environment: PLAID_ENV,
         institution: 'First Platypus Bank',
       },
-      accounts: accounts.map(acc => ({
+      accounts: accounts.map((acc) => ({
         account_id: acc.account_id,
         type: acc.type,
         subtype: acc.subtype,
@@ -204,7 +223,7 @@ async function main() {
           iso_currency_code: acc.balances.iso_currency_code,
         },
       })),
-      transactions: transactions.map(tx => ({
+      transactions: transactions.map((tx) => ({
         transaction_id: tx.transaction_id,
         account_id: tx.account_id,
         date: tx.date,
@@ -255,7 +274,9 @@ async function main() {
     }
 
     console.log('Transaction Categories Found:');
-    for (const [category, count] of Array.from(categoryCount.entries()).sort((a, b) => b[1] - a[1])) {
+    for (const [category, count] of Array.from(categoryCount.entries()).sort(
+      (a, b) => b[1] - a[1]
+    )) {
       console.log(`  ${category}: ${count} transactions`);
     }
 

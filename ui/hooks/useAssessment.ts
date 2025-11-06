@@ -31,17 +31,14 @@ export function useAssessment(): UseAssessmentReturn {
     setProgress({ stage: 'Starting', percent: 0 });
 
     try {
-      const result = await generateAssessmentFromPlaid(
-        plaidData,
-        (stage, percent) => setProgress({ stage, percent })
+      const result = await generateAssessmentFromPlaid(plaidData, (stage, percent) =>
+        setProgress({ stage, percent })
       );
 
       setAssessment(result);
       return result;
     } catch (err) {
-      setError(
-        err instanceof Error ? err : new Error('Assessment generation failed')
-      );
+      setError(err instanceof Error ? err : new Error('Assessment generation failed'));
       throw err;
     } finally {
       setLoading(false);

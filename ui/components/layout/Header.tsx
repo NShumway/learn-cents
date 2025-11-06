@@ -8,12 +8,12 @@ export default function Header() {
           <Link to="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold text-blue-600">Learning Cents</span>
           </Link>
-          <nav>
-            <Link
-              to="/"
-              className="text-gray-600 hover:text-gray-900 font-medium"
-            >
+          <nav className="flex gap-6">
+            <Link to="/" className="text-gray-600 hover:text-gray-900 font-medium">
               Home
+            </Link>
+            <Link to="/synthetic-data" className="text-gray-600 hover:text-gray-900 font-medium">
+              Synthetic Data
             </Link>
           </nav>
         </div>

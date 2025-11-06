@@ -14,13 +14,13 @@ All downstream processes receive data in this bundled format:
 ```typescript
 interface PlaidUserData {
   metadata: {
-    fetched_at: string;           // ISO timestamp
-    environment: string;           // "sandbox" | "production" | "synthetic"
-    institution?: string;          // Institution name (if applicable)
+    fetched_at: string; // ISO timestamp
+    environment: string; // "sandbox" | "production" | "synthetic"
+    institution?: string; // Institution name (if applicable)
   };
-  accounts: PlaidAccount[];        // All user accounts
+  accounts: PlaidAccount[]; // All user accounts
   transactions: PlaidTransaction[]; // All transactions
-  liabilities?: PlaidLiability[];  // Credit cards, loans (optional)
+  liabilities?: PlaidLiability[]; // Credit cards, loans (optional)
   summary: {
     total_accounts: number;
     total_transactions: number;
@@ -29,6 +29,7 @@ interface PlaidUserData {
 ```
 
 **Access Pattern:**
+
 ```typescript
 // Read the bundled data
 const userData = JSON.parse(fs.readFileSync('data/plaid-user-data.json', 'utf-8'));
@@ -40,6 +41,7 @@ const liabilities = userData.liabilities || [];
 ```
 
 **Available Data Files:**
+
 - `data/plaid-user-data.json` - Current user data
 - `data/synthetic-users.json` - Test dataset with multiple users
 
@@ -49,24 +51,25 @@ const liabilities = userData.liabilities || [];
 
 ```typescript
 interface PlaidAccount {
-  account_id: string;              // Unique identifier
-  type: string;                    // Account type
-  subtype: string;                 // Account subtype
-  name: string;                    // Display name
-  mask: string;                    // Last 4 digits
+  account_id: string; // Unique identifier
+  type: string; // Account type
+  subtype: string; // Account subtype
+  name: string; // Display name
+  mask: string; // Last 4 digits
   balances: {
-    available: number | null;      // Available balance
-    current: number;               // Current balance
-    limit: number | null;          // Credit limit (for credit accounts)
-    iso_currency_code: string;     // Currency code (e.g., "USD")
+    available: number | null; // Available balance
+    current: number; // Current balance
+    limit: number | null; // Credit limit (for credit accounts)
+    iso_currency_code: string; // Currency code (e.g., "USD")
   };
-  holder_category?: string;        // "personal" | "business"
+  holder_category?: string; // "personal" | "business"
 }
 ```
 
 ### Account Types
 
 **Depository Accounts:**
+
 - `checking` - Standard checking account
 - `savings` - Savings account
 - `money market` - Money market account
@@ -75,13 +78,16 @@ interface PlaidAccount {
 - `cd` - Certificate of Deposit
 
 **Credit Accounts:**
+
 - `credit card` - Credit card account
 
 **Loan Accounts:**
+
 - `student` - Student loan
 - `mortgage` - Mortgage loan
 
 **Investment Accounts:**
+
 - `ira` - Individual Retirement Account
 - `401k` - 401(k) retirement account
 
@@ -91,19 +97,19 @@ interface PlaidAccount {
 
 ```typescript
 interface PlaidTransaction {
-  transaction_id: string;                    // Unique identifier
-  account_id: string;                        // Associated account
-  date: string;                              // Transaction date (YYYY-MM-DD)
-  amount: number;                            // Amount (positive = debit, negative = credit)
-  merchant_name: string | null;              // Merchant name
-  merchant_entity_id: string | null;         // Plaid merchant ID
-  payment_channel: string;                   // Payment method
+  transaction_id: string; // Unique identifier
+  account_id: string; // Associated account
+  date: string; // Transaction date (YYYY-MM-DD)
+  amount: number; // Amount (positive = debit, negative = credit)
+  merchant_name: string | null; // Merchant name
+  merchant_entity_id: string | null; // Plaid merchant ID
+  payment_channel: string; // Payment method
   personal_finance_category: {
-    primary: string;                         // Primary category
-    detailed: string;                        // Detailed subcategory
+    primary: string; // Primary category
+    detailed: string; // Detailed subcategory
   };
-  pending: boolean;                          // Is transaction pending?
-  name: string;                              // Transaction description
+  pending: boolean; // Is transaction pending?
+  name: string; // Transaction description
 }
 ```
 
@@ -118,6 +124,7 @@ interface PlaidTransaction {
 Transaction categories from Plaid's taxonomy. Common examples:
 
 **Primary Categories:**
+
 - `FOOD_AND_DRINK` - Groceries, restaurants, bars
 - `ENTERTAINMENT` - Movies, concerts, streaming
 - `TRANSPORTATION` - Gas, parking, rideshare
@@ -128,6 +135,7 @@ Transaction categories from Plaid's taxonomy. Common examples:
 - `RENT_AND_UTILITIES` - Rent, utilities
 
 **Detailed Categories (examples):**
+
 - `FOOD_AND_DRINK_GROCERIES`
 - `FOOD_AND_DRINK_RESTAURANTS`
 - `ENTERTAINMENT_VIDEO` (Streaming services)
@@ -143,28 +151,29 @@ Full taxonomy: https://plaid.com/documents/transactions-personal-finance-categor
 
 ```typescript
 interface PlaidLiability {
-  account_id: string;                        // Links to account
-  type: 'credit' | 'student' | 'mortgage';   // Liability type
+  account_id: string; // Links to account
+  type: 'credit' | 'student' | 'mortgage'; // Liability type
 
   // Credit card specific
   aprs?: Array<{
-    apr_type: string;                        // APR type
-    apr_percentage: number;                  // APR percentage
+    apr_type: string; // APR type
+    apr_percentage: number; // APR percentage
   }>;
-  minimum_payment_amount?: number;           // Minimum payment due
-  last_payment_amount?: number;              // Last payment amount
-  is_overdue?: boolean;                      // Is account overdue?
-  next_payment_due_date?: string;            // Next payment date
-  last_statement_balance?: number;           // Last statement balance
+  minimum_payment_amount?: number; // Minimum payment due
+  last_payment_amount?: number; // Last payment amount
+  is_overdue?: boolean; // Is account overdue?
+  next_payment_due_date?: string; // Next payment date
+  last_statement_balance?: number; // Last statement balance
 
   // Loan specific
-  interest_rate?: number;                    // Interest rate percentage
+  interest_rate?: number; // Interest rate percentage
 }
 ```
 
 ### Example Credit Card Liability
 
 From Plaid Sandbox:
+
 ```json
 {
   "account_id": "pKeNv18lq8fd138D5dNEI77AL1kae9spMo4jV",
@@ -174,7 +183,7 @@ From Plaid Sandbox:
       "apr_percentage": 15.24
     }
   ],
-  "minimum_payment_amount": 20.00,
+  "minimum_payment_amount": 20.0,
   "is_overdue": false
 }
 ```
@@ -198,6 +207,7 @@ interface SyntheticDataset {
 ```
 
 **Access Pattern:**
+
 ```typescript
 // Read multi-user dataset
 const dataset = JSON.parse(fs.readFileSync('data/synthetic-users.json', 'utf-8'));
@@ -208,7 +218,7 @@ const accounts = user.accounts;
 const transactions = user.transactions;
 
 // Or iterate all users
-dataset.users.forEach(user => {
+dataset.users.forEach((user) => {
   // Process each user's data
 });
 ```
@@ -255,17 +265,21 @@ Parsers should detect format and extract user data accordingly.
 ## Data File Conventions
 
 **Single User Data:**
+
 - `data/plaid-user-data.json` - Current/latest user financial data
 
 **Multi-User Test Data:**
+
 - `data/synthetic-users.json` - Generated test dataset
 
 **Test Fixtures:**
+
 - `data/test-*.json` - Specific test cases
 
 ## Usage Examples
 
 ### Signal Detection
+
 ```typescript
 import { detectSubscriptions, detectSavingsPatterns } from './signals';
 
@@ -275,6 +289,7 @@ const savingsSignals = detectSavingsPatterns(userData.accounts, userData.transac
 ```
 
 ### Persona Assignment
+
 ```typescript
 import { assignPersona } from './personas';
 
@@ -282,11 +297,12 @@ const userData = JSON.parse(fs.readFileSync('data/plaid-user-data.json', 'utf-8'
 const persona = assignPersona({
   accounts: userData.accounts,
   transactions: userData.transactions,
-  liabilities: userData.liabilities
+  liabilities: userData.liabilities,
 });
 ```
 
 ### Assessment Generation
+
 ```typescript
 import { generateAssessment } from './assessment';
 
@@ -297,12 +313,14 @@ const assessment = generateAssessment(userData);
 ## Generating Fresh Data
 
 **From Plaid Sandbox:**
+
 ```bash
 npm run explore:plaid
 # Outputs to: data/plaid-user-data.json
 ```
 
 **From Synthetic Generator:**
+
 ```bash
 npm run generate:data
 # Outputs to: data/synthetic-users.json

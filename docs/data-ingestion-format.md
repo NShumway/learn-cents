@@ -22,9 +22,15 @@ JSON is the primary format. We support two variants:
     "first": "John",
     "last": "Doe"
   },
-  "accounts": [ /* array of PlaidAccount */ ],
-  "transactions": [ /* array of PlaidTransaction */ ],
-  "liabilities": [ /* array of PlaidLiability */ ]
+  "accounts": [
+    /* array of PlaidAccount */
+  ],
+  "transactions": [
+    /* array of PlaidTransaction */
+  ],
+  "liabilities": [
+    /* array of PlaidLiability */
+  ]
 }
 ```
 
@@ -63,6 +69,7 @@ acc_456,credit,credit card,Credit Card,3333,,410.00,2000.00,USD
 ```
 
 **Required Columns:**
+
 - `account_id` (string)
 - `type` (string: depository, credit, loan, investment)
 - `subtype` (string: checking, savings, credit card, etc.)
@@ -72,6 +79,7 @@ acc_456,credit,credit card,Credit Card,3333,,410.00,2000.00,USD
 - `currency` (string: ISO code, default USD)
 
 **Optional Columns:**
+
 - `available` (number: available balance)
 - `limit` (number: credit limit for credit accounts)
 
@@ -84,6 +92,7 @@ txn_2,acc_123,2025-11-03,-2500.00,Employer,,other,INCOME,INCOME_PAYROLL,false,Pa
 ```
 
 **Required Columns:**
+
 - `transaction_id` (string)
 - `account_id` (string: must match an account_id)
 - `date` (string: YYYY-MM-DD)
@@ -91,6 +100,7 @@ txn_2,acc_123,2025-11-03,-2500.00,Employer,,other,INCOME,INCOME_PAYROLL,false,Pa
 - `name` (string: transaction description)
 
 **Optional Columns:**
+
 - `merchant_name` (string)
 - `merchant_entity_id` (string)
 - `payment_channel` (string: online, in store, other)
@@ -107,10 +117,12 @@ acc_789,student,,,,,,,4.5
 ```
 
 **Required Columns:**
+
 - `account_id` (string: must match an account_id)
 - `type` (string: credit, student, mortgage)
 
 **Optional Columns (Credit Cards):**
+
 - `apr_percentage` (number)
 - `minimum_payment` (number)
 - `last_payment` (number)
@@ -119,6 +131,7 @@ acc_789,student,,,,,,,4.5
 - `last_statement` (number)
 
 **Optional Columns (Loans):**
+
 - `interest_rate` (number)
 
 ## Implementation Notes
@@ -136,7 +149,7 @@ export async function parseJSON(filePath: string): Promise<UserFinancialData> {
     return {
       accounts: user.accounts || [],
       transactions: user.transactions || [],
-      liabilities: user.liabilities || []
+      liabilities: user.liabilities || [],
     };
   }
 
@@ -144,7 +157,7 @@ export async function parseJSON(filePath: string): Promise<UserFinancialData> {
   return {
     accounts: data.accounts || [],
     transactions: data.transactions || [],
-    liabilities: data.liabilities || []
+    liabilities: data.liabilities || [],
   };
 }
 ```
@@ -154,6 +167,7 @@ export async function parseJSON(filePath: string): Promise<UserFinancialData> {
 **Status:** Stub implementation for Phase 2. Full CSV support can be added in future phase if needed.
 
 For now, the parser will:
+
 1. Throw helpful error directing user to JSON format
 2. Document CSV specification for future implementation
 3. Allow team to decide if CSV support is needed
@@ -162,7 +176,7 @@ For now, the parser will:
 export async function parseCSV(filePath: string): Promise<UserFinancialData> {
   throw new Error(
     'CSV parsing not yet implemented. Please use JSON format.\n' +
-    'See docs/data-ingestion-format.md for JSON format specification.'
+      'See docs/data-ingestion-format.md for JSON format specification.'
   );
 }
 ```
@@ -214,24 +228,26 @@ import { ingestData } from './ingest';
 // JSON ingestion
 const data = await ingestData({
   source: 'json',
-  filePath: './data/user-data.json'
+  filePath: './data/user-data.json',
 });
 
 // CSV ingestion (future)
 const data = await ingestData({
   source: 'csv',
-  filePath: './data/transactions.csv'
+  filePath: './data/transactions.csv',
 });
 ```
 
 ## File Location Conventions
 
 **Development:**
+
 - `./data/synthetic-users.json` - Generated test data
 - `./data/plaid-sandbox-sample.json` - Plaid sandbox sample
 - `./data/test-*.json` - Test fixtures
 
 **Production (Phase 4):**
+
 - Data will come directly from Plaid API, not files
 - File-based ingestion used only for testing/development
 
@@ -250,7 +266,9 @@ throw new Error(`Transaction ${tx.transaction_id} references unknown account ${t
 throw new Error(`Invalid date format: ${tx.date}. Expected YYYY-MM-DD.`);
 
 // Invalid data type
-throw new Error(`Invalid amount for transaction ${tx.transaction_id}: expected number, got ${typeof tx.amount}`);
+throw new Error(
+  `Invalid amount for transaction ${tx.transaction_id}: expected number, got ${typeof tx.amount}`
+);
 ```
 
 ## Future Enhancements
@@ -270,6 +288,7 @@ If CSV support becomes a priority:
 ### Excel Support (if needed)
 
 Could add `.xlsx` support using `xlsx` library:
+
 - Parse Excel workbooks
 - Support multiple sheets (accounts, transactions, liabilities)
 - Handle Excel date formats
@@ -277,6 +296,7 @@ Could add `.xlsx` support using `xlsx` library:
 ### Streaming for Large Files
 
 For very large datasets:
+
 - Implement streaming JSON parser
 - Process transactions in batches
 - Memory-efficient processing

@@ -28,7 +28,8 @@ export function renderOverdraftVulnerable(signals: DetectedSignals): string {
     text += `, costing you $${totalFees.toFixed(2)} in fees`;
   }
 
-  text += '. Overdrafts can be stressful and expensive. Let us work on building a small buffer to prevent these in the future.';
+  text +=
+    '. Overdrafts can be stressful and expensive. Let us work on building a small buffer to prevent these in the future.';
 
   return text;
 }
@@ -109,7 +110,8 @@ export function renderSubscriptionHeavy(signals: DetectedSignals): string {
   text += ` That is about ${sharePercent}% of your spending.`;
 
   if (count >= 5) {
-    text += ' Consider auditing which ones you actively use. Canceling just 1-2 unused services could free up money.';
+    text +=
+      ' Consider auditing which ones you actively use. Canceling just 1-2 unused services could free up money.';
   } else {
     text += ' It may be worth reviewing whether you are getting value from all of them.';
   }
@@ -156,7 +158,8 @@ export function renderLowUse(signals: DetectedSignals): string {
 
   let text = `Your banking activity has been light, with ${outboundPaymentCount180d} transaction${outboundPaymentCount180d === 1 ? '' : 's'} across ${uniquePaymentMerchants} merchant${uniquePaymentMerchants === 1 ? '' : 's'} in the past 6 months.`;
 
-  text += ' If you are just getting started with digital banking, that is great! Explore features like mobile check deposit and bill pay to make managing money easier.';
+  text +=
+    ' If you are just getting started with digital banking, that is great! Explore features like mobile check deposit and bill pay to make managing money easier.';
 
   return text;
 }
@@ -178,7 +181,8 @@ export function renderSteady(signals: DetectedSignals): string {
     text += ` You have ${signalsDetected.join(', ')}.`;
   }
 
-  text += ' Keep up the good work! Consider exploring ways to optimize your finances, like high-yield savings accounts or reviewing investment options.';
+  text +=
+    ' Keep up the good work! Consider exploring ways to optimize your finances, like high-yield savings accounts or reviewing investment options.';
 
   return text;
 }

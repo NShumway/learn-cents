@@ -167,9 +167,7 @@ export function checkVariableIncomeBudgeter(signals: DetectedSignals): DecisionN
   if (medianPayGap > 45 && cashFlowBuffer < 1) {
     matched = true;
     criteria.push(`Median pay gap of ${medianPayGap.toFixed(0)} days (>45 days)`);
-    criteria.push(
-      `Cash flow buffer of ${cashFlowBuffer.toFixed(1)} months (<1 month)`
-    );
+    criteria.push(`Cash flow buffer of ${cashFlowBuffer.toFixed(1)} months (<1 month)`);
     evidence.medianPayGap = medianPayGap;
     evidence.cashFlowBuffer = cashFlowBuffer;
     evidence.frequency = income180d.evidence.frequency;
@@ -215,13 +213,9 @@ export function checkSubscriptionHeavy(signals: DetectedSignals): DecisionNode {
     };
   }
 
-  const { subscriptions, totalMonthlySpend, subscriptionShareOfSpend } =
-    subscriptions30d.evidence;
+  const { subscriptions, totalMonthlySpend, subscriptionShareOfSpend } = subscriptions30d.evidence;
 
-  if (
-    subscriptions.length >= 3 &&
-    (totalMonthlySpend >= 50 || subscriptionShareOfSpend >= 10)
-  ) {
+  if (subscriptions.length >= 3 && (totalMonthlySpend >= 50 || subscriptionShareOfSpend >= 10)) {
     matched = true;
     criteria.push(`${subscriptions.length} recurring subscriptions detected`);
 
@@ -364,11 +358,7 @@ export function checkLowUse(signals: DetectedSignals): DecisionNode {
   const { outboundPaymentCount180d, outboundPaymentCount30d, uniquePaymentMerchants } =
     activity180d.evidence;
 
-  if (
-    outboundPaymentCount180d < 10 &&
-    outboundPaymentCount30d < 5 &&
-    uniquePaymentMerchants < 5
-  ) {
+  if (outboundPaymentCount180d < 10 && outboundPaymentCount30d < 5 && uniquePaymentMerchants < 5) {
     matched = true;
     criteria.push(`Only ${outboundPaymentCount180d} payments in 180 days (<10)`);
     criteria.push(`Only ${outboundPaymentCount30d} payments in 30 days (<5)`);

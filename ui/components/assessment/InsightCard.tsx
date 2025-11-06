@@ -14,9 +14,7 @@ export default function InsightCard({ insight, isPriority = false }: InsightCard
       }`}
     >
       {isPriority && (
-        <div className="text-xs font-semibold text-blue-600 uppercase mb-2">
-          Priority Insight
-        </div>
+        <div className="text-xs font-semibold text-blue-600 uppercase mb-2">Priority Insight</div>
       )}
 
       <h2 className="text-2xl font-bold mb-4 text-gray-900">{insight.personaLabel}</h2>

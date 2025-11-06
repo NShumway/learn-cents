@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import InsightCard from '../components/assessment/InsightCard';
 import DecisionTreeComponent from '../components/assessment/DecisionTree';
 import { mockAssessment } from '../lib/mockAssessment';
@@ -13,7 +13,6 @@ import type { Assessment as AssessmentType } from '../../src/types/assessment';
 
 export default function Assessment() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [showAdditional, setShowAdditional] = useState(false);
 
   // Get assessment from navigation state or fall back to mock
@@ -24,9 +23,7 @@ export default function Assessment() {
     <>
       <div className="max-w-4xl mx-auto pb-24">
         <h1 className="text-3xl font-bold mb-2">Your Financial Assessment</h1>
-        <p className="text-gray-600 mb-8">
-          Personalized insights based on your transaction data
-        </p>
+        <p className="text-gray-600 mb-8">Personalized insights based on your transaction data</p>
 
         {/* Priority Insight */}
         <div className="mb-8">

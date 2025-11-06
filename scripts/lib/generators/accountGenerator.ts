@@ -33,11 +33,13 @@ function generateCheckingAccount(): PlaidAccount {
       available: balance,
       current: balance,
       limit: null,
-      iso_currency_code: 'USD'
+      iso_currency_code: 'USD',
     },
     holder_category: 'personal',
     name: 'Checking Account',
-    mask: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    mask: Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0'),
   };
 }
 
@@ -52,11 +54,13 @@ function generateSavingsAccount(): PlaidAccount {
       available: balance,
       current: balance,
       limit: null,
-      iso_currency_code: 'USD'
+      iso_currency_code: 'USD',
     },
     holder_category: 'personal',
     name: 'Savings Account',
-    mask: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    mask: Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0'),
   };
 }
 
@@ -73,11 +77,13 @@ function generateCreditCard(): PlaidAccount {
       available: limit - balance,
       current: balance,
       limit: limit,
-      iso_currency_code: 'USD'
+      iso_currency_code: 'USD',
     },
     holder_category: 'personal',
     name: 'Credit Card',
-    mask: Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+    mask: Math.floor(Math.random() * 10000)
+      .toString()
+      .padStart(4, '0'),
   };
 }
 

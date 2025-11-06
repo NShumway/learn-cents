@@ -48,7 +48,7 @@ export interface CreditSignal {
       accountId: string;
       mask: string;
       utilizationBucket: UtilizationBucket;
-      utilizationPercent: number;  // Kept for overall calculation
+      utilizationPercent: number; // Kept for overall calculation
       balance: number;
       limit: number;
       minimumPaymentOnly: boolean;
@@ -67,8 +67,8 @@ export interface IncomeSignal {
   detected: boolean;
   evidence: {
     incomeBuckets: Array<{
-      startDate: string;  // YYYY-MM-DD
-      endDate: string;    // YYYY-MM-DD
+      startDate: string; // YYYY-MM-DD
+      endDate: string; // YYYY-MM-DD
       totalIncome: number;
     }>;
     frequency: 'weekly' | 'biweekly' | 'monthly' | 'irregular';

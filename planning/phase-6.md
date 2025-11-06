@@ -7,6 +7,7 @@
 ## Story 20: Evaluation & Final Verification
 
 ### Goals
+
 - Build evaluation harness (CLI tool)
 - Measure system performance and quality metrics
 - Run comprehensive testing across 100 synthetic users
@@ -17,6 +18,7 @@
 ### Key Considerations from PRD
 
 **Evaluation Metrics**:
+
 - **Coverage**: 100% of users assigned persona with ≥3 detected behaviors
 - **Explainability**: 100% of recommendations include plain-language rationales citing specific data points
 - **Relevance**: Insights match detected behavioral patterns
@@ -61,6 +63,7 @@ interface CoverageMetric {
 ```
 
 Test:
+
 - Run signal detection on 100 synthetic users
 - Verify all users get assigned at least one persona
 - Verify General persona catches users with no specific patterns
@@ -82,6 +85,7 @@ interface ExplainabilityMetric {
 ```
 
 Test:
+
 - Verify every insight has plain-language rationale
 - Verify every rationale cites specific data points
 - Verify decision trees show all matching criteria
@@ -104,6 +108,7 @@ interface RelevanceMetric {
 ```
 
 Test:
+
 - Verify High Utilization assigned only when utilization ≥50% OR interest OR overdue
 - Verify Savings Builder assigned only when growth ≥2% OR inflow ≥$200/mo
 - Verify all persona assignments match documented criteria
@@ -131,6 +136,7 @@ interface LatencyMetric {
 ```
 
 Test:
+
 - Run 100 assessments, measure each
 - Target: <1s for assessment generation
 - Target: <2s for AI responses
@@ -160,6 +166,7 @@ interface FairnessMetric {
 ```
 
 Test:
+
 - Create synthetic users with similar financial profiles
 - Verify they receive same persona assignment
 - Verify they receive same partner offers
@@ -188,6 +195,7 @@ reports/
 ### Evaluation Output
 
 #### JSON Report
+
 ```json
 {
   "timestamp": "2024-03-15T10:30:00Z",
@@ -241,28 +249,34 @@ reports/
 **Users Evaluated**: 100
 
 ## Coverage: ✅ PASS
+
 - 100% of users assigned persona
 - 100% of users have ≥3 detected behaviors
 - All personas represented in dataset
 
 ## Explainability: ✅ PASS
+
 - 100% of insights include rationales
 - 100% of rationales cite specific data
 - Decision trees complete for all users
 
 ## Relevance: ✅ PASS
+
 - 100% of persona assignments match criteria
 - No mismatched personas detected
 
 ## Latency: ⚠️ PARTIAL
+
 - Assessment generation: 95% under 1 second (target: 100%)
 - AI responses: 98% under 2 seconds (target: 100%)
 
 ## Fairness: ✅ PASS
+
 - Consistent persona assignment across similar profiles
 - Consistent offer eligibility across similar users
 
 ## Recommendations
+
 - Optimize assessment generation for edge cases (5% over 1s target)
 - Consider caching for improved AI response times
 ```
@@ -270,6 +284,7 @@ reports/
 ### Comprehensive Testing
 
 #### Unit Tests
+
 - All signal detectors
 - All persona matchers
 - Rendering functions
@@ -277,6 +292,7 @@ reports/
 - Eligibility matcher
 
 #### Integration Tests
+
 - Full pipeline: Ingest → Detect → Assign → Build → Render
 - Plaid integration (sandbox)
 - Assessment storage/archival
@@ -285,12 +301,14 @@ reports/
 - AI chat with guardrails
 
 #### End-to-End Tests
+
 - User signup → consent → Plaid → assessment → chat
 - Admin viewing user data
 - Data flush
 - Consent revocation
 
 #### Performance Tests
+
 - 100 users in parallel
 - Assessment generation latency
 - AI response latency
@@ -319,23 +337,27 @@ reports/
 ### Final Verification Checklist
 
 #### Phase 1: Foundation
+
 - [ ] Synthetic data generator working
 - [ ] Database schema matches spec
 - [ ] All migrations run successfully
 
 #### Phase 2: Core Functionality
+
 - [ ] All 5 signal types detect correctly
 - [ ] All 7 personas assign correctly
 - [ ] Rendering functions work for all personas
 - [ ] CLI assessment generation <1s
 
 #### Phase 3: User Interface
+
 - [ ] Frontend renders correctly
 - [ ] Assessment display working
 - [ ] Plaid sandbox integration working
 - [ ] Client-side assessment generation working
 
 #### Phase 4: Server & Authentication
+
 - [ ] Auth working (signup/login/logout)
 - [ ] Consent management working
 - [ ] Assessment storage/archival working
@@ -345,18 +367,21 @@ reports/
 - [ ] CLI admin tools working
 
 #### Phase 5: AI Integration
+
 - [ ] AI chat working with guardrails
 - [ ] Chat history persisting
 - [ ] Streaming responses working
 - [ ] Admin can flag responses
 
 #### Phase 6: Evaluation
+
 - [ ] All metrics passing targets
 - [ ] 100 user evaluation complete
 - [ ] Reports generated
 - [ ] All tests passing
 
 ### Acceptance Criteria
+
 - [ ] Evaluation harness built and running
 - [ ] Coverage metric: 100% (all users assigned persona)
 - [ ] Explainability metric: 100% (all insights have rationales)
@@ -375,6 +400,7 @@ reports/
 ## Phase 6 Completion Checklist
 
 ### Story 20: Evaluation & Final Verification
+
 - [ ] Evaluation harness CLI tool built
 - [ ] Coverage metric passing (100%)
 - [ ] Explainability metric passing (100%)
@@ -394,6 +420,7 @@ reports/
 After completing Phase 6, the Learning Cents MVP is ready for deployment.
 
 ### Deployment Checklist
+
 - [ ] Environment variables configured
 - [ ] Supabase project created and migrations run
 - [ ] Plaid production credentials configured (if going to production)
@@ -405,6 +432,7 @@ After completing Phase 6, the Learning Cents MVP is ready for deployment.
 - [ ] Monitoring setup (Vercel Analytics, Supabase Dashboard)
 
 ### Post-Deployment
+
 - [ ] Monitor error logs
 - [ ] Monitor performance metrics
 - [ ] Monitor AI chat for inappropriate responses

@@ -22,7 +22,7 @@ const MERCHANTS = [
   'Rent Payment',
   'Mortgage Payment',
   'Car Insurance',
-  'Health Insurance'
+  'Health Insurance',
 ];
 
 const CATEGORIES = [
@@ -39,7 +39,7 @@ const CATEGORIES = [
   { primary: 'HOME_IMPROVEMENT', detailed: 'HOME_IMPROVEMENT_RENT' },
   { primary: 'LOAN_PAYMENTS', detailed: 'LOAN_PAYMENTS_MORTGAGE_PAYMENT' },
   { primary: 'BANK_FEES', detailed: 'BANK_FEES_OVERDRAFT' },
-  { primary: 'INCOME', detailed: 'INCOME_WAGES' }
+  { primary: 'INCOME', detailed: 'INCOME_WAGES' },
 ];
 
 export function generateTransactions(
@@ -50,12 +50,14 @@ export function generateTransactions(
   const transactions: PlaidTransaction[] = [];
 
   // Find depository accounts for deposits
-  const depositoryAccounts = accounts.filter(a => a.type === 'depository');
+  const depositoryAccounts = accounts.filter((a) => a.type === 'depository');
   const primaryAccount = depositoryAccounts[0] || accounts[0];
 
   for (let i = 0; i < count; i++) {
     const isDeposit = Math.random() < 0.15; // 15% are deposits (income)
-    const account = isDeposit ? primaryAccount : accounts[Math.floor(Math.random() * accounts.length)];
+    const account = isDeposit
+      ? primaryAccount
+      : accounts[Math.floor(Math.random() * accounts.length)];
 
     transactions.push(generateTransaction(account, daysBack, isDeposit));
   }
@@ -73,7 +75,7 @@ function generateTransaction(
 ): PlaidTransaction {
   const merchant = MERCHANTS[Math.floor(Math.random() * MERCHANTS.length)];
   const category = isDeposit
-    ? CATEGORIES.find(c => c.primary === 'INCOME')!
+    ? CATEGORIES.find((c) => c.primary === 'INCOME')!
     : CATEGORIES[Math.floor(Math.random() * CATEGORIES.length - 1)]; // Exclude income
 
   // Amount varies based on category
@@ -102,6 +104,6 @@ function generateTransaction(
     payment_channel: Math.random() < 0.6 ? 'online' : 'in store',
     personal_finance_category: category || CATEGORIES[0],
     pending: Math.random() < 0.05, // 5% pending
-    name: isDeposit ? 'Payroll Deposit' : `${merchant} Purchase`
+    name: isDeposit ? 'Payroll Deposit' : `${merchant} Purchase`,
   };
 }

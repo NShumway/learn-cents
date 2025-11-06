@@ -22,9 +22,7 @@ export default function PlaidConnectButton({
 
   if (error) {
     return (
-      <div className="text-red-600 text-sm">
-        Unable to initialize Plaid Link: {error.message}
-      </div>
+      <div className="text-red-600 text-sm">Unable to initialize Plaid Link: {error.message}</div>
     );
   }
 
@@ -34,11 +32,7 @@ export default function PlaidConnectButton({
       disabled={!ready || disabled || !linkToken}
       className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
     >
-      {!linkToken
-        ? 'No Link Token'
-        : ready
-        ? 'Connect Bank Account'
-        : 'Loading...'}
+      {!linkToken ? 'No Link Token' : ready ? 'Connect Bank Account' : 'Loading...'}
     </button>
   );
 }

@@ -27,7 +27,7 @@ export function generateSyntheticUsers(count: number): PlaidUser[] {
       name,
       accounts,
       transactions,
-      liabilities
+      liabilities,
     });
   }
 

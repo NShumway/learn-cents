@@ -22,7 +22,10 @@ export function detectOverdrafts(
   // Check checking accounts for negative balances
   const checkingAccounts = accounts.filter((acc) => acc.subtype === 'checking');
   for (const account of checkingAccounts) {
-    if (account.balances.current < 0 || (account.balances.available && account.balances.available < 0)) {
+    if (
+      account.balances.current < 0 ||
+      (account.balances.available && account.balances.available < 0)
+    ) {
       incidents.push({
         date: new Date().toISOString().split('T')[0], // Current date
         amount: Math.abs(account.balances.current),
@@ -34,9 +37,7 @@ export function detectOverdrafts(
   // Check for overdraft/NSF fees in transactions
   for (const tx of txs180d) {
     if (isOverdraftFee(tx)) {
-      const type = tx.name.toUpperCase().includes('NSF')
-        ? 'nsf_fee'
-        : 'overdraft_fee';
+      const type = tx.name.toUpperCase().includes('NSF') ? 'nsf_fee' : 'overdraft_fee';
 
       incidents.push({
         date: tx.date,
@@ -50,9 +51,7 @@ export function detectOverdrafts(
   incidents.sort((a, b) => a.date.localeCompare(b.date));
 
   // Count incidents in each window
-  const incidents30dDates = new Set(
-    txs30d.map((tx) => tx.date)
-  );
+  const incidents30dDates = new Set(txs30d.map((tx) => tx.date));
   const count30d = incidents.filter((inc) => incidents30dDates.has(inc.date)).length;
   const count180d = incidents.length;
 

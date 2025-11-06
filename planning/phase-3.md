@@ -7,6 +7,7 @@
 ## Story 8: Frontend Setup
 
 ### Goals
+
 - Set up React + TypeScript + Vite frontend
 - Configure Tailwind CSS for styling
 - Create basic routing structure
@@ -71,15 +72,12 @@ npm install react-router-dom
 ```javascript
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};
 ```
 
 #### 3. Global Styles (src/styles/index.css)
@@ -136,9 +134,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        {children}
-      </main>
+      <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
       <Footer />
     </div>
   );
@@ -195,6 +191,7 @@ npm run preview
 ## Story 9: Assessment Display UI
 
 ### Goals
+
 - Display assessment with priority insight and additional insights
 - Render persona-specific education content
 - Show decision tree explaining persona assignment
@@ -238,32 +235,34 @@ export const mockAssessment: Assessment = {
           utilization: 68,
           balance: 3400,
           limit: 5000,
-          interest: 57.50
+          interest: 57.5,
         },
         {
           mask: '1234',
           utilization: 42,
           balance: 2100,
           limit: 5000,
-          interest: 35.20
-        }
-      ]
+          interest: 35.2,
+        },
+      ],
     },
     renderedForUser: 'Your credit card usage is high...',
     educationItems: [
       {
         title: 'Understanding Credit Utilization',
-        description: 'Learn how credit card utilization affects your credit score and financial health.'
+        description:
+          'Learn how credit card utilization affects your credit score and financial health.',
       },
       {
         title: 'Debt Paydown Strategies',
-        description: 'Strategies for paying down credit card debt efficiently, including avalanche and snowball methods.'
+        description:
+          'Strategies for paying down credit card debt efficiently, including avalanche and snowball methods.',
       },
       {
         title: 'Setting Up Autopay',
-        description: 'How to set up automatic payments to avoid missed payments and late fees.'
-      }
-    ]
+        description: 'How to set up automatic payments to avoid missed payments and late fees.',
+      },
+    ],
   },
   additionalInsights: [
     {
@@ -271,20 +270,32 @@ export const mockAssessment: Assessment = {
       priority: 4,
       underlyingData: {
         subscriptions: [
-          { merchant: 'Netflix', amount: 15.99, cadence: 'monthly', lastChargeDate: '2024-03-15', count: 6 },
-          { merchant: 'Spotify', amount: 9.99, cadence: 'monthly', lastChargeDate: '2024-03-10', count: 6 }
+          {
+            merchant: 'Netflix',
+            amount: 15.99,
+            cadence: 'monthly',
+            lastChargeDate: '2024-03-15',
+            count: 6,
+          },
+          {
+            merchant: 'Spotify',
+            amount: 9.99,
+            cadence: 'monthly',
+            lastChargeDate: '2024-03-10',
+            count: 6,
+          },
         ],
         totalMonthlySpend: 2400,
-        subscriptionShareOfSpend: 12
+        subscriptionShareOfSpend: 12,
       },
       renderedForUser: 'You have multiple recurring subscriptions...',
       educationItems: [
         {
           title: 'Audit Active Subscriptions',
-          description: 'Review all your recurring charges and cancel unused services.'
-        }
-      ]
-    }
+          description: 'Review all your recurring charges and cancel unused services.',
+        },
+      ],
+    },
   ],
   decisionTree: {
     signalsDetected: ['credit-high-util', 'subscriptions'],
@@ -292,21 +303,21 @@ export const mockAssessment: Assessment = {
       {
         persona: 'High Utilization',
         matched: true,
-        criteria: ['Utilization ≥50%', 'Interest charges detected']
+        criteria: ['Utilization ≥50%', 'Interest charges detected'],
       },
       {
         persona: 'Subscription-Heavy',
         matched: true,
-        criteria: ['≥3 recurring merchants', 'Subscription share ≥10%']
+        criteria: ['≥3 recurring merchants', 'Subscription share ≥10%'],
       },
       {
         persona: 'Savings Builder',
         matched: false,
-        criteria: ['Growth rate <2%']
-      }
+        criteria: ['Growth rate <2%'],
+      },
     ],
-    priorityReasoning: 'High Utilization (priority 1) matched first'
-  }
+    priorityReasoning: 'High Utilization (priority 1) matched first',
+  },
 };
 ```
 
@@ -322,11 +333,11 @@ interface InsightCardProps {
 
 export default function InsightCard({ insight, isPriority }: InsightCardProps) {
   return (
-    <div className={`border rounded-lg p-6 ${isPriority ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}>
+    <div
+      className={`border rounded-lg p-6 ${isPriority ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
+    >
       {isPriority && (
-        <div className="text-xs font-semibold text-blue-600 uppercase mb-2">
-          Priority Insight
-        </div>
+        <div className="text-xs font-semibold text-blue-600 uppercase mb-2">Priority Insight</div>
       )}
 
       <h2 className="text-2xl font-bold mb-4">{insight.personaType}</h2>
@@ -390,7 +401,10 @@ export default function DecisionTreeComponent({ tree }: DecisionTreeProps) {
         <div className="text-sm font-medium text-gray-700 mb-2">Signals Detected</div>
         <div className="flex flex-wrap gap-2">
           {tree.signalsDetected.map((signal, index) => (
-            <span key={index} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+            <span
+              key={index}
+              className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
+            >
               {signal}
             </span>
           ))}
@@ -401,18 +415,23 @@ export default function DecisionTreeComponent({ tree }: DecisionTreeProps) {
         <div className="text-sm font-medium text-gray-700 mb-2">Personas Considered</div>
         <div className="space-y-2">
           {tree.personasConsidered.map((persona, index) => (
-            <div key={index} className={`p-3 rounded ${persona.matched ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}>
+            <div
+              key={index}
+              className={`p-3 rounded ${persona.matched ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'}`}
+            >
               <div className="flex items-center gap-2 mb-1">
-                <span className={`text-sm font-medium ${persona.matched ? 'text-blue-900' : 'text-gray-600'}`}>
+                <span
+                  className={`text-sm font-medium ${persona.matched ? 'text-blue-900' : 'text-gray-600'}`}
+                >
                   {persona.persona}
                 </span>
                 {persona.matched && (
-                  <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded">Matched</span>
+                  <span className="text-xs bg-blue-600 text-white px-2 py-0.5 rounded">
+                    Matched
+                  </span>
                 )}
               </div>
-              <div className="text-xs text-gray-600">
-                {persona.criteria.join(', ')}
-              </div>
+              <div className="text-xs text-gray-600">{persona.criteria.join(', ')}</div>
             </div>
           ))}
         </div>
@@ -442,9 +461,7 @@ export default function Assessment() {
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-2">Your Financial Assessment</h1>
-      <p className="text-gray-600 mb-8">
-        Personalized insights based on your transaction data
-      </p>
+      <p className="text-gray-600 mb-8">Personalized insights based on your transaction data</p>
 
       <div className="mb-8">
         <InsightCard insight={assessment.priorityInsight} isPriority />
@@ -475,8 +492,8 @@ export default function Assessment() {
       </div>
 
       <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600">
-        <strong>Disclaimer:</strong> This is educational content, not financial advice.
-        Consult a licensed advisor for personalized guidance.
+        <strong>Disclaimer:</strong> This is educational content, not financial advice. Consult a
+        licensed advisor for personalized guidance.
       </div>
     </div>
   );
@@ -506,6 +523,7 @@ export default function Assessment() {
 ## Story 10: Plaid Integration (Sandbox)
 
 ### Goals
+
 - Integrate Plaid Link for OAuth-based account connection
 - **SANDBOX MODE ONLY** - no production credentials yet
 - Fetch transaction data from Plaid Sandbox
@@ -568,7 +586,11 @@ export const SANDBOX_LINK_TOKEN = process.env.VITE_PLAID_SANDBOX_LINK_TOKEN || '
 import { detectAllSignals } from '../../../features/signals';
 import { assignPersonas } from '../../../personas';
 import { buildAssessment } from '../../../recommend/assessmentBuilder';
-import type { PlaidAccount, PlaidTransaction, PlaidLiability } from '../../../scripts/lib/types/plaidData';
+import type {
+  PlaidAccount,
+  PlaidTransaction,
+  PlaidLiability,
+} from '../../../scripts/lib/types/plaidData';
 import type { Assessment } from '../../../recommend/types';
 
 export interface PlaidData {
@@ -615,7 +637,6 @@ export async function generateAssessmentFromPlaid(
     onProgress?.('Finalizing', 100);
 
     return assessment;
-
   } catch (error) {
     console.error('Assessment generation failed:', error);
     throw error;
@@ -697,6 +718,7 @@ export async function fetchPlaidData(accessToken: string): Promise<PlaidData> {
 ## Story 11: Plaid Connection UI
 
 ### Goals
+
 - Build UI for connecting Plaid accounts
 - Display loading states during processing
 - Show assessment after successful connection
@@ -788,8 +810,18 @@ export default function ErrorState({ error, onRetry }: ErrorStateProps) {
   return (
     <div className="max-w-md mx-auto text-center">
       <div className="mb-4 text-red-600">
-        <svg className="inline-block w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg
+          className="inline-block w-12 h-12"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
         </svg>
       </div>
       <h2 className="text-xl font-semibold mb-2">Something went wrong</h2>
@@ -834,9 +866,8 @@ export function useAssessment(): UseAssessmentReturn {
     setProgress({ stage: 'Starting', percent: 0 });
 
     try {
-      const result = await generateAssessmentFromPlaid(
-        plaidData,
-        (stage, percent) => setProgress({ stage, percent })
+      const result = await generateAssessmentFromPlaid(plaidData, (stage, percent) =>
+        setProgress({ stage, percent })
       );
 
       setAssessment(result);
@@ -911,13 +942,12 @@ export default function Home() {
       </div>
 
       <div className="text-sm text-gray-500 mb-4">
-        <strong>Note:</strong> This demo uses Plaid Sandbox mode.
-        Use test credentials to connect.
+        <strong>Note:</strong> This demo uses Plaid Sandbox mode. Use test credentials to connect.
       </div>
 
       <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 text-left">
-        <strong>Disclaimer:</strong> This is educational content, not financial advice.
-        Consult a licensed advisor for personalized guidance.
+        <strong>Disclaimer:</strong> This is educational content, not financial advice. Consult a
+        licensed advisor for personalized guidance.
       </div>
     </div>
   );
@@ -949,6 +979,7 @@ export default function Home() {
 ## Story 11.5: Architecture Cleanup & Synthetic Data UI
 
 ### Goals
+
 - Migrate Express server to Vercel serverless functions
 - Implement Plaid Link modal UI flow (replace sandbox bypass)
 - Add UI file operations for synthetic data (generate/analyze)
@@ -957,6 +988,7 @@ export default function Home() {
 - Update CLI tools quick reference documentation
 
 ### Key Considerations
+
 - **Architecture migration**: Convert Express server (ui/app/main.ts) to Vercel serverless functions (/api routes)
 - **Plaid Link modal**: Show test credentials on screen (username: `user_transactions_dynamic`, password: any value)
 - **File operations**: Use browser File System Access API (no upload/download - direct file system access)
@@ -999,10 +1031,12 @@ src/
 #### 1. Migrate Express Server to Vercel Serverless
 
 **Delete:**
+
 - `ui/app/main.ts` (Express server)
 - Express-related scripts from `package.json`
 
 **Create:** `/api/plaid/create-link-token.ts`
+
 ```typescript
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from 'plaid';
@@ -1042,6 +1076,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 ```
 
 **Create:** `/api/plaid/exchange-token.ts`
+
 ```typescript
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { Configuration, PlaidApi, PlaidEnvironments } from 'plaid';
@@ -1118,6 +1153,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 **Update:** `vite.config.ts` - Remove proxy (no longer needed for local dev with Vercel CLI)
 
 **Update:** `package.json` scripts:
+
 ```json
 {
   "dev": "vercel dev",
@@ -1130,6 +1166,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 #### 2. Plaid Link Modal UI Flow
 
 **Update:** `ui/pages/Home.tsx`
+
 ```typescript
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -1247,6 +1284,7 @@ export default function Home() {
 #### 3. Synthetic Data UI
 
 **Create:** `ui/pages/SyntheticData.tsx`
+
 ```typescript
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -1295,6 +1333,7 @@ export default function SyntheticData() {
 ```
 
 **Create:** `ui/components/synthetic/GenerateDataForm.tsx`
+
 ```typescript
 import { useState } from 'react';
 import { generateSyntheticUsers } from '../../../scripts/lib/generators/userGenerator';
@@ -1368,6 +1407,7 @@ export default function GenerateDataForm() {
 ```
 
 **Create:** `ui/components/synthetic/AnalyzeDataForm.tsx`
+
 ```typescript
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -1444,6 +1484,7 @@ export default function AnalyzeDataForm() {
 ```
 
 **Create:** `ui/lib/fileSystem.ts`
+
 ```typescript
 /**
  * File System Access API helpers
@@ -1507,12 +1548,13 @@ export async function loadFromFile(extension: string): Promise<string> {
 #### 4. CLI File Path Flexibility
 
 **Update:** `scripts/generateRandomPlaidData.ts`
+
 ```typescript
 // Change hardcoded default
 const options: CLIOptions = {
   count: 50,
   format: 'json',
-  output: './data/synthetic-users' // Keep as default
+  output: './data/synthetic-users', // Keep as default
 };
 
 // Update help message
@@ -1536,6 +1578,7 @@ Examples:
 ```
 
 **Update:** `scripts/viewAssessmentObject.ts`
+
 ```typescript
 // Add --file flag for custom file paths
 let filePath: string | null = null;
@@ -1558,6 +1601,7 @@ if (source === 'synthetic') {
 #### 5. Type Consolidation
 
 **Update:** `scripts/lib/types/plaidData.ts`
+
 ```typescript
 /**
  * Re-export Plaid types from canonical source
@@ -1594,6 +1638,7 @@ export interface PlaidUser {
 
 1. **scripts/explorePlaidSandbox.ts:13**
    - Remove unused import: `SandboxItemFireWebhookRequestWebhookCodeEnum`
+
    ```diff
    - import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, SandboxItemFireWebhookRequestWebhookCodeEnum, Transaction } from 'plaid';
    + import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode, Transaction } from 'plaid';
@@ -1606,6 +1651,7 @@ export interface PlaidUser {
 3. **ui/components/plaid/LoadingState.tsx:12**
    - `percent` parameter defined but never used
    - **Fix:** Add progress bar to component:
+
    ```tsx
    export default function LoadingState({ stage, percent }: LoadingStateProps) {
      const displayStage = stage || 'Connecting to Plaid Sandbox...';
@@ -1632,6 +1678,7 @@ export interface PlaidUser {
 
 4. **ui/pages/Assessment.tsx:16**
    - `navigate` imported but never used
+
    ```diff
    - import { useLocation, useNavigate } from 'react-router-dom';
    + import { useLocation } from 'react-router-dom';
@@ -1643,6 +1690,7 @@ export interface PlaidUser {
 
 5. **ui/pages/Home.tsx:8**
    - `useState` imported but never used
+
    ```diff
    - import { useState } from 'react';
    ```
@@ -1674,11 +1722,13 @@ export interface PlaidUser {
 ```
 
 **Install @vercel/node:**
+
 ```bash
 npm install -D @vercel/node
 ```
 
 **Update package.json scripts:**
+
 ```json
 {
   "dev": "vercel dev",
@@ -1689,6 +1739,7 @@ npm install -D @vercel/node
 ```
 
 **Remove proxy from vite.config.ts:**
+
 ```diff
    resolve: {
      // ... aliases
@@ -1724,13 +1775,14 @@ npm install -D @vercel/node
 - [ ] **All 6 ESLint errors fixed**
 - [ ] **vercel.json created with correct configuration**
 - [ ] **@vercel/node installed**
-- [ ] **npm run lint passes with no errors**
+- [ ] **npm run check passes with no errors**
 - [ ] **GitHub Actions CI/CD passes**
 - [ ] **Vercel deployment succeeds**
 
 ### Testing
 
 **Vercel serverless:**
+
 ```bash
 # Install Vercel CLI
 npm install -g vercel
@@ -1743,18 +1795,21 @@ curl -X POST http://localhost:3000/api/plaid/create-link-token
 ```
 
 **Plaid Link modal:**
+
 - Open app, click "Connect with Plaid"
 - Verify modal opens
 - Enter test credentials: `user_transactions_dynamic` / (any password)
 - Verify connection succeeds and assessment generates
 
 **Synthetic data UI:**
+
 - Navigate to /synthetic-data
 - Generate 1 user, save to file
 - Analyze saved file
 - Verify assessment displays
 
 **CLI flexibility:**
+
 ```bash
 # Test custom output paths
 npm run generate:data -- --count 5 --output ~/test-data
@@ -1763,20 +1818,13 @@ npm run generate:data -- --count 5 --output ~/test-data
 npm run run:assessment -- --file ~/test-data.json
 ```
 
-**Type consolidation:**
+**Type checking and linting:**
+
 ```bash
-# Run type check
-npm run typecheck
+# Run type check and lint
+npm run check
 
-# Verify no errors
-```
-
-**ESLint & CI/CD:**
-```bash
-# Run lint locally
-npm run lint
-
-# Should show: ✔ No problems found
+# Should show no errors or linting issues
 
 # Verify GitHub Actions passes
 git push
@@ -1785,6 +1833,7 @@ git push
 ```
 
 **Vercel deployment:**
+
 ```bash
 # Test local Vercel build
 vercel build
@@ -1803,6 +1852,7 @@ vercel --prod
 ## Phase 3 Completion Checklist
 
 ### Story 8: Frontend Setup
+
 - [ ] Vite + React + TypeScript project created
 - [ ] Tailwind CSS configured
 - [ ] React Router setup
@@ -1811,6 +1861,7 @@ vercel --prod
 - [ ] NO authentication (deferred to Phase 4)
 
 ### Story 9: Assessment Display UI
+
 - [ ] Assessment display page renders
 - [ ] Priority insight and additional insights display
 - [ ] Education items show for each insight
@@ -1819,6 +1870,7 @@ vercel --prod
 - [ ] Responsive design verified
 
 ### Story 10: Plaid Integration (Sandbox)
+
 - [ ] Plaid Link SDK installed
 - [ ] Sandbox configuration set
 - [ ] Client-side assessment generator working
@@ -1826,6 +1878,7 @@ vercel --prod
 - [ ] Types properly defined
 
 ### Story 11: Plaid Connection UI
+
 - [ ] Plaid Connect button works
 - [ ] Loading states display
 - [ ] Error handling works
@@ -1833,6 +1886,7 @@ vercel --prod
 - [ ] Retry functionality works
 
 ### Story 11.5: Architecture Cleanup & Synthetic Data UI
+
 - [ ] Express server migrated to Vercel serverless functions
 - [ ] Plaid Link modal implemented (not bypass)
 - [ ] Test credentials displayed on screen
@@ -1843,6 +1897,7 @@ vercel --prod
 - [ ] Types consolidated (no duplicates)
 
 ### Integration Test
+
 - [ ] Full flow: Connect Plaid → Generate assessment → Display
 - [ ] Works with Plaid Sandbox test credentials
 - [ ] No server persistence (client-side only)

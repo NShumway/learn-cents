@@ -1,10 +1,32 @@
-const FIRST_NAMES = ['John', 'Jane', 'Michael', 'Sarah', 'David', 'Emily', 'Chris', 'Jessica', 'Robert', 'Lisa'];
-const LAST_NAMES = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
+const FIRST_NAMES = [
+  'John',
+  'Jane',
+  'Michael',
+  'Sarah',
+  'David',
+  'Emily',
+  'Chris',
+  'Jessica',
+  'Robert',
+  'Lisa',
+];
+const LAST_NAMES = [
+  'Smith',
+  'Johnson',
+  'Williams',
+  'Brown',
+  'Jones',
+  'Garcia',
+  'Miller',
+  'Davis',
+  'Rodriguez',
+  'Martinez',
+];
 
 export function randomName(): { first: string; last: string } {
   return {
     first: FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)],
-    last: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)]
+    last: LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)],
   };
 }
 

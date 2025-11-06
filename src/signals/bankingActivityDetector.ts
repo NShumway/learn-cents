@@ -37,9 +37,7 @@ export function detectBankingActivity(
   // - AND < 5 outbound payments in 30d
   // - AND < 5 unique merchants
   const detected =
-    outboundPaymentCount180d < 10 &&
-    outboundPaymentCount30d < 5 &&
-    uniqueMerchants.size < 5;
+    outboundPaymentCount180d < 10 && outboundPaymentCount30d < 5 && uniqueMerchants.size < 5;
 
   return {
     detected,

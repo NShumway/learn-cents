@@ -9,7 +9,7 @@ describe('Synthetic Data Generator', () => {
 
   it('each user has required fields', () => {
     const users = generateSyntheticUsers(5);
-    users.forEach(user => {
+    users.forEach((user) => {
       expect(user.user_id).toBeDefined();
       expect(user.name.first).toBeDefined();
       expect(user.name.last).toBeDefined();
@@ -20,8 +20,8 @@ describe('Synthetic Data Generator', () => {
 
   it('generates valid account structures', () => {
     const users = generateSyntheticUsers(5);
-    users.forEach(user => {
-      user.accounts.forEach(account => {
+    users.forEach((user) => {
+      user.accounts.forEach((account) => {
         expect(account.account_id).toBeDefined();
         expect(account.type).toMatch(/depository|credit|loan/);
         expect(account.balances.current).toBeTypeOf('number');
@@ -32,8 +32,8 @@ describe('Synthetic Data Generator', () => {
 
   it('generates valid transaction structures', () => {
     const users = generateSyntheticUsers(3);
-    users.forEach(user => {
-      user.transactions.forEach(transaction => {
+    users.forEach((user) => {
+      user.transactions.forEach((transaction) => {
         expect(transaction.transaction_id).toBeDefined();
         expect(transaction.account_id).toBeDefined();
         expect(transaction.date).toMatch(/^\d{4}-\d{2}-\d{2}$/); // YYYY-MM-DD format
@@ -46,9 +46,9 @@ describe('Synthetic Data Generator', () => {
 
   it('generates diverse account types', () => {
     const users = generateSyntheticUsers(20);
-    const allAccounts = users.flatMap(u => u.accounts);
+    const allAccounts = users.flatMap((u) => u.accounts);
 
-    const accountTypes = new Set(allAccounts.map(a => a.type));
+    const accountTypes = new Set(allAccounts.map((a) => a.type));
     expect(accountTypes.size).toBeGreaterThan(1); // Should have multiple account types
   });
 
@@ -58,8 +58,8 @@ describe('Synthetic Data Generator', () => {
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setDate(sixMonthsAgo.getDate() - 180);
 
-    users.forEach(user => {
-      user.transactions.forEach(transaction => {
+    users.forEach((user) => {
+      user.transactions.forEach((transaction) => {
         const txnDate = new Date(transaction.date);
         expect(txnDate.getTime()).toBeGreaterThanOrEqual(sixMonthsAgo.getTime());
         expect(txnDate.getTime()).toBeLessThanOrEqual(now.getTime());
@@ -70,11 +70,11 @@ describe('Synthetic Data Generator', () => {
   it('generates liabilities for credit accounts', () => {
     const users = generateSyntheticUsers(10);
 
-    users.forEach(user => {
-      const creditAccounts = user.accounts.filter(a => a.type === 'credit');
+    users.forEach((user) => {
+      const creditAccounts = user.accounts.filter((a) => a.type === 'credit');
       // If there are credit accounts, some should have liabilities
       if (creditAccounts.length > 0 && user.liabilities.length > 0) {
-        user.liabilities.forEach(liability => {
+        user.liabilities.forEach((liability) => {
           expect(liability.account_id).toBeDefined();
           expect(liability.type).toBeDefined();
         });

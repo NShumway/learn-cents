@@ -18,9 +18,7 @@ export function detectSavings(
   const days = window === '30d' ? 30 : 180;
 
   // Filter savings accounts
-  const savingsAccounts = accounts.filter((acc) =>
-    SAVINGS_ACCOUNT_TYPES.includes(acc.subtype)
-  );
+  const savingsAccounts = accounts.filter((acc) => SAVINGS_ACCOUNT_TYPES.includes(acc.subtype));
 
   if (savingsAccounts.length === 0) {
     return {
@@ -53,8 +51,7 @@ export function detectSavings(
     const endBalance = account.balances.current;
     const startBalance = endBalance - netInflow;
 
-    const growthRate =
-      startBalance > 0 ? ((endBalance - startBalance) / startBalance) * 100 : 0;
+    const growthRate = startBalance > 0 ? ((endBalance - startBalance) / startBalance) * 100 : 0;
 
     accountData.push({
       accountId: account.account_id,
@@ -66,15 +63,10 @@ export function detectSavings(
     });
   }
 
-  const totalSavings = savingsAccounts.reduce(
-    (sum, acc) => sum + acc.balances.current,
-    0
-  );
+  const totalSavings = savingsAccounts.reduce((sum, acc) => sum + acc.balances.current, 0);
 
   // Calculate average monthly expenses from spending
-  const spendingTxs = getTransactionsInWindow(transactions, days).filter(
-    (tx) => tx.amount > 0
-  );
+  const spendingTxs = getTransactionsInWindow(transactions, days).filter((tx) => tx.amount > 0);
   const totalSpending = spendingTxs.reduce((sum, tx) => sum + tx.amount, 0);
   const averageMonthlyExpenses = (totalSpending / days) * 30;
 
@@ -82,10 +74,7 @@ export function detectSavings(
     averageMonthlyExpenses > 0 ? totalSavings / averageMonthlyExpenses : 0;
 
   // Detected if growth rate >= 2% OR net inflow >= $200/month
-  const monthlyNetInflow = accountData.reduce(
-    (sum, acc) => sum + (acc.netInflow / days) * 30,
-    0
-  );
+  const monthlyNetInflow = accountData.reduce((sum, acc) => sum + (acc.netInflow / days) * 30, 0);
   const hasPositiveGrowth = accountData.some((acc) => acc.growthRate >= 2);
   const hasSignificantInflow = monthlyNetInflow >= 200;
 

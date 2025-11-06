@@ -188,10 +188,7 @@ export function assignPersona(signals: DetectedSignals): PersonaAssignmentResult
 /**
  * Build human-readable reasoning string for primary persona
  */
-function buildReasoningString(
-  primaryAssignment: PersonaAssignment,
-  nodes: DecisionNode[]
-): string {
+function buildReasoningString(primaryAssignment: PersonaAssignment, nodes: DecisionNode[]): string {
   const matchedNode = nodes.find((n) => n.persona === primaryAssignment.persona);
   if (!matchedNode) {
     return 'Default assignment - no specific patterns detected';

@@ -6,6 +6,7 @@
  */
 
 import type { Assessment } from '../types/assessment';
+import type { DetectedSignals } from '../../src/types/signals';
 
 export const mockAssessment: Assessment = {
   priorityInsight: {
@@ -96,7 +97,8 @@ export const mockAssessment: Assessment = {
       },
     ],
     primaryPersona: 'high_utilization',
-    reasoning: 'Assigned high_utilization (priority 2) based on: 1 card(s) carrying interest charges',
+    reasoning:
+      'Assigned high_utilization (priority 2) based on: 1 card(s) carrying interest charges',
   },
-  signals: {} as any, // Not needed for UI display
+  signals: {} as DetectedSignals, // Not needed for UI display
 };

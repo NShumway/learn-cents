@@ -4,42 +4,46 @@
 **Author: Nate Shumway**  
 **Date: 11/03/2025**  
 **Version: 0.0.0.1**  
-**Status: Draft**  
+**Status: Draft**
 
 ---
 
-## 1. Problem Statement  
+## 1. Problem Statement
+
 > Banks generate massive transaction data through Plaid integrations but struggle to transform it into actionable customer insights without crossing into regulated financial advice. Use this data to help users make smart financial decisions, including offering the choice of partner services.
 
 ---
 
 ## 2. Summary
+
 > Learning Cents is an explainable, consent-aware financial education platform that leverages Plaid-style transaction data into personalized financial learning experiences. After the user consents, Learning Cents detects behavioral patterns and delivers tailored, easy-to-understand financial education content while obeying financial advice regulations. Admin access provides human oversight with full decision traceability and overridability while preserving users' anonymity. Initial suggestions are generated locally, while the user can ask follow-up questions that are processed via cloud AI. All communications respect clear guardrails around tone and product eligibility.
 
 ---
 
 ## 3. Goals
+
 - Transform transaction data into actionable behavioral insights through algorithmic pattern detection (subscriptions, savings, credit utilization, income stability, etc.)
 - Deliver personalized, explainable financial education with 100% of recommendations including plain-language rationales citing specific data points
 - Build trust through robust consent management, product eligibility filtering, and non-judgmental tone guardrails that prevent financial advice overreach
 - Enable human oversight with a full-featured admin view providing decision traceability and recommendation override workflows
-- Achieve high system performance with <1 second recommendation generation while maintaining 100% coverage (all users assigned persona with ≥3 detected behaviors)  
+- Achieve high system performance with <1 second recommendation generation while maintaining 100% coverage (all users assigned persona with ≥3 detected behaviors)
 
 ---
 
-## 4. User Personas  
+## 4. User Personas
 
-| Persona | Description | Key Needs |
-|----------|--------------|-----------|
-| **Developers** | Engineers building, deploying, and maintaining the Learning Cents platform | One-line build command (single bat/script file) that sets up entire app with all dependencies; CLI tools for quick iteration; comprehensive testing suite; clear modular architecture; deterministic behavior for debugging; local development environment without external dependencies |
-| **Admins (Operators)** | Internal operators providing human oversight of the recommendation system | Dashboard to view anonymized user data and detected behavioral signals; ability to review, override, and flag recommendations; access to decision traces explaining why recommendations were made; tools to ensure consent compliance and eligibility rules are followed |
-| **End Users** | Customers who connect their Plaid accounts to receive personalized financial education | Simple consent flow, including opt-out; clear privacy controls; personalized financial education content with easy-to-understand explanations; non-judgmental, empowering tone; ability to revoke consent at any time; transparency about how their data is being used; ability to ask follow-up questions and discuss with AI |
+| Persona                | Description                                                                            | Key Needs                                                                                                                                                                                                                                                                                                                      |
+| ---------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Developers**         | Engineers building, deploying, and maintaining the Learning Cents platform             | One-line build command (single bat/script file) that sets up entire app with all dependencies; CLI tools for quick iteration; comprehensive testing suite; clear modular architecture; deterministic behavior for debugging; local development environment without external dependencies                                       |
+| **Admins (Operators)** | Internal operators providing human oversight of the recommendation system              | Dashboard to view anonymized user data and detected behavioral signals; ability to review, override, and flag recommendations; access to decision traces explaining why recommendations were made; tools to ensure consent compliance and eligibility rules are followed                                                       |
+| **End Users**          | Customers who connect their Plaid accounts to receive personalized financial education | Simple consent flow, including opt-out; clear privacy controls; personalized financial education content with easy-to-understand explanations; non-judgmental, empowering tone; ability to revoke consent at any time; transparency about how their data is being used; ability to ask follow-up questions and discuss with AI |
 
 ---
 
 ## 5. Functional Requirements
 
 **Core Features:**
+
 - **Synthetic Data Generation**: CLI tool only - Generate 50-100 synthetic users with Plaid-style data (accounts, transactions, liabilities) representing diverse financial situations without real PII for testing and evaluation purposes
 - **Data Import**: End users connect via Plaid Link for OAuth-based connection to financial institutions, retrieving transaction history, account balances, liabilities, and income data. JSON/CSV file upload available for development, testing, and demo purposes only (not practical for real end users due to lack of standardized bank export formats)
 - **Behavioral Signal Detection**: Client-side browser processing for single users; also available as CLI tool for batch testing (50-100 users). Compute signals per 30-day and 180-day windows for subscriptions (recurring merchants, spend patterns), savings (net inflow, growth rate, emergency fund coverage), credit (utilization, minimum payments, overdue status), income stability (payroll detection, payment frequency, cash-flow buffer), and overdraft patterns (negative balances, overdraft/NSF fees)
@@ -56,11 +60,13 @@
 - **Evaluation Harness**: CLI tool measures coverage, explainability, relevance, latency (<1s assessment generation, <2s AI responses), and fairness with JSON/CSV metrics output and summary reports
 
 **User Flows / Interactions:**
+
 - **Developer Flow**: Run single build command → All dependencies installed → Run tests → Start local development server → Use CLI tool for synthetic data generation and batch testing (50-100 users) → Run evaluation metrics
 - **End User Flow**: Create account → Grant consent (stored server-side) → Connect financial accounts via Plaid Link OAuth → Browser processes Plaid data client-side and generates assessment with decision trees → Only assessment and decision trees sent to server (raw financial data flushed immediately after processing) → User views priority insight first, with button to reveal additional insights in chat window → User asks follow-up questions via AI chat (with guardrails) → User can reconnect Plaid to refresh data (archives previous assessment) → User can flush all server data at any time for privacy
 - **Admin Flow**: Access operator dashboard → Select user by internal account ID (username/email masked) → View assessment (priority insight + additional insights), decision trees, and specific financial signals as user sees them → Review AI chat history → Flag problematic AI responses for developer review → Monitor system metrics and compliance
 
 **Edge Cases:**
+
 - Users with insufficient transaction history (<90 days) should receive default educational content until enough data is available
 - Users matching multiple persona criteria generate insights for ALL matching personas. Priority insight determined by persona priority order (High Utilization > Frequent Overdrafts > Variable Income > Subscription-Heavy > Savings Builder > Blank Slate > General), additional insights available via button
 - Frequent Overdrafts persona detects negative balances and overdraft/NSF fees in transaction history
@@ -73,7 +79,7 @@
 - Users with no detected behaviors (edge case for coverage metric) should be flagged for manual review
 - Partner offers for products users already have must be filtered out by eligibility checks
 - Transaction data with missing or malformed fields should be handled gracefully without breaking signal detection
-- JSON/CSV file upload (dev/testing feature): Files must be parseable into expected Plaid schema format; validation errors should provide clear feedback  
+- JSON/CSV file upload (dev/testing feature): Files must be parseable into expected Plaid schema format; validation errors should provide clear feedback
 
 ---
 
@@ -119,7 +125,7 @@
   - No regulated financial advice provided
   - Consent required before any data processing and can be withdrawn
   - Eligibility checks prevent inappropriate product suggestions
-  - Full decision traceability for regulatory audit support  
+  - Full decision traceability for regulatory audit support
 
 ---
 
@@ -166,7 +172,7 @@
   - **AI Chat History (Supabase)**: User questions, AI responses, timestamps, associated assessment ID
   - **Financial Data Sources**: Plaid API for end-user data retrieval (transactions, accounts, liabilities, income). JSON/CSV files matching Plaid schema available for development, testing, and demos only (processed client-side in browser). All financial data processed client-side and flushed immediately; never stored server-side
   - **Rendering Functions**: Per-persona functions stored in codebase (not database) to render insights from underlying data structures for user display and AI context
-  - **Synthetic Data Generation**: CLI tool generates 50-100 test users on-demand for evaluation (not stored long-term)  
+  - **Synthetic Data Generation**: CLI tool generates 50-100 test users on-demand for evaluation (not stored long-term)
 
 ---
 
@@ -186,28 +192,29 @@
 - **No Automated Scheduling**: No recurring Plaid data refreshes, scheduled reassessments, or automated reminders. User must manually trigger new assessments by reconnecting Plaid or uploading new data
 - **Strict Merchant Name Matching**: Subscription detection uses case-insensitive strict name matching only. No fuzzy matching or merchant name normalization. Variations in merchant names may not be detected as same merchant
 - **Chromium Browser Only**: Application tested and supported on Chromium-based browsers (Chrome, Edge, Brave) only. Other browsers (Firefox, Safari) not officially supported in MVP
-- **United States Only**: This application is designed for use in the United States only. Financial regulations, product offerings, and compliance requirements vary by country. Using this application outside the United States may violate local financial services regulations or data privacy laws. All partner offers and educational content are US-focused  
+- **United States Only**: This application is designed for use in the United States only. Financial regulations, product offerings, and compliance requirements vary by country. Using this application outside the United States may violate local financial services regulations or data privacy laws. All partner offers and educational content are US-focused
 
 ---
 
-## 9. Risks  
+## 9. Risks
 
-| Risk | Impact | Mitigation |
-|------|---------|-------------|
-| **Plaid API Rate Limits or Downtime** | Users cannot connect accounts or refresh data, blocking primary user flow | Use Plaid Sandbox environment for testing and demos; setup instructions include connecting paid Plaid account for production; display clear error messages; monitor Plaid status page; graceful failure with retry prompts |
-| **AI Guardrail Bypass** | AI provides regulated financial advice, inappropriate tone, or ineligible product recommendations, exposing platform to legal liability | Implement function calling validation before response delivery; extensive testing of edge cases; clear disclaimers on every insight and AI message; admin review after-the-fact with ability to flag problematic responses for developer review and guardrail refinement |
-| **Client-Side Processing Performance** | Assessment generation exceeds 1-second target for users with extensive transaction history. Plaid returns up to 24 months of data with no server-side filtering; users could have 10,000+ transactions | Process only last 180 days of transactions client-side (ignore older data from Plaid response); implement Web Workers for background processing to keep UI responsive; optimize algorithms with indexing; progressive loading for perceived speed; add loading indicators |
-| **Data Privacy Breach** | Raw financial data accidentally stored server-side or exposed through logs/errors, violating core security promise | Strict code reviews for any server-side data handling; client-side processing architecture ensures financial data never reaches server; protection against XSS attacks; comprehensive logging audit to exclude financial data; never log Plaid responses server-side |
-| **Inaccurate Behavioral Signal Detection** | Pattern detection algorithms produce false positives (e.g., flagging one-time purchases as subscriptions), leading to irrelevant insights and user distrust | Extensive testing with diverse synthetic datasets; conservative thresholds for pattern matching (require ≥3 occurrences); validate against 100 synthetic users in evaluation; admin oversight to flag incorrect patterns for algorithm refinement |
-| **Persona Assignment Inconsistency** | Unclear decision logic for priority insight selection causing confusion for admins and users | Build and document clear decision tree with explicit prioritization hierarchy (High Utilization > Variable Income > Subscription-Heavy > Savings Builder > Custom); provide secondary insights for users matching multiple personas; decision tree documentation accessible to admins for reference; validate against synthetic user dataset |
-| **Supabase Service Disruption** | Database or auth outage prevents consent verification, blocking all data processing operations | Implement retry logic with exponential backoff; graceful failure (do NOT generate assessments without server connection since consent check required); clear error messaging explaining service unavailability; monitor Supabase status; user can retry when service restored |
-| **AI Response Latency** | GPT-4 API calls take longer than 2-second target during high load or OpenAI outages, degrading chat experience | Implement streaming responses via Vercel AI SDK for perceived speed; display loading spinner during processing; long timeout (30s+) to handle slower responses without premature failure; clear error messaging if timeout reached; load testing before launch |
-| **Processing Without Consent** | System processes user financial data before consent verified or after consent revoked, violating privacy promise and potentially regulations | CRITICAL: Server-side consent check required before ANY data processing operation; consent status fetched from Supabase before Plaid connection allowed; consent verification before assessment generation; consent revocation immediately blocks all processing; automated testing to verify consent checks are in place; clear user messaging when operations blocked due to missing consent |
-| **Regulatory Compliance Uncertainty** | Unclear whether platform constitutes "financial advice" despite disclaimers, risking regulatory action | Legal review of all user-facing content before launch; consult with fintech compliance expert; research state-by-state financial advice regulations; ensure all insights are purely educational; prominent disclaimers on every insight and chat message; admin review of all content |
+| Risk                                       | Impact                                                                                                                                                                                                 | Mitigation                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Plaid API Rate Limits or Downtime**      | Users cannot connect accounts or refresh data, blocking primary user flow                                                                                                                              | Use Plaid Sandbox environment for testing and demos; setup instructions include connecting paid Plaid account for production; display clear error messages; monitor Plaid status page; graceful failure with retry prompts                                                                                                                                                                     |
+| **AI Guardrail Bypass**                    | AI provides regulated financial advice, inappropriate tone, or ineligible product recommendations, exposing platform to legal liability                                                                | Implement function calling validation before response delivery; extensive testing of edge cases; clear disclaimers on every insight and AI message; admin review after-the-fact with ability to flag problematic responses for developer review and guardrail refinement                                                                                                                       |
+| **Client-Side Processing Performance**     | Assessment generation exceeds 1-second target for users with extensive transaction history. Plaid returns up to 24 months of data with no server-side filtering; users could have 10,000+ transactions | Process only last 180 days of transactions client-side (ignore older data from Plaid response); implement Web Workers for background processing to keep UI responsive; optimize algorithms with indexing; progressive loading for perceived speed; add loading indicators                                                                                                                      |
+| **Data Privacy Breach**                    | Raw financial data accidentally stored server-side or exposed through logs/errors, violating core security promise                                                                                     | Strict code reviews for any server-side data handling; client-side processing architecture ensures financial data never reaches server; protection against XSS attacks; comprehensive logging audit to exclude financial data; never log Plaid responses server-side                                                                                                                           |
+| **Inaccurate Behavioral Signal Detection** | Pattern detection algorithms produce false positives (e.g., flagging one-time purchases as subscriptions), leading to irrelevant insights and user distrust                                            | Extensive testing with diverse synthetic datasets; conservative thresholds for pattern matching (require ≥3 occurrences); validate against 100 synthetic users in evaluation; admin oversight to flag incorrect patterns for algorithm refinement                                                                                                                                              |
+| **Persona Assignment Inconsistency**       | Unclear decision logic for priority insight selection causing confusion for admins and users                                                                                                           | Build and document clear decision tree with explicit prioritization hierarchy (High Utilization > Variable Income > Subscription-Heavy > Savings Builder > Custom); provide secondary insights for users matching multiple personas; decision tree documentation accessible to admins for reference; validate against synthetic user dataset                                                   |
+| **Supabase Service Disruption**            | Database or auth outage prevents consent verification, blocking all data processing operations                                                                                                         | Implement retry logic with exponential backoff; graceful failure (do NOT generate assessments without server connection since consent check required); clear error messaging explaining service unavailability; monitor Supabase status; user can retry when service restored                                                                                                                  |
+| **AI Response Latency**                    | GPT-4 API calls take longer than 2-second target during high load or OpenAI outages, degrading chat experience                                                                                         | Implement streaming responses via Vercel AI SDK for perceived speed; display loading spinner during processing; long timeout (30s+) to handle slower responses without premature failure; clear error messaging if timeout reached; load testing before launch                                                                                                                                 |
+| **Processing Without Consent**             | System processes user financial data before consent verified or after consent revoked, violating privacy promise and potentially regulations                                                           | CRITICAL: Server-side consent check required before ANY data processing operation; consent status fetched from Supabase before Plaid connection allowed; consent verification before assessment generation; consent revocation immediately blocks all processing; automated testing to verify consent checks are in place; clear user messaging when operations blocked due to missing consent |
+| **Regulatory Compliance Uncertainty**      | Unclear whether platform constitutes "financial advice" despite disclaimers, risking regulatory action                                                                                                 | Legal review of all user-facing content before launch; consult with fintech compliance expert; research state-by-state financial advice regulations; ensure all insights are purely educational; prominent disclaimers on every insight and chat message; admin review of all content                                                                                                          |
 
 ---
 
 ✅ **Next Steps / Open Questions (Post-MVP):**
+
 - **Admin UI for Partner Offer Editing**: Build UI for admins to create, edit, and delete partner offers including eligibility requirements without code changes. Currently partner offers managed via CLI only.
 - **User Feedback Mechanism**: Consider adding feature for users to report inaccurate behavioral signal detection (e.g., "This isn't a subscription" button). Would improve algorithm refinement beyond admin oversight alone.
 - **Automated Plaid Refresh Prompts**: Consider prompting users to refresh Plaid connection after X days (e.g., 30, 60, 90 days) to ensure insights remain current. Balance between data freshness and user friction.
@@ -217,5 +224,4 @@
 - **Historical Trend Analysis**: Currently analyzes 30-day and 180-day windows. Future: year-over-year comparisons, multi-year trends, predictive forecasting.
 - **Mobile Native Apps**: Currently web-only. Consider iOS/Android native apps for better mobile experience and push notifications.
 - **Export/Reporting**: Consider PDF export, email reports, or downloadable assessment summaries for users who want records.
-- **Investment/Portfolio Analysis**: Expand beyond transaction accounts to include stocks, retirement accounts, investment performance (requires additional Plaid products or integrations).  
-
+- **Investment/Portfolio Analysis**: Expand beyond transaction accounts to include stocks, retirement accounts, investment performance (requires additional Plaid products or integrations).

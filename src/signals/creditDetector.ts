@@ -64,9 +64,10 @@ export function detectCredit(
         : false;
 
     // Check for interest charges (APR indicates interest-bearing)
-    const hasInterestCharges = liability && liability.aprs && liability.aprs.length > 0
-      ? liability.aprs[0].apr_percentage > 0
-      : false;
+    const hasInterestCharges =
+      liability && liability.aprs && liability.aprs.length > 0
+        ? liability.aprs[0].apr_percentage > 0
+        : false;
 
     const isOverdue = liability?.is_overdue || false;
 

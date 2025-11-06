@@ -58,8 +58,8 @@ export function detectIncome(
 
   // Determine frequency
   let frequency: IncomeSignal['evidence']['frequency'] = 'irregular';
-  const matchingFrequency = FREQUENCIES.find((freq) =>
-    Math.abs(medianPayGap - freq.avgDays) <= freq.tolerance
+  const matchingFrequency = FREQUENCIES.find(
+    (freq) => Math.abs(medianPayGap - freq.avgDays) <= freq.tolerance
   );
 
   if (matchingFrequency) {
@@ -74,18 +74,14 @@ export function detectIncome(
 
   // Calculate cash flow buffer (checking balance / average monthly expenses)
   const checkingAccounts = accounts.filter((acc) => acc.subtype === 'checking');
-  const totalChecking = checkingAccounts.reduce(
-    (sum, acc) => sum + acc.balances.current,
-    0
-  );
+  const totalChecking = checkingAccounts.reduce((sum, acc) => sum + acc.balances.current, 0);
 
   // Estimate monthly expenses from spending
   const spendingTxs = windowTxs.filter((tx) => tx.amount > 0);
   const totalSpending = spendingTxs.reduce((sum, tx) => sum + tx.amount, 0);
   const averageMonthlyExpenses = (totalSpending / days) * 30;
 
-  const cashFlowBuffer =
-    averageMonthlyExpenses > 0 ? totalChecking / averageMonthlyExpenses : 0;
+  const cashFlowBuffer = averageMonthlyExpenses > 0 ? totalChecking / averageMonthlyExpenses : 0;
 
   // Detected if median pay gap > 45 days OR frequency is irregular
   const detected = medianPayGap > 45 || frequency === 'irregular';
