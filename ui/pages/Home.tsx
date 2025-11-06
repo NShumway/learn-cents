@@ -83,7 +83,7 @@ export default function Home() {
       <div className="max-w-2xl mx-auto text-center pb-24">
         <h1 className="text-4xl font-bold mb-4">Learning Cents</h1>
         <p className="text-lg text-gray-600 mb-8">
-          Get personalized financial education based on your transaction data
+          Discover where you can go next with personalized financial education
         </p>
 
         <div className="mb-8 space-y-4">
@@ -97,9 +97,21 @@ export default function Home() {
 
           <div className="text-sm text-gray-700 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <strong>Sandbox Test Credentials:</strong>
-            <div className="mt-2 font-mono text-left">
+            <p className="mt-2 mb-3 text-xs">
+              Click the username below to copy it, then paste into Plaid Link when prompted.
+            </p>
+            <div className="font-mono text-left space-y-1">
               <div>
-                Username: <strong>user_transactions_dynamic</strong>
+                Username:{' '}
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText('user_transactions_dynamic');
+                  }}
+                  className="font-bold hover:text-blue-600 cursor-pointer underline"
+                  title="Click to copy"
+                >
+                  user_transactions_dynamic
+                </button>
               </div>
               <div>
                 Password: <strong>(any value)</strong>
@@ -115,11 +127,6 @@ export default function Home() {
               Or view sample assessment
             </button>
           </div>
-        </div>
-
-        <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-800 text-left">
-          <strong>Story 11.5 Complete:</strong> Click "Connect with Plaid" to open the Link modal,
-          enter test credentials, and generate a personalized assessment!
         </div>
       </div>
 
