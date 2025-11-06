@@ -66,14 +66,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.warn('Could not fetch liabilities');
     }
 
-    // Log what we're receiving from Plaid
-    console.log(
-      'Accounts data keys:',
-      accountsResponse.data.accounts[0]
-        ? Object.keys(accountsResponse.data.accounts[0])
-        : 'no accounts'
-    );
-
     // Return financial data
     res.status(200).json({
       accounts: accountsResponse.data.accounts,
