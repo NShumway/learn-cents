@@ -6,7 +6,15 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Configuration, PlaidApi, PlaidEnvironments, Products, CountryCode } from 'plaid';
+import {
+  Configuration,
+  PlaidApi,
+  PlaidEnvironments,
+  Products,
+  CountryCode,
+  DepositoryAccountSubtype,
+  CreditAccountSubtype,
+} from 'plaid';
 
 const plaidClient = new PlaidApi(
   new Configuration({
@@ -34,6 +42,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       products: [Products.Transactions],
       country_codes: [CountryCode.Us],
       language: 'en',
+      account_filters: {
+        depository: {
+          account_subtypes: [DepositoryAccountSubtype.Checking, DepositoryAccountSubtype.Savings],
+        },
+        credit: {
+          account_subtypes: [CreditAccountSubtype.CreditCard],
+        },
+      },
     });
 
     res.status(200).json({ link_token: response.data.link_token });

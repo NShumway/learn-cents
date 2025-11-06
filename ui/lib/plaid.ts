@@ -28,8 +28,7 @@ export function usePlaidConnection(linkToken: string, onSuccess: PlaidLinkOnSucc
  */
 export async function fetchLinkToken(): Promise<string> {
   try {
-    // Use relative URL - Vite dev server will proxy to :3001
-    const response = await fetch('/api/plaid/create_link_token', {
+    const response = await fetch('/api/plaid/create-link-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,8 +53,7 @@ export async function fetchLinkToken(): Promise<string> {
  */
 export async function exchangeTokenAndFetchData(publicToken: string): Promise<UserFinancialData> {
   try {
-    // Use relative URL - Vite dev server will proxy to :3001
-    const response = await fetch('/api/plaid/exchange_and_fetch', {
+    const response = await fetch('/api/plaid/exchange-token', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

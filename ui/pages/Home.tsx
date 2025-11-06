@@ -7,11 +7,11 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePlaidLink } from 'react-plaid-link';
 import LoadingState from '../components/plaid/LoadingState';
 import ErrorState from '../components/plaid/ErrorState';
 import { useAssessment } from '../hooks/useAssessment';
 import { mockAssessment } from '../lib/mockAssessment';
+import { usePlaidConnection } from '../lib/plaid';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -62,10 +62,8 @@ export default function Home() {
     }
   };
 
-  const { open, ready } = usePlaidLink({
-    token: linkToken,
-    onSuccess,
-  });
+  // Use the wrapper hook to avoid duplicate Plaid Link initialization
+  const { open, ready } = usePlaidConnection(linkToken || '', onSuccess);
 
   // Fallback: use mock assessment
   const handleMockFlow = () => {
