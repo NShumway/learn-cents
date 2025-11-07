@@ -1,5 +1,5 @@
-import { getUserFromRequest } from '../../../src/lib/supabase.js';
-import { prisma } from '../../../src/lib/prisma.js';
+import { getUserFromRequest } from '../../_lib/supabase.js';
+import { prisma } from '../../_lib/prisma.js';
 
 export default async function handler(req: Request) {
   if (req.method !== 'GET') {

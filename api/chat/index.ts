@@ -1,10 +1,10 @@
 import { streamText, convertToModelMessages, type UIMessage } from 'ai';
-import { aiModel } from '../../src/lib/ai/client.js';
-import { buildSystemPrompt } from '../../src/lib/ai/prompts.js';
-import { validateUserMessage, validateResponse } from '../../src/lib/ai/guardrails.js';
-import { buildAIContext, sanitizeContext } from '../../src/lib/ai/context.js';
-import { getUserFromRequest } from '../../src/lib/supabase.js';
-import { prisma } from '../../src/lib/prisma.js';
+import { aiModel } from '../_lib/ai/client.js';
+import { buildSystemPrompt } from '../_lib/ai/prompts.js';
+import { validateUserMessage, validateResponse } from '../_lib/ai/guardrails.js';
+import { buildAIContext, sanitizeContext } from '../_lib/ai/context.js';
+import { getUserFromRequest } from '../_lib/supabase.js';
+import { prisma } from '../_lib/prisma.js';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;

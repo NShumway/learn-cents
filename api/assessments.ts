@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getUserFromRequest } from '../src/lib/supabase.js';
-import { prisma } from '../src/lib/prisma.js';
+import { getUserFromRequest } from './_lib/supabase.js';
+import { prisma } from './_lib/prisma.js';
 import { matchOffersToUser } from '../features/eligibility/matcher.js';
 import { calculateEligibilityMetrics } from '../features/eligibility/calculator.js';
 import type { EligibilityRequirements } from '../features/eligibility/types.js';
