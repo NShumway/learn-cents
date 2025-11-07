@@ -80,10 +80,13 @@
     "vitest": "^4.0.7"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.64",
+    "@ai-sdk/react": "^2.0.89",
     "@prisma/client": "^6.18.0",
     "@supabase/supabase-js": "^2.79.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "ai": "^5.0.89",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

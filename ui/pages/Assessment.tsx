@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import InsightCard from '../components/assessment/InsightCard';
 import DecisionTreeComponent from '../components/assessment/DecisionTree';
+import { ChatContainer } from '../../src/components/chat/ChatContainer';
 import { mockAssessment } from '../lib/mockAssessment';
 import { getAccessToken } from '../lib/auth';
 import type { Assessment as AssessmentType } from '../../src/types/assessment';
@@ -109,6 +110,9 @@ export default function Assessment() {
         <div className="mb-8">
           <DecisionTreeComponent tree={assessment.decisionTree} />
         </div>
+
+        {/* AI Chat */}
+        {assessment.id && <ChatContainer assessmentId={assessment.id} />}
       </div>
 
       {/* Sticky Disclaimer */}

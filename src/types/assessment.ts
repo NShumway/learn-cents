@@ -46,6 +46,7 @@ export interface Insight {
  * Complete assessment for a user
  */
 export interface Assessment {
+  id?: string; // Database ID when loaded from server
   priorityInsight: Insight;
   additionalInsights: Insight[];
   decisionTree: DecisionTree;

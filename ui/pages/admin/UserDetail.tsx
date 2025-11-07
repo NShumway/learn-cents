@@ -5,6 +5,7 @@ import { Button } from '../../components/ui/Button';
 import { getAccessToken } from '../../lib/auth';
 import InsightCard from '../../components/assessment/InsightCard';
 import DecisionTreeComponent from '../../components/assessment/DecisionTree';
+import { ChatHistory } from '../../../src/components/admin/ChatHistory';
 import type { Insight } from '../../../src/types/assessment';
 import type { DecisionTree } from '../../../src/personas/assignPersonas';
 
@@ -243,6 +244,11 @@ export function AdminUserDetail() {
           <p className="text-gray-600">No current assessment found</p>
         </Card>
       )}
+
+      {/* Chat History */}
+      <Card className="p-6 mb-6">
+        <ChatHistory userId={userId!} />
+      </Card>
 
       {/* Flag Modal */}
       {showFlagModal && (
