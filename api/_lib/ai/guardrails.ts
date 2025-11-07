@@ -49,6 +49,14 @@ export function validateResponse(content: string): ValidationResult {
     }
   }
 
+  // If there are prohibited phrases or advice indicators, fail validation immediately
+  if (issues.length > 0) {
+    return {
+      isValid: false,
+      issues,
+    };
+  }
+
   // Check if disclaimer is included when discussing financial topics
   const financialKeywords = ['credit', 'debt', 'savings', 'invest', 'loan', 'budget'];
   const hasFinancialContent = financialKeywords.some((keyword) => lowerContent.includes(keyword));
@@ -70,8 +78,8 @@ export function validateResponse(content: string): ValidationResult {
   }
 
   return {
-    isValid: issues.length === 0,
-    issues,
+    isValid: true,
+    issues: [],
   };
 }
 
