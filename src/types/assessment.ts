@@ -17,6 +17,19 @@ export interface EducationItem {
 }
 
 /**
+ * Partner offer recommendation
+ */
+export interface PartnerOffer {
+  id: string;
+  offerName: string;
+  offerPitch: string;
+  targetedPersonas: string[];
+  priorityPerPersona: Record<string, number>;
+  activeDateStart: Date;
+  activeDateEnd: Date | null;
+}
+
+/**
  * Single insight for a persona with rendered content
  */
 export interface Insight {
@@ -26,6 +39,7 @@ export interface Insight {
   renderedForUser: string; // Human-readable explanation
   educationItems: EducationItem[];
   evidence: Record<string, unknown>; // Raw evidence from signals
+  partnerOffer?: PartnerOffer | null; // Optional matched partner offer
 }
 
 /**

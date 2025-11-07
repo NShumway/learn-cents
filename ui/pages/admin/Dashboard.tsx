@@ -81,7 +81,23 @@ export function AdminDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
+        <div className="flex gap-4">
+          <Link
+            to="/admin"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Users
+          </Link>
+          <Link
+            to="/admin/offers"
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+          >
+            Partner Offers
+          </Link>
+        </div>
+      </div>
 
       {/* Flagged Insights Section */}
       {flaggedAssessments.length > 0 && (

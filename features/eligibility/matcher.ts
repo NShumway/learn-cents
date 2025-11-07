@@ -4,34 +4,90 @@ export function matchOffersToUser(
   offers: PartnerOffer[],
   metrics: EligibilityMetrics,
   persona: string
-): PartnerOffer[] {
+): PartnerOffer | null {
   const now = new Date();
+
+  console.log('[MATCHER] Starting match:', {
+    offerCount: offers.length,
+    persona,
+    now: now.toISOString(),
+  });
 
   // Filter offers by eligibility and active dates
   const eligibleOffers = offers.filter((offer) => {
+    console.log(`[MATCHER] Checking offer: ${offer.offerName}`, {
+      activeDateStart: offer.activeDateStart,
+      activeDateEnd: offer.activeDateEnd,
+      targetedPersonas: offer.targetedPersonas,
+      eligibilityReqs: offer.eligibilityReqs,
+    });
+
     // Check if offer is active
-    if (offer.activeDateStart > now) return false;
-    if (offer.activeDateEnd && offer.activeDateEnd < now) return false;
-
-    // Check if persona matches
-    if (!offer.targetedPersonas.includes(persona)) return false;
-
-    // Check eligibility requirements
-    if (!meetsEligibilityRequirements(metrics, offer.eligibilityReqs)) {
+    if (offer.activeDateStart > now) {
+      console.log(`[MATCHER] ❌ ${offer.offerName}: not yet active`);
+      return false;
+    }
+    if (offer.activeDateEnd && offer.activeDateEnd < now) {
+      console.log(`[MATCHER] ❌ ${offer.offerName}: expired`);
       return false;
     }
 
+    // Check if persona matches (case-insensitive, handles spaces vs underscores)
+    const normalizedPersona = persona.toLowerCase().replace(/\s+/g, '_');
+    const personaMatches = offer.targetedPersonas.some(
+      (p) => p.toLowerCase().replace(/\s+/g, '_') === normalizedPersona
+    );
+    if (!personaMatches) {
+      console.log(`[MATCHER] ❌ ${offer.offerName}: persona mismatch (looking for ${persona})`);
+      return false;
+    }
+
+    // Check eligibility requirements
+    if (!meetsEligibilityRequirements(metrics, offer.eligibilityReqs)) {
+      console.log(`[MATCHER] ❌ ${offer.offerName}: failed eligibility`);
+      return false;
+    }
+
+    console.log(`[MATCHER] ✅ ${offer.offerName}: ELIGIBLE`);
     return true;
   });
 
-  // Sort by priority for the user's persona
+  console.log('[MATCHER] Eligible offers:', eligibleOffers.length);
+
+  // Sort by priority for the user's persona, with tie-breaking
+  const normalizedPersona = persona.toLowerCase().replace(/\s+/g, '_');
   const sortedOffers = eligibleOffers.sort((a, b) => {
-    const priorityA = a.priorityPerPersona[persona] || 999;
-    const priorityB = b.priorityPerPersona[persona] || 999;
-    return priorityA - priorityB;
+    // Try to find priority with normalized matching
+    const priorityA =
+      a.priorityPerPersona[persona] ||
+      a.priorityPerPersona[normalizedPersona] ||
+      Object.entries(a.priorityPerPersona).find(
+        ([key]) => key.toLowerCase().replace(/\s+/g, '_') === normalizedPersona
+      )?.[1] ||
+      999;
+    const priorityB =
+      b.priorityPerPersona[persona] ||
+      b.priorityPerPersona[normalizedPersona] ||
+      Object.entries(b.priorityPerPersona).find(
+        ([key]) => key.toLowerCase().replace(/\s+/g, '_') === normalizedPersona
+      )?.[1] ||
+      999;
+
+    // Primary sort: by priority (lower number = higher priority)
+    if (priorityA !== priorityB) {
+      return priorityA - priorityB;
+    }
+
+    // Tie-breaker: pick the one that ends later
+    // null activeDateEnd = no expiration = highest priority
+    if (a.activeDateEnd === null && b.activeDateEnd === null) return 0;
+    if (a.activeDateEnd === null) return -1;
+    if (b.activeDateEnd === null) return 1;
+    return b.activeDateEnd.getTime() - a.activeDateEnd.getTime();
   });
 
-  return sortedOffers;
+  // Return the top offer, or null if no eligible offers
+  return sortedOffers[0] || null;
 }
 
 function meetsEligibilityRequirements(

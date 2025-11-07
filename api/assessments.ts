@@ -1,6 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getUserFromRequest } from './lib/supabase.js';
 import { prisma } from './lib/prisma.js';
+import { matchOffersToUser } from '../features/eligibility/matcher.js';
+import { calculateEligibilityMetrics } from '../features/eligibility/calculator.js';
+import type { EligibilityRequirements } from '../features/eligibility/types.js';
+import type { DetectedSignals } from '../src/types/signals.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
@@ -105,7 +109,109 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
       });
 
-      return res.status(200).json({ assessment: assessment || null });
+      if (!assessment) {
+        return res.status(200).json({ assessment: null });
+      }
+
+      // Fetch all active partner offers
+      const now = new Date();
+      const offersFromDb = await prisma.partnerOffer.findMany({
+        where: {
+          activeDateStart: { lte: now },
+          OR: [{ activeDateEnd: null }, { activeDateEnd: { gte: now } }],
+        },
+      });
+
+      console.log('[OFFERS] Found active offers:', offersFromDb.length);
+
+      // Convert Prisma types to PartnerOffer types
+      const offers = offersFromDb.map((o) => ({
+        id: o.id,
+        offerName: o.offerName,
+        offerPitch: o.offerPitch,
+        targetedPersonas: o.targetedPersonas,
+        priorityPerPersona: o.priorityPerPersona as Record<string, number>,
+        eligibilityReqs: o.eligibilityReqs as EligibilityRequirements,
+        activeDateStart: o.activeDateStart,
+        activeDateEnd: o.activeDateEnd,
+      }));
+
+      // Match offers to insights if we have signals data
+      let enhancedAssessment = assessment;
+
+      console.log('[OFFERS] Assessment check:', {
+        hasSignals: !!assessment.signals,
+        hasOffers: offers.length > 0,
+        priorityPersona: (assessment.priorityInsight as Record<string, unknown>)?.personaType,
+      });
+
+      if (assessment.signals && offers.length > 0) {
+        try {
+          const signals = assessment.signals as unknown as DetectedSignals;
+          const eligibilityMetrics = calculateEligibilityMetrics(signals);
+
+          console.log('[OFFERS] Eligibility metrics:', eligibilityMetrics);
+
+          // Match offer for priority insight
+          const priorityInsight = assessment.priorityInsight as Record<string, unknown>;
+          const priorityOffer = matchOffersToUser(
+            offers,
+            eligibilityMetrics,
+            priorityInsight.personaType as string
+          );
+
+          console.log('[OFFERS] Match result:', {
+            persona: priorityInsight.personaType,
+            matched: priorityOffer ? priorityOffer.offerName : null,
+          });
+
+          if (priorityOffer) {
+            priorityInsight.partnerOffer = {
+              id: priorityOffer.id,
+              offerName: priorityOffer.offerName,
+              offerPitch: priorityOffer.offerPitch,
+              targetedPersonas: priorityOffer.targetedPersonas,
+              priorityPerPersona: priorityOffer.priorityPerPersona,
+              activeDateStart: priorityOffer.activeDateStart,
+              activeDateEnd: priorityOffer.activeDateEnd,
+            };
+          }
+
+          // Match offers for additional insights
+          const additionalInsights =
+            (assessment.additionalInsights as Record<string, unknown>[]) || [];
+          additionalInsights.forEach((insight) => {
+            const offer = matchOffersToUser(
+              offers,
+              eligibilityMetrics,
+              insight.personaType as string
+            );
+            if (offer) {
+              insight.partnerOffer = {
+                id: offer.id,
+                offerName: offer.offerName,
+                offerPitch: offer.offerPitch,
+                targetedPersonas: offer.targetedPersonas,
+                priorityPerPersona: offer.priorityPerPersona,
+                activeDateStart: offer.activeDateStart,
+                activeDateEnd: offer.activeDateEnd,
+              };
+            }
+          });
+
+          enhancedAssessment = {
+            ...assessment,
+            priorityInsight: priorityInsight as unknown as typeof assessment.priorityInsight,
+            additionalInsights:
+              additionalInsights as unknown as typeof assessment.additionalInsights,
+          };
+        } catch (error) {
+          console.error('Error matching offers:', error);
+          // Return assessment without offers if matching fails
+        }
+      }
+
+      return res.status(200).json({ assessment: enhancedAssessment });
     }
 
     // PATCH /api/assessments?id=<assessment_id> - Flag/unflag assessment (admin only)

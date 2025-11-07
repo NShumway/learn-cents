@@ -5,7 +5,6 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 import InsightCard from '../components/assessment/InsightCard';
 import DecisionTreeComponent from '../components/assessment/DecisionTree';
 import { mockAssessment } from '../lib/mockAssessment';
@@ -13,32 +12,21 @@ import { getAccessToken } from '../lib/auth';
 import type { Assessment as AssessmentType } from '../../src/types/assessment';
 
 export default function Assessment() {
-  const location = useLocation();
   const [showAdditional, setShowAdditional] = useState(false);
   const [assessment, setAssessment] = useState<AssessmentType | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadAssessment() {
-      // First, try to get assessment from navigation state
-      const stateAssessment = (location.state as { assessment?: AssessmentType })?.assessment;
-
-      if (stateAssessment) {
-        setAssessment(stateAssessment);
-        setLoading(false);
-        return;
-      }
-
-      // If not in state, fetch from API
       try {
         const token = await getAccessToken();
         if (!token) {
-          // No auth, fall back to mock
           setAssessment(mockAssessment);
           setLoading(false);
           return;
         }
 
+        // Always fetch from API - it includes dynamic offer matching
         const response = await fetch('/api/assessments?type=current', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,9 +35,13 @@ export default function Assessment() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log('[Assessment] Loaded from API:', {
+            hasAssessment: !!data.assessment,
+            hasPriorityOffer: !!data.assessment?.priorityInsight?.partnerOffer,
+            priorityOffer: data.assessment?.priorityInsight?.partnerOffer,
+          });
           setAssessment(data.assessment);
         } else {
-          // No assessment found, use mock
           setAssessment(mockAssessment);
         }
       } catch (err) {
@@ -61,7 +53,7 @@ export default function Assessment() {
     }
 
     loadAssessment();
-  }, [location.state]);
+  }, []);
 
   if (loading) {
     return (

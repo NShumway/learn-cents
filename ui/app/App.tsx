@@ -11,6 +11,8 @@ import { Consent } from '../pages/Consent';
 import { Settings } from '../pages/Settings';
 import { AdminDashboard } from '../pages/admin/Dashboard';
 import { AdminUserDetail } from '../pages/admin/UserDetail';
+import AdminOffers from '../pages/admin/Offers';
+import AdminOfferDetail from '../pages/admin/OfferDetail';
 import NotFound from '../pages/NotFound';
 
 function App() {
@@ -33,6 +35,8 @@ function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/users/:userId" element={<AdminUserDetail />} />
+                    <Route path="/admin/offers" element={<AdminOffers />} />
+                    <Route path="/admin/offers/:id" element={<AdminOfferDetail />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Layout>
