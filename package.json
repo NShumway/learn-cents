@@ -16,7 +16,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "generate:data": "tsx scripts/generateRandomPlaidData.ts",
     "explore:plaid": "tsx scripts/explorePlaidSandbox.ts",
-    "db:migrate": "prisma migrate dev",
+    "db:migrate": "prisma db push",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",

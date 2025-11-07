@@ -6,7 +6,7 @@ import { Card } from '../components/ui/Card';
 import { getAccessToken } from '../lib/auth';
 
 export function Settings() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, checkConsent } = useAuth();
   const [consentStatus, setConsentStatus] = useState<boolean | null>(null);
   const [consentDate, setConsentDate] = useState<Date | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,7 @@ export function Settings() {
   const loadConsentStatus = async () => {
     try {
       const token = await getAccessToken();
-      const response = await fetch('/api/consent/status', {
+      const response = await fetch('/api/consent', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -47,8 +47,8 @@ export function Settings() {
 
     try {
       const token = await getAccessToken();
-      const response = await fetch('/api/consent/revoke', {
-        method: 'POST',
+      const response = await fetch('/api/consent', {
+        method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -62,6 +62,9 @@ export function Settings() {
       setConsentStatus(false);
       setConsentDate(null);
       setShowRevokeModal(false);
+
+      // Update the global consent state, which will trigger redirect to consent page
+      await checkConsent();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to revoke consent');
     } finally {
@@ -75,8 +78,8 @@ export function Settings() {
 
     try {
       const token = await getAccessToken();
-      const response = await fetch('/api/user/delete-account', {
-        method: 'POST',
+      const response = await fetch('/api/auth', {
+        method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -149,7 +152,7 @@ export function Settings() {
                 <p className="text-gray-900 font-medium">Consent not granted</p>
               </div>
               <p className="text-sm text-gray-600">
-                You need to grant consent to use Learn Cents features.
+                You need to grant consent to use Learning Cents features.
               </p>
               <Button onClick={() => navigate('/consent')}>Grant Consent</Button>
             </>

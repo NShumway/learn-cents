@@ -32,6 +32,11 @@ export default function Header() {
                 Settings
               </Link>
             )}
+            {user?.isAdmin && (
+              <Link to="/admin" className="text-blue-600 hover:text-blue-700 font-medium">
+                Admin
+              </Link>
+            )}
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600">{user.email}</span>

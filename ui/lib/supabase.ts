@@ -12,4 +12,5 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 export type AuthUser = {
   id: string;
   email: string;
+  isAdmin?: boolean;
 };

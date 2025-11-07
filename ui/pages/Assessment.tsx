@@ -4,20 +4,80 @@
  * Displays the generated financial assessment with insights and decision tree
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import InsightCard from '../components/assessment/InsightCard';
 import DecisionTreeComponent from '../components/assessment/DecisionTree';
 import { mockAssessment } from '../lib/mockAssessment';
+import { getAccessToken } from '../lib/auth';
 import type { Assessment as AssessmentType } from '../../src/types/assessment';
 
 export default function Assessment() {
   const location = useLocation();
   const [showAdditional, setShowAdditional] = useState(false);
+  const [assessment, setAssessment] = useState<AssessmentType | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Get assessment from navigation state or fall back to mock
-  const assessment: AssessmentType =
-    (location.state as { assessment?: AssessmentType })?.assessment || mockAssessment;
+  useEffect(() => {
+    async function loadAssessment() {
+      // First, try to get assessment from navigation state
+      const stateAssessment = (location.state as { assessment?: AssessmentType })?.assessment;
+
+      if (stateAssessment) {
+        setAssessment(stateAssessment);
+        setLoading(false);
+        return;
+      }
+
+      // If not in state, fetch from API
+      try {
+        const token = await getAccessToken();
+        if (!token) {
+          // No auth, fall back to mock
+          setAssessment(mockAssessment);
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch('/api/assessments?type=current', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setAssessment(data.assessment);
+        } else {
+          // No assessment found, use mock
+          setAssessment(mockAssessment);
+        }
+      } catch (err) {
+        console.error('Failed to load assessment:', err);
+        setAssessment(mockAssessment);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAssessment();
+  }, [location.state]);
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <div className="animate-pulse">Loading your assessment...</div>
+      </div>
+    );
+  }
+
+  if (!assessment) {
+    return (
+      <div className="max-w-4xl mx-auto text-center py-12">
+        <p className="text-gray-600">No assessment found.</p>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import { useAuth } from '../contexts/AuthContext';
 import { getAccessToken } from '../lib/auth';
 
 export function Consent() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { checkConsent } = useAuth();
 
   const handleGrantConsent = async () => {
     setLoading(true);
@@ -15,7 +17,12 @@ export function Consent() {
 
     try {
       const token = await getAccessToken();
-      const response = await fetch('/api/consent/grant', {
+
+      if (!token) {
+        throw new Error('No authentication token available. Please try logging in again.');
+      }
+
+      const response = await fetch('/api/consent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,6 +35,8 @@ export function Consent() {
         throw new Error(data.error || 'Failed to grant consent');
       }
 
+      // Refresh consent status in auth context
+      await checkConsent();
       navigate('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to grant consent');
@@ -36,18 +45,13 @@ export function Consent() {
     }
   };
 
-  const handleDenyConsent = () => {
-    // If user denies consent, they can't use the app
-    navigate('/');
-  };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-2xl p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Privacy & Consent</h1>
           <p className="text-gray-600">
-            Before you can use Learn Cents, we need your consent to process your financial data.
+            Before you can use Learning Cents, we need your consent to process your financial data.
           </p>
         </div>
 
@@ -118,12 +122,9 @@ export function Consent() {
           </ul>
         </div>
 
-        <div className="flex gap-4">
-          <Button onClick={handleGrantConsent} disabled={loading} className="flex-1">
-            {loading ? 'Processing...' : 'I Consent - Continue to Learn Cents'}
-          </Button>
-          <Button onClick={handleDenyConsent} variant="outline" className="flex-1">
-            Deny - Return to Home
+        <div className="flex justify-center">
+          <Button onClick={handleGrantConsent} disabled={loading} className="px-8">
+            {loading ? 'Processing...' : 'I Consent - Continue to Learning Cents'}
           </Button>
         </div>
       </Card>

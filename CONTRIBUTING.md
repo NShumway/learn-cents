@@ -1,4 +1,4 @@
-# Contributing to Learn Cents
+# Contributing to Learning Cents
 
 ## Development Workflow
 

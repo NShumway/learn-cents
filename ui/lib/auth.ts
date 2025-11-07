@@ -1,33 +1,35 @@
 import { supabase, type AuthUser } from './supabase';
 
 export async function signUp(email: string, password: string): Promise<AuthUser> {
-  const { data, error } = await supabase.auth.signUp({
+  // Call our API to create user atomically in both Supabase Auth and our database
+  const response = await fetch('/api/auth?action=signup', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.error || 'Failed to sign up');
+  }
+
+  const { user } = await response.json();
+
+  // Now sign in with Supabase client to get a session
+  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
 
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!data.user) {
-    throw new Error('Signup failed - no user returned');
-  }
-
-  // Sync with our database via API
-  const response = await fetch('/api/auth/sync-user', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId: data.user.id, email: data.user.email }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to sync user with database');
+  if (signInError || !signInData.session) {
+    throw new Error('Account created but failed to sign in. Please try logging in.');
   }
 
   return {
-    id: data.user.id,
-    email: data.user.email!,
+    id: user.id,
+    email: user.email,
   };
 }
 

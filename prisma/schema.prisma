@@ -33,7 +33,7 @@ model Assessment {
   // Assessment data (stored as JSONB)
   priorityInsight   Json     // Priority persona insight
   additionalInsights Json    // Array of additional insights
-  eligibilityMetrics Json    // Aggregated metrics for offer eligibility
+  signals           Json     // Detected signals from financial data
   decisionTree      Json     // Decision trace
 
   // Metadata

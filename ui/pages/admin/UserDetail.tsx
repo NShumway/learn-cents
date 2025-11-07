@@ -3,6 +3,10 @@ import { useParams } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { getAccessToken } from '../../lib/auth';
+import InsightCard from '../../components/assessment/InsightCard';
+import DecisionTreeComponent from '../../components/assessment/DecisionTree';
+import type { Insight } from '../../../src/types/assessment';
+import type { DecisionTree } from '../../../src/personas/assignPersonas';
 
 interface UserData {
   id: string;
@@ -17,10 +21,10 @@ interface AssessmentData {
   id: string;
   userId: string;
   createdAt: string;
-  priorityInsight: Record<string, unknown>;
-  additionalInsights: Record<string, unknown>;
-  eligibilityMetrics: Record<string, unknown>;
-  decisionTree: Record<string, unknown>;
+  priorityInsight: Insight;
+  additionalInsights: Insight[];
+  signals: Record<string, unknown>;
+  decisionTree: DecisionTree;
   isArchived: boolean;
   isFlagged: boolean;
   flaggedAt: string | null;
@@ -44,7 +48,7 @@ export function AdminUserDetail() {
   const loadUserData = async () => {
     try {
       const token = await getAccessToken();
-      const response = await fetch(`/api/admin/users/${userId}`, {
+      const response = await fetch(`/api/admin/users?id=${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -68,13 +72,13 @@ export function AdminUserDetail() {
 
     try {
       const token = await getAccessToken();
-      const response = await fetch(`/api/admin/assessments/${currentAssessment.id}/flag`, {
-        method: 'POST',
+      const response = await fetch(`/api/assessments?id=${currentAssessment.id}`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ reason: flagReason }),
+        body: JSON.stringify({ isFlagged: true, flagReason }),
       });
 
       if (!response.ok) {
@@ -93,11 +97,13 @@ export function AdminUserDetail() {
 
     try {
       const token = await getAccessToken();
-      const response = await fetch(`/api/admin/assessments/${currentAssessment.id}/unflag`, {
-        method: 'POST',
+      const response = await fetch(`/api/assessments?id=${currentAssessment.id}`, {
+        method: 'PATCH',
         headers: {
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
+        body: JSON.stringify({ isFlagged: false }),
       });
 
       if (!response.ok) {
@@ -196,36 +202,38 @@ export function AdminUserDetail() {
             </div>
           )}
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <p className="text-sm text-gray-600">
               Created: {new Date(currentAssessment.createdAt).toLocaleString()}
             </p>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Priority Insight</h3>
-              <pre className="bg-gray-50 p-4 rounded text-sm overflow-x-auto">
-                {JSON.stringify(currentAssessment.priorityInsight, null, 2)}
-              </pre>
+              <h3 className="font-semibold text-gray-900 mb-3">Priority Insight</h3>
+              <InsightCard insight={currentAssessment.priorityInsight} isPriority />
+            </div>
+
+            {currentAssessment.additionalInsights.length > 0 && (
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Additional Insights ({currentAssessment.additionalInsights.length})
+                </h3>
+                <div className="space-y-3">
+                  {currentAssessment.additionalInsights.map((insight, index) => (
+                    <InsightCard key={index} insight={insight} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-3">Decision Tree</h3>
+              <DecisionTreeComponent tree={currentAssessment.decisionTree} />
             </div>
 
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Additional Insights</h3>
+              <h3 className="font-semibold text-gray-900 mb-2">Detected Signals (Raw Data)</h3>
               <pre className="bg-gray-50 p-4 rounded text-sm overflow-x-auto">
-                {JSON.stringify(currentAssessment.additionalInsights, null, 2)}
-              </pre>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Eligibility Metrics</h3>
-              <pre className="bg-gray-50 p-4 rounded text-sm overflow-x-auto">
-                {JSON.stringify(currentAssessment.eligibilityMetrics, null, 2)}
-              </pre>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Decision Tree</h3>
-              <pre className="bg-gray-50 p-4 rounded text-sm overflow-x-auto">
-                {JSON.stringify(currentAssessment.decisionTree, null, 2)}
+                {JSON.stringify(currentAssessment.signals, null, 2)}
               </pre>
             </div>
           </div>

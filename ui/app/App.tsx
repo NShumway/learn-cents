@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '../contexts/AuthContext';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import Layout from '../components/layout/Layout';
 import Home from '../pages/Home';
 import Assessment from '../pages/Assessment';
@@ -23,17 +24,19 @@ function App() {
           <Route
             path="/*"
             element={
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/assessment" element={<Assessment />} />
-                  <Route path="/synthetic-data" element={<SyntheticData />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/admin" element={<AdminDashboard />} />
-                  <Route path="/admin/users/:userId" element={<AdminUserDetail />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/assessment" element={<Assessment />} />
+                    <Route path="/synthetic-data" element={<SyntheticData />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
+                    <Route path="/admin/users/:userId" element={<AdminUserDetail />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              </ProtectedRoute>
             }
           />
         </Routes>

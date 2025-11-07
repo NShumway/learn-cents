@@ -60,7 +60,7 @@ async function main() {
       user: {
         client_user_id: 'test-user-' + Date.now(),
       },
-      client_name: 'Learn Cents Sandbox Explorer',
+      client_name: 'Learning Cents Sandbox Explorer',
       products: [Products.Transactions, Products.Liabilities, Products.Auth],
       country_codes: [CountryCode.Us],
       language: 'en',

@@ -1,14 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getUserFromRequest } from '../lib/supabase';
-import { prisma } from '../lib/prisma';
+import { getUserFromRequest } from '../lib/supabase.js';
+import { prisma } from '../lib/prisma.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
   try {
-    const userId = await getUserFromRequest(req as unknown as Request);
+    const userId = await getUserFromRequest(req);
 
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -24,27 +20,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    // Get all flagged assessments
-    const flaggedAssessments = await prisma.assessment.findMany({
-      where: {
-        isFlagged: true,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            createdAt: true,
+    // GET /api/admin/flagged - Get all flagged assessments
+    if (req.method === 'GET') {
+      const flaggedAssessments = await prisma.assessment.findMany({
+        where: {
+          isFlagged: true,
+        },
+        select: {
+          id: true,
+          userId: true,
+          createdAt: true,
+          flaggedAt: true,
+          flagReason: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              createdAt: true,
+            },
           },
         },
-      },
-      orderBy: {
-        flaggedAt: 'desc',
-      },
-    });
+        orderBy: {
+          flaggedAt: 'desc',
+        },
+      });
 
-    return res.status(200).json({ flaggedAssessments });
+      return res.status(200).json({ flaggedAssessments });
+    }
+
+    return res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
-    console.error('Get flagged assessments error:', error);
-    return res.status(500).json({ error: 'Failed to get flagged assessments' });
+    console.error('Admin flagged handler error:', error);
+    return res.status(500).json({ error: 'Failed to load flagged assessments' });
   }
 }

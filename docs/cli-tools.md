@@ -2,28 +2,39 @@
 
 ## Common Commands
 
-| Command                  | Description                                         | Optional Arguments                                                         |
-| ------------------------ | --------------------------------------------------- | -------------------------------------------------------------------------- |
-| `./setup.sh`             | Initial project setup (install deps, configure env) |                                                                            |
-| `vercel dev`             | Start full-stack dev server (UI + API)              |                                                                            |
-| `npm run check`          | Run TypeScript type checking and ESLint             |                                                                            |
-| `npm run generate:data`  | Generate synthetic user data                        | `--count <num>` (default: 50)<br>`--output <path>`                         |
-| `npm run explore:plaid`  | Fetch Plaid sandbox data (requires `.env`)          |                                                                            |
-| `npm run run:assessment` | Generate financial assessment                       | `<index>` (default: 0)<br>`--source plaid\|synthetic` (default: synthetic) |
-| `npm test`               | Run tests with Vitest                               | `<path>` (specific test file)<br>`--coverage`                              |
+| Command                  | Description                                         | Optional Arguments                                                               |
+| ------------------------ | --------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `./setup.sh`             | Initial project setup (install deps, configure env) |                                                                                  |
+| `vercel dev`             | Start full-stack dev server (UI + API)              |                                                                                  |
+| `npm run check`          | Run TypeScript type checking and ESLint             |                                                                                  |
+| `npm run generate:data`  | Generate synthetic user data                        | `-- --count <num>` (default: 50)<br>`-- --output <path>`                         |
+| `npm run explore:plaid`  | Fetch Plaid sandbox data (requires `.env`)          |                                                                                  |
+| `npm run run:assessment` | Generate financial assessment                       | `-- <index>` (default: 0)<br>`-- --source plaid\|synthetic` (default: synthetic) |
+| `npm run admin:promote`  | Promote user to admin (requires `--confirm` flag)   | `-- <email> --confirm`                                                           |
+| `npm test`               | Run tests with Vitest                               | `-- <path>` (specific test file)<br>`-- --coverage`                              |
 
 ## All Commands
 
-| Command                 | Description                                     | Optional Arguments |
-| ----------------------- | ----------------------------------------------- | ------------------ |
-| `npm run dev`           | Start UI-only dev server (no API routes)        |                    |
-| `npm run build`         | Build for production (TypeScript + bundling)    |                    |
-| `npm run deploy`        | Deploy to Vercel production                     |                    |
-| `npm run format`        | Format code files (TS, JSON, MD) using Prettier |                    |
-| `npm run test:ui`       | Run tests with interactive UI                   |                    |
-| `npm run test:personas` | Test persona assignment                         | `<index>` or `all` |
-| `npm run db:migrate`    | Run database migrations using Prisma            |                    |
-| `npm run db:generate`   | Generate Prisma client from schema              |                    |
-| `npm run db:studio`     | Open Prisma Studio GUI for database management  |                    |
-| `npm run db:push`       | Push schema changes to database (no migrations) |                    |
-| `npm run db:seed`       | Seed database with initial data                 |                    |
+| Command                 | Description                                     | Optional Arguments              |
+| ----------------------- | ----------------------------------------------- | ------------------------------- |
+| `npm run dev`           | Start UI-only dev server (no API routes)        |                                 |
+| `npm run build`         | Build for production (TypeScript + bundling)    |                                 |
+| `npm run deploy`        | Deploy to Vercel production                     |                                 |
+| `npm run format`        | Format code files (TS, JSON, MD) using Prettier |                                 |
+| `npm run test:ui`       | Run tests with interactive UI                   |                                 |
+| `npm run test:personas` | Test persona assignment                         | `-- <index>` or `all`           |
+| `npm run db:migrate`    | Run database migrations using Prisma            |                                 |
+| `npm run db:generate`   | Generate Prisma client from schema              |                                 |
+| `npm run db:studio`     | Open Prisma Studio GUI for database management  |                                 |
+| `npm run db:push`       | Push schema changes to database (no migrations) |                                 |
+| `npm run db:seed`       | Seed database with initial data                 |                                 |
+| `npm run admin:promote` | Promote user to admin (requires `--confirm`)    | `-- <email> --confirm`          |
+| `npm run admin:demote`  | Demote admin (requires `--confirm`)             | `-- <email> --confirm`          |
+| `npm run admin:list`    | List all admin users                            |                                 |
+| `npm run user:list`     | List all users                                  |                                 |
+| `npm run user:view`     | View user details                               | `-- <email>`                    |
+| `npm run user:delete`   | Delete user and all data (requires `--confirm`) | `-- <email> --confirm`          |
+| `npm run offers:list`   | List all partner offers                         |                                 |
+| `npm run offers:create` | Create new partner offer (requires `--confirm`) | `-- <json-file> --confirm`      |
+| `npm run offers:update` | Update partner offer (requires `--confirm`)     | `-- <id> <json-file> --confirm` |
+| `npm run offers:delete` | Delete partner offer (requires `--confirm`)     | `-- <id> --confirm`             |
