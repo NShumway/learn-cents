@@ -84,6 +84,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Baseline existing database
+        run: npx prisma migrate resolve --applied "20251106194007_phase4_server"
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        continue-on-error: true
+
       - name: Run database migrations
         run: npx prisma migrate deploy
         env:
