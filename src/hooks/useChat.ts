@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getAccessToken } from '../../ui/lib/auth';
 
 interface UseChatOptions {
   assessmentId: string;
@@ -21,7 +22,12 @@ export function useChat({ assessmentId, onError }: UseChatOptions) {
   useEffect(() => {
     async function loadHistory() {
       try {
-        const res = await fetch(`/api/chat/history?assessmentId=${assessmentId}`);
+        const token = await getAccessToken();
+        const res = await fetch(`/api/chat/history?assessmentId=${assessmentId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (!res.ok) throw new Error('Failed to load chat history');
 
         const { messages: historyMessages } = await res.json();
@@ -59,9 +65,13 @@ export function useChat({ assessmentId, onError }: UseChatOptions) {
     setError(null);
 
     try {
+      const token = await getAccessToken();
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           messages: [...messages, userMessage],
           assessmentId,
@@ -84,37 +94,37 @@ export function useChat({ assessmentId, onError }: UseChatOptions) {
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       let assistantMessage = '';
+      const assistantId = (Date.now() + 1).toString();
 
       if (reader) {
+        // Add initial empty assistant message
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: assistantId,
+            role: 'assistant' as const,
+            parts: [{ type: 'text', text: '' }],
+            createdAt: new Date(),
+          },
+        ]);
+
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          const chunk = decoder.decode(value);
+          const chunk = decoder.decode(value, { stream: true });
           assistantMessage += chunk;
 
           // Update assistant message as it streams
           setMessages((prev) => {
-            const lastMessage = prev[prev.length - 1];
-            if (lastMessage?.role === 'assistant') {
-              return [
-                ...prev.slice(0, -1),
-                {
-                  ...lastMessage,
-                  parts: [{ type: 'text', text: assistantMessage }],
-                },
-              ];
-            } else {
-              return [
-                ...prev,
-                {
-                  id: (Date.now() + 1).toString(),
-                  role: 'assistant' as const,
-                  parts: [{ type: 'text', text: assistantMessage }],
-                  createdAt: new Date(),
-                },
-              ];
-            }
+            return prev.map((msg) =>
+              msg.id === assistantId
+                ? {
+                    ...msg,
+                    parts: [{ type: 'text', text: assistantMessage }],
+                  }
+                : msg
+            );
           });
         }
       }

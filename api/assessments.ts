@@ -122,8 +122,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         },
       });
 
-      console.log('[OFFERS] Found active offers:', offersFromDb.length);
-
       // Convert Prisma types to PartnerOffer types
       const offers = offersFromDb.map((o) => ({
         id: o.id,
@@ -139,18 +137,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Match offers to insights if we have signals data
       let enhancedAssessment = assessment;
 
-      console.log('[OFFERS] Assessment check:', {
-        hasSignals: !!assessment.signals,
-        hasOffers: offers.length > 0,
-        priorityPersona: (assessment.priorityInsight as Record<string, unknown>)?.personaType,
-      });
-
       if (assessment.signals && offers.length > 0) {
         try {
           const signals = assessment.signals as unknown as DetectedSignals;
           const eligibilityMetrics = calculateEligibilityMetrics(signals);
-
-          console.log('[OFFERS] Eligibility metrics:', eligibilityMetrics);
 
           // Match offer for priority insight
           const priorityInsight = assessment.priorityInsight as Record<string, unknown>;
@@ -159,11 +149,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             eligibilityMetrics,
             priorityInsight.personaType as string
           );
-
-          console.log('[OFFERS] Match result:', {
-            persona: priorityInsight.personaType,
-            matched: priorityOffer ? priorityOffer.offerName : null,
-          });
 
           if (priorityOffer) {
             priorityInsight.partnerOffer = {

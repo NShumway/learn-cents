@@ -7,28 +7,13 @@ export function matchOffersToUser(
 ): PartnerOffer | null {
   const now = new Date();
 
-  console.log('[MATCHER] Starting match:', {
-    offerCount: offers.length,
-    persona,
-    now: now.toISOString(),
-  });
-
   // Filter offers by eligibility and active dates
   const eligibleOffers = offers.filter((offer) => {
-    console.log(`[MATCHER] Checking offer: ${offer.offerName}`, {
-      activeDateStart: offer.activeDateStart,
-      activeDateEnd: offer.activeDateEnd,
-      targetedPersonas: offer.targetedPersonas,
-      eligibilityReqs: offer.eligibilityReqs,
-    });
-
     // Check if offer is active
     if (offer.activeDateStart > now) {
-      console.log(`[MATCHER] ❌ ${offer.offerName}: not yet active`);
       return false;
     }
     if (offer.activeDateEnd && offer.activeDateEnd < now) {
-      console.log(`[MATCHER] ❌ ${offer.offerName}: expired`);
       return false;
     }
 
@@ -38,21 +23,16 @@ export function matchOffersToUser(
       (p) => p.toLowerCase().replace(/\s+/g, '_') === normalizedPersona
     );
     if (!personaMatches) {
-      console.log(`[MATCHER] ❌ ${offer.offerName}: persona mismatch (looking for ${persona})`);
       return false;
     }
 
     // Check eligibility requirements
     if (!meetsEligibilityRequirements(metrics, offer.eligibilityReqs)) {
-      console.log(`[MATCHER] ❌ ${offer.offerName}: failed eligibility`);
       return false;
     }
 
-    console.log(`[MATCHER] ✅ ${offer.offerName}: ELIGIBLE`);
     return true;
   });
-
-  console.log('[MATCHER] Eligible offers:', eligibleOffers.length);
 
   // Sort by priority for the user's persona, with tie-breaking
   const normalizedPersona = persona.toLowerCase().replace(/\s+/g, '_');
