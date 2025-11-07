@@ -85,7 +85,7 @@ jobs:
         run: npm ci
 
       - name: Run database migrations
-        run: npx prisma db push --force-reset --accept-data-loss
+        run: npx prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
