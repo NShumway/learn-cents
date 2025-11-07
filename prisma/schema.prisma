@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // User model (integrates with Supabase Auth)
@@ -32,17 +33,25 @@ model Assessment {
   // Assessment data (stored as JSONB)
   priorityInsight   Json     // Priority persona insight
   additionalInsights Json    // Array of additional insights
-  eligibilityMetrics Json    // Aggregated metrics for offer eligibility
+  signals           Json     // Detected signals from financial data
   decisionTree      Json     // Decision trace
 
   // Metadata
   createdAt         DateTime @default(now())
-  archived          Boolean  @default(false)
+  updatedAt         DateTime @updatedAt
+  isArchived        Boolean  @default(false) // Set to true when new assessment created
+
+  // Admin flagging (Story 16)
+  isFlagged         Boolean  @default(false)
+  flaggedAt         DateTime?
+  flaggedBy         String?  // Admin user ID who flagged
+  flagReason        String?  @db.Text
 
   chatMessages      ChatMessage[]
 
   @@map("assessments")
   @@index([userId, createdAt(sort: Desc)])
+  @@index([isFlagged])
 }
 
 // Partner Offer model

@@ -12,17 +12,21 @@ import ErrorState from '../components/plaid/ErrorState';
 import { useAssessment } from '../hooks/useAssessment';
 import { mockAssessment } from '../lib/mockAssessment';
 import { usePlaidConnection } from '../lib/plaid';
+import { getAccessToken } from '../lib/auth';
+import type { Assessment as AssessmentType } from '../../src/types/assessment';
 
 export default function Home() {
   const navigate = useNavigate();
   const [linkToken, setLinkToken] = useState<string | null>(null);
+  const [currentAssessment, setCurrentAssessment] = useState<AssessmentType | null>(null);
+  const [loadingAssessment, setLoadingAssessment] = useState(true);
   const { error, progress, generate, reset, setProgress } = useAssessment();
 
-  // Fetch link token on mount
+  // Fetch link token and current assessment on mount
   useEffect(() => {
     async function fetchLinkToken() {
       try {
-        const response = await fetch('/api/plaid/create-link-token', {
+        const response = await fetch('/api/plaid?action=create-link-token', {
           method: 'POST',
         });
         const data = await response.json();
@@ -31,7 +35,34 @@ export default function Home() {
         console.error('Failed to fetch link token:', err);
       }
     }
+
+    async function fetchCurrentAssessment() {
+      try {
+        const token = await getAccessToken();
+        if (!token) {
+          setLoadingAssessment(false);
+          return;
+        }
+
+        const response = await fetch('/api/assessments?type=current', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setCurrentAssessment(data.assessment);
+        }
+      } catch (err) {
+        console.error('Failed to fetch current assessment:', err);
+      } finally {
+        setLoadingAssessment(false);
+      }
+    }
+
     fetchLinkToken();
+    fetchCurrentAssessment();
   }, []);
 
   // Handle Plaid Link success
@@ -40,7 +71,7 @@ export default function Home() {
       setProgress({ stage: 'Exchanging token and fetching data...', percent: 20 });
 
       // Exchange token and fetch data
-      const response = await fetch('/api/plaid/exchange-token', {
+      const response = await fetch('/api/plaid?action=exchange-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ public_token: publicToken }),
@@ -54,6 +85,39 @@ export default function Home() {
       // Generate assessment
       const assessment = await generate(plaidData);
 
+      // Save assessment to database
+      setProgress({ stage: 'Saving your assessment...', percent: 90 });
+      try {
+        const token = await getAccessToken();
+        if (token) {
+          const saveResponse = await fetch('/api/assessments', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              priorityInsight: assessment.priorityInsight,
+              additionalInsights: assessment.additionalInsights,
+              signals: assessment.signals,
+              decisionTree: assessment.decisionTree,
+            }),
+          });
+
+          if (!saveResponse.ok) {
+            console.error('Failed to save assessment:', await saveResponse.text());
+          } else {
+            // Update current assessment state so button appears
+            setCurrentAssessment(assessment);
+          }
+        }
+      } catch (saveErr) {
+        console.error('Error saving assessment:', saveErr);
+        // Don't throw - still show the assessment even if save fails
+      }
+
+      setProgress({ stage: 'Complete!', percent: 100 });
+
       // Navigate to assessment page
       navigate('/assessment', { state: { assessment } });
     } catch (err) {
@@ -64,6 +128,13 @@ export default function Home() {
 
   // Use the wrapper hook to avoid duplicate Plaid Link initialization
   const { open, ready } = usePlaidConnection(linkToken || '', onSuccess);
+
+  // View saved assessment
+  const handleViewAssessment = () => {
+    if (currentAssessment) {
+      navigate('/assessment', { state: { assessment: currentAssessment } });
+    }
+  };
 
   // Fallback: use mock assessment
   const handleMockFlow = () => {
@@ -87,12 +158,25 @@ export default function Home() {
         </p>
 
         <div className="mb-8 space-y-4">
+          {!loadingAssessment && currentAssessment && (
+            <button
+              onClick={handleViewAssessment}
+              className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors shadow-md w-full sm:w-auto"
+            >
+              View Your Assessment
+            </button>
+          )}
+
           <button
             onClick={() => open()}
             disabled={!ready || !linkToken}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 transition-colors shadow-md"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 transition-colors shadow-md w-full sm:w-auto"
           >
-            {ready && linkToken ? 'Connect with Plaid' : 'Loading...'}
+            {ready && linkToken
+              ? currentAssessment
+                ? 'Create New Assessment'
+                : 'Connect with Plaid'
+              : 'Loading...'}
           </button>
 
           <div className="text-sm text-gray-700 bg-blue-50 border border-blue-200 rounded-lg p-4">

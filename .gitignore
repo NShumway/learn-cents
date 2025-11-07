@@ -38,3 +38,8 @@ PRD.pdf
 
 # Generated data files (entire data directory)
 data/
+
+# Implementation summary docs (for PR review only)
+docs/PHASE*_IMPLEMENTATION_SUMMARY.md
+PHASE*_COMPLETION_CHECKLIST.md
+.vercel

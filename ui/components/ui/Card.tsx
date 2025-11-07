@@ -6,7 +6,7 @@ interface CardProps {
   variant?: 'default' | 'highlighted';
 }
 
-export default function Card({ children, className = '', variant = 'default' }: CardProps) {
+export function Card({ children, className = '', variant = 'default' }: CardProps) {
   const baseClasses = 'rounded-lg p-6';
 
   const variantClasses = {
@@ -18,3 +18,5 @@ export default function Card({ children, className = '', variant = 'default' }: 
 
   return <div className={classes}>{children}</div>;
 }
+
+export default Card;

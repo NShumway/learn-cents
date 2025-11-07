@@ -3,7 +3,7 @@ interface SpinnerProps {
   className?: string;
 }
 
-export default function Spinner({ size = 'md', className = '' }: SpinnerProps) {
+export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
   const sizeClasses = {
     sm: 'w-4 h-4 border-2',
     md: 'w-8 h-8 border-2',
@@ -14,3 +14,5 @@ export default function Spinner({ size = 'md', className = '' }: SpinnerProps) {
 
   return <div className={classes} role="status" aria-label="Loading" />;
 }
+
+export default Spinner;

@@ -1,5 +1,5 @@
 /**
- * Learn Cents - Core Module Exports
+ * Learning Cents - Core Module Exports
  */
 
 // Types
