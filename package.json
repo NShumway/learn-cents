@@ -31,6 +31,7 @@
     "offers:create": "tsx scripts/manageOffers.ts create",
     "offers:update": "tsx scripts/manageOffers.ts update",
     "offers:delete": "tsx scripts/manageOffers.ts delete",
+    "postinstall": "prisma generate",
     "prepare": "husky"
   },
   "lint-staged": {
