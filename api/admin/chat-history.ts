@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('[ADMIN CHAT] Fetching messages for userId:', userId);
     const messages = await prisma.chatMessage.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'asc' }, // Chronological order: see user question then assistant reply
       select: {
         id: true,
         assessmentId: true,
