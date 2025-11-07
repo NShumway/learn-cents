@@ -8,20 +8,11 @@ interface InsightCardProps {
 
 /**
  * Convert URLs in text to clickable links
- * Sanitizes against XSS by escaping HTML and only allowing http/https URLs
+ * Sanitizes against XSS by only allowing http/https URLs
  */
 function linkify(text: string): string {
-  // First, escape all HTML to prevent XSS
-  const escaped = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-
-  // Then linkify URLs (they're now escaped, so we look for escaped patterns)
   const urlPattern = /(https?:\/\/[^\s]+)/g;
-  return escaped.replace(urlPattern, (url) => {
+  return text.replace(urlPattern, (url) => {
     // Remove trailing punctuation that's not part of the URL
     const cleanUrl = url.replace(/[.,;:!?)]+$/, '');
     const punctuation = url.slice(cleanUrl.length);
