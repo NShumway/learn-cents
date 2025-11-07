@@ -1,7 +1,17 @@
+interface AssessmentInsight {
+  type: string;
+  severity?: string;
+  [key: string]: unknown;
+}
+
+interface EligibilityMetrics {
+  [key: string]: unknown;
+}
+
 export function buildSystemPrompt(assessmentData: {
-  priorityInsight: any;
-  additionalInsights: any[];
-  eligibilityMetrics?: any;
+  priorityInsight: AssessmentInsight;
+  additionalInsights: AssessmentInsight[];
+  eligibilityMetrics?: EligibilityMetrics;
 }): string {
   return `You are a financial education assistant for Learning Cents, a platform that helps users understand their financial health through personalized assessments.
 

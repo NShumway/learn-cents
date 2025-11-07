@@ -33,7 +33,13 @@ export function useChat({ assessmentId, onError }: UseChatOptions) {
         const { messages: historyMessages } = await res.json();
 
         // Convert to Message format
-        const formattedMessages = historyMessages.map((msg: any) => ({
+        interface HistoryMessage {
+          id: string;
+          role: 'user' | 'assistant';
+          content: string;
+          createdAt: string;
+        }
+        const formattedMessages = (historyMessages as HistoryMessage[]).map((msg) => ({
           id: msg.id,
           role: msg.role,
           parts: [{ type: 'text', text: msg.content }],

@@ -7,7 +7,8 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const host = (req.headers as any).host || 'localhost';
+    const headers = req.headers as Headers;
+    const host = headers.get('host') || 'localhost';
     const url = new URL(req.url, `http://${host}`);
     const assessmentId = url.searchParams.get('assessmentId');
 

@@ -1,4 +1,19 @@
 import type { Assessment } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
+
+interface AssessmentInsight {
+  type: string;
+  severity?: string;
+  [key: string]: unknown;
+}
+
+interface EligibilityMetrics {
+  [key: string]: unknown;
+}
+
+interface AssessmentWithMetrics extends Assessment {
+  eligibilityMetrics?: Prisma.JsonValue;
+}
 
 /**
  * Build AI context from assessment data
@@ -6,11 +21,13 @@ import type { Assessment } from '@prisma/client';
  */
 export function buildAIContext(assessment: Assessment) {
   // Assessment data is stored as JSONB in Prisma
-  const priorityInsight = assessment.priorityInsight as any;
-  const additionalInsights = assessment.additionalInsights as any[];
+  const priorityInsight = assessment.priorityInsight as AssessmentInsight;
+  const additionalInsights = assessment.additionalInsights as AssessmentInsight[];
 
   // Extract eligibility metrics if available
-  const eligibilityMetrics = (assessment as any).eligibilityMetrics || null;
+  const eligibilityMetrics = (assessment as AssessmentWithMetrics).eligibilityMetrics as
+    | EligibilityMetrics
+    | undefined;
 
   return {
     priorityInsight,
@@ -22,12 +39,12 @@ export function buildAIContext(assessment: Assessment) {
 /**
  * Sanitize context to ensure no PII leaks
  */
-export function sanitizeContext(context: any): any {
+export function sanitizeContext<T extends Record<string, unknown>>(context: T): T {
   // Remove any fields that might contain PII
-  const sanitized = JSON.parse(JSON.stringify(context));
+  const sanitized = JSON.parse(JSON.stringify(context)) as T;
 
   // Recursively remove sensitive fields
-  function removeSensitiveFields(obj: any) {
+  function removeSensitiveFields(obj: Record<string, unknown>) {
     if (typeof obj !== 'object' || obj === null) return;
 
     delete obj.accountId;
@@ -38,12 +55,12 @@ export function sanitizeContext(context: any): any {
     delete obj.ssn;
 
     for (const key in obj) {
-      if (typeof obj[key] === 'object') {
-        removeSensitiveFields(obj[key]);
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        removeSensitiveFields(obj[key] as Record<string, unknown>);
       }
     }
   }
 
-  removeSensitiveFields(sanitized);
+  removeSensitiveFields(sanitized as Record<string, unknown>);
   return sanitized;
 }
