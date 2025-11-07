@@ -1,5 +1,5 @@
-import { getUserFromRequest } from '../lib/supabase.js';
-import { prisma } from '../lib/prisma.js';
+import { getUserFromRequest } from '../../src/lib/supabase.js';
+import { prisma } from '../../src/lib/prisma.js';
 
 export default async function handler(req: Request) {
   if (req.method !== 'GET') {
@@ -7,7 +7,8 @@ export default async function handler(req: Request) {
   }
 
   try {
-    const url = new URL(req.url);
+    const host = (req.headers as any).host || 'localhost';
+    const url = new URL(req.url, `http://${host}`);
     const assessmentId = url.searchParams.get('assessmentId');
 
     if (!assessmentId) {

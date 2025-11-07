@@ -69,7 +69,15 @@ export function useChat({ assessmentId, onError }: UseChatOptions) {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        // Try to parse error response for better error messages
+        let errorMessage = 'Failed to send message';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch {
+          // If we can't parse the error, use default message
+        }
+        throw new Error(errorMessage);
       }
 
       // Handle streaming response

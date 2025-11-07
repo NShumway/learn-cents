@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAccessToken } from '../../../ui/lib/auth';
 
 interface ChatMessage {
@@ -16,33 +16,50 @@ interface ChatHistoryProps {
 }
 
 export function ChatHistory({ userId }: ChatHistoryProps) {
+  console.log('[CHAT HISTORY] Component rendering, userId:', userId);
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadMessages();
-  }, [userId]);
+  const loadMessages = useCallback(async () => {
+    console.log('[CHAT HISTORY] Starting loadMessages...');
+    setLoading(true);
+    setError(null);
 
-  const loadMessages = async () => {
     try {
+      console.log('[CHAT HISTORY] Getting access token...');
       const token = await getAccessToken();
-      const res = await fetch(`/api/admin/chat/${userId}`, {
+      console.log('[CHAT HISTORY] Token received, fetching...');
+
+      const res = await fetch(`/api/admin/chat-history?userId=${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!res.ok) throw new Error('Failed to load messages');
+      console.log('[CHAT HISTORY] Fetch completed, status:', res.status);
 
-      const { messages } = await res.json();
-      setMessages(messages);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to load messages (${res.status})`);
+      }
+
+      console.log('[CHAT HISTORY] Parsing JSON...');
+      const data = await res.json();
+      console.log('[CHAT HISTORY] Received data:', data);
+      setMessages(data.messages || []);
     } catch (err) {
+      console.error('Failed to load chat messages:', err);
       setError(err instanceof Error ? err.message : 'Failed to load messages');
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    loadMessages();
+  }, [loadMessages]);
 
   const handleFlag = async (messageId: string) => {
     const reason = prompt('Reason for flagging:');

@@ -1,5 +1,5 @@
-import { getUserFromRequest } from '../../lib/supabase.js';
-import { prisma } from '../../lib/prisma.js';
+import { getUserFromRequest } from '../../../src/lib/supabase.js';
+import { prisma } from '../../../src/lib/prisma.js';
 
 export default async function handler(req: Request) {
   if (req.method !== 'GET') {
@@ -56,9 +56,16 @@ export default async function handler(req: Request) {
     });
   } catch (error) {
     console.error('Admin chat history error:', error);
-    return new Response(JSON.stringify({ error: 'Internal server error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+    return new Response(
+      JSON.stringify({
+        error: 'Internal server error',
+        details: errorMessage,
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 }

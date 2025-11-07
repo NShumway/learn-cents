@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getUserFromRequest, supabaseAdmin } from './lib/supabase.js';
-import { prisma } from './lib/prisma.js';
+import { getUserFromRequest, supabaseAdmin } from '../src/lib/supabase.js';
+import { prisma } from '../src/lib/prisma.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {

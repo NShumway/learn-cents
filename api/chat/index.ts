@@ -1,10 +1,10 @@
 import { streamText, convertToModelMessages, type UIMessage } from 'ai';
-import { aiModel } from '../lib/ai/client.js';
-import { buildSystemPrompt } from '../lib/ai/prompts.js';
-import { validateUserMessage, validateResponse } from '../lib/ai/guardrails.js';
-import { buildAIContext, sanitizeContext } from '../lib/ai/context.js';
-import { getUserFromRequest } from '../lib/supabase.js';
-import { prisma } from '../lib/prisma.js';
+import { aiModel } from '../../src/lib/ai/client.js';
+import { buildSystemPrompt } from '../../src/lib/ai/prompts.js';
+import { validateUserMessage, validateResponse } from '../../src/lib/ai/guardrails.js';
+import { buildAIContext, sanitizeContext } from '../../src/lib/ai/context.js';
+import { getUserFromRequest } from '../../src/lib/supabase.js';
+import { prisma } from '../../src/lib/prisma.js';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -138,9 +138,32 @@ export default async function handler(req: Request) {
     return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error('Chat API error:', error);
+
+    // Check if it's an API key error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isApiKeyError =
+      errorMessage.includes('API key') ||
+      errorMessage.includes('authentication') ||
+      errorMessage.includes('401') ||
+      errorMessage.includes('Invalid API');
+
+    if (isApiKeyError) {
+      return new Response(
+        JSON.stringify({
+          error: 'AI service configuration error',
+          message: 'The AI service is not properly configured. Please contact support.',
+        }),
+        {
+          status: 503,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     return new Response(
       JSON.stringify({
         error: 'Internal server error',
+        message: 'An unexpected error occurred. Please try again.',
       }),
       {
         status: 500,
