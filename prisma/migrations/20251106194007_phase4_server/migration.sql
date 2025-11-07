@@ -17,7 +17,7 @@ CREATE TABLE "assessments" (
     "userId" TEXT NOT NULL,
     "priorityInsight" JSONB NOT NULL,
     "additionalInsights" JSONB NOT NULL,
-    "eligibilityMetrics" JSONB NOT NULL,
+    "signals" JSONB NOT NULL,
     "decisionTree" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
