@@ -82,9 +82,12 @@ model ChatMessage {
   role         String     // 'user' or 'assistant'
   content      String     @db.Text
   flagged      Boolean    @default(false)
+  flagReason   String?    @db.Text
 
   createdAt    DateTime   @default(now())
 
   @@map("chat_messages")
+  @@index([userId, createdAt])
   @@index([assessmentId, createdAt])
+  @@index([flagged])
 }
